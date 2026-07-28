@@ -104,6 +104,22 @@ install_drawio() {
   log_success "Draw.io ${tag#v} instalado"
 }
 
+install_dbeaver() {
+  # https://snapcraft.io/dbeaver-ce
+  print_header "DBeaver" "Gerenciador de bancos de dados universal — https://dbeaver.io"
+  log_info "↪ https://snapcraft.io/dbeaver-ce"
+  sudo snap install dbeaver-ce --classic
+  log_success "DBeaver instalado"
+}
+
+install_anyquery() {
+  # https://anyquery.dev/docs/#installation
+  print_header "Anyquery" "Ferramenta de consulta SQL para qualquer fonte de dados — https://anyquery.dev"
+  log_info "↪ https://anyquery.dev/docs/#installation"
+  curl -fsSL https://anyquery.dev/install.sh | sh
+  log_success "Anyquery instalado"
+}
+
 install_superfile() {
   # https://superfile.dev/getting-started/installation/
   print_header "Superfile" "Gerenciador de arquivos no terminal — https://superfile.dev"
@@ -121,5 +137,7 @@ run_tools() {
   track "TOOLS" install_waveterm "Wave Terminal"
   track "TOOLS" install_warpreminal "Warp Terminal"
   track "TOOLS" install_drawio "Draw.io"
+  track "TOOLS" install_dbeaver "DBeaver"
+  track "TOOLS" install_anyquery "Anyquery"
   track "TOOLS" install_superfile "Superfile"
 }
