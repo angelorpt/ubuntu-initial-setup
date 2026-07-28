@@ -77,6 +77,19 @@ Durante a instalação, duas barras de progresso são exibidas em tempo real:
 
 O sistema detecta automaticamente o **gum** (instalado via `base.sh`), mas funciona sem ele com cores ANSI puras.
 
+## Testes
+
+```bash
+# ShellCheck + BATS
+bash tests/run.sh
+
+# Apenas ShellCheck
+bash tests/lint.sh
+
+# Apenas BATS
+bats tests/lib/
+```
+
 ## Estrutura
 
 ```
@@ -94,12 +107,21 @@ ubuntu-initial-setup/
 │   ├── fonts.sh            # Fira Code, JetBrains Mono, Cascadia Code, Victor Mono, Monaspace
 │   ├── config.sh           # Git, SSH, Gogh
 │   └── npm-globals.sh      # TypeScript, Nest.js, Vue.js, Prisma e mais
-└── lib/
-    ├── colors.sh         # Cores ANSI
-    ├── log.sh            # log_info, log_success, log_error, print_header
-    ├── utils.sh          # Utilitários (die_on_error, download_to_temp, install_deb)
-    ├── progress.sh       # Barras de progresso (módulo + total)
-    └── results.sh        # Tracking de resultados, relatório e retry
+├── lib/
+│   ├── colors.sh         # Cores ANSI
+│   ├── log.sh            # log_info, log_success, log_error, print_header
+│   ├── utils.sh          # Utilitários (die_on_error, download_to_temp, install_deb)
+│   ├── progress.sh       # Barras de progresso (módulo + total)
+│   └── results.sh        # Tracking de resultados, relatório e retry
+└── tests/
+    ├── run.sh              # Runner: lint + BATS
+    ├── lint.sh             # ShellCheck em todos os .sh
+    ├── helpers.bash        # source_lib() para BATS
+    └── lib/
+        ├── log.bats        # Testes: print_header, print_details, log_*
+        ├── progress.bats   # Testes: init_progress, update_progress
+        ├── results.bats    # Testes: init_results, track
+        └── utils.bats      # Testes: die_on_error, ensure_whiptail
 ```
 
 ## Arquitetura
