@@ -30,10 +30,18 @@ install_blisk() {
     "Navegador feito para desenvolvedores web com emulador mobile" \
     "Ferramentas de screenshot, grab de requisições, auto-refresh" \
     "Uso: blisk (ou Blisk no menu)"
+
+  if command -v blisk &>/dev/null; then
+    log_info "Blisk já instalado"
+    return 0
+  fi
+
   pushd /tmp > /dev/null
-  wget -q -O blisk.deb "https://blisk.io/download/installer/?os=linux-deb"
-  sudo dpkg -i blisk.deb 2>/dev/null || true
-  sudo apt install -f -y
+  local url="https://blisk.io/download/installer/?os=linux-deb"
+  log_info "↪ Baixando: $url"
+  wget -q -O blisk.deb "$url" || { log_error "Falha ao baixar Blisk"; popd > /dev/null; return 1; }
+  sudo apt install -y ./blisk.deb || { log_error "Falha ao instalar Blisk"; popd > /dev/null; return 1; }
+  rm -f blisk.deb
   popd > /dev/null
   log_success "Blisk instalado"
 }

@@ -104,9 +104,18 @@ install_warpreminal() {
     "Terminal com IA para explicar erros e sugerir comandos" \
     "Blocos de comando, histórico pesquisável, worktrees" \
     "Uso: warp"
+
+  if command -v warp &>/dev/null; then
+    log_info "Warp Terminal já instalado: $(warp --version 2>&1 | head -1)"
+    return 0
+  fi
+
   pushd /tmp > /dev/null
-  wget -q -O warp.deb "https://app.warp.dev/get_warp?package=deb"
-  sudo apt install -y ./warp.deb
+  local url="https://app.warp.dev/download/linux/deb"
+  log_info "↪ Baixando: $url"
+  wget -q -O warp.deb "$url" || { log_error "Falha ao baixar Warp Terminal"; popd > /dev/null; return 1; }
+  sudo apt install -y ./warp.deb || { log_error "Falha ao instalar Warp Terminal"; popd > /dev/null; return 1; }
+  rm -f warp.deb
   popd > /dev/null
   log_success "Warp Terminal instalado"
 }
