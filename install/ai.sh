@@ -16,7 +16,7 @@ install_opencode() {
     "Agente de codificação que entende seu repositório inteiro" \
     "Edita arquivos, executa comandos, gerencia git e deploys" \
     "Uso: opencode -p 'refatore esta função'"
-  curl -fsSL https://opencode.ai/install.sh | bash
+  curl -fsSL https://opencode.ai/install | bash
   log_success "OpenCode instalado"
 }
 
