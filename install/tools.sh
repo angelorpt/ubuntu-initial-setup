@@ -89,6 +89,21 @@ install_warpreminal() {
   log_success "Warp Terminal instalado"
 }
 
+install_drawio() {
+  # https://github.com/jgraph/drawio-desktop/releases
+  print_header "Draw.io" "Editor de diagramas e fluxogramas — https://www.drawio.com"
+  log_info "↪ https://github.com/jgraph/drawio-desktop/releases"
+  local tag url
+  tag=$(curl -s https://api.github.com/repos/jgraph/drawio-desktop/releases/latest | grep '"tag_name":' | cut -d'"' -f4)
+  [ -z "$tag" ] && log_error "Não foi possível obter versão do Draw.io" && return 1
+  url="https://github.com/jgraph/drawio-desktop/releases/download/${tag}/drawio-amd64-${tag#v}.deb"
+  cd /tmp
+  wget -q -O drawio.deb "$url"
+  sudo dpkg -i drawio.deb 2>/dev/null || true
+  sudo apt install -f -y
+  log_success "Draw.io ${tag#v} instalado"
+}
+
 install_superfile() {
   # https://superfile.dev/getting-started/installation/
   print_header "Superfile" "Gerenciador de arquivos no terminal — https://superfile.dev"
@@ -105,5 +120,6 @@ run_tools() {
   track "TOOLS" install_gparted "GParted"
   track "TOOLS" install_waveterm "Wave Terminal"
   track "TOOLS" install_warpreminal "Warp Terminal"
+  track "TOOLS" install_drawio "Draw.io"
   track "TOOLS" install_superfile "Superfile"
 }
