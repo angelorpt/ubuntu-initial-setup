@@ -7,9 +7,9 @@ install_flameshot() {
 }
 
 install_espanso() {
-  # https://espanso.org/
+  # https://espanso.org/docs/install/linux/
   print_header "Espanso" "Expansor de texto para produtividade"
-  log_info "↪ https://espanso.org/"
+  log_info "↪ https://espanso.org/docs/install/linux/"
   sudo apt-get update
   sudo apt-get install -y xclip
   sudo snap install espanso --classic

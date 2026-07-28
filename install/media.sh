@@ -46,6 +46,14 @@ install_obsidian() {
   log_success "Obsidian instalado"
 }
 
+install_vlc() {
+  # https://snapcraft.io/vlc
+  print_header "VLC" "Player de mídia versátil e de código aberto — https://snapcraft.io/vlc"
+  log_info "↪ https://snapcraft.io/vlc"
+  sudo snap install vlc
+  log_success "VLC instalado"
+}
+
 install_inkscape() {
   # https://wiki.inkscape.org/wiki/Installing_Inkscape#Ubuntu_or_Debian
   print_header "Inkscape" "Editor de gráficos vetoriais — https://wiki.inkscape.org/wiki/Installing_Inkscape#Ubuntu_or_Debian"
@@ -69,6 +77,7 @@ run_media() {
   install_mailspring
   install_telegram
   install_obsidian
+  install_vlc
   install_inkscape
   install_calibre
 }

@@ -19,10 +19,10 @@ cd ubuntu-initial-setup
 | Módulo | Programas |
 |--------|-----------|
 | `base` | curl, git, zsh + oh-my-zsh |
-| `dev` | Docker, NVM + Node LTS, Java, VSCode, Antigravity 2.0, Antigravity IDE |
+| `dev` | Docker, NVM + Node LTS, Java, VSCode, Go, Postman, Antigravity 2.0, Antigravity IDE |
 | `ai` | Ollama, OpenCode, Serena, Hermes Agent, Antigravity CLI |
 | `tools` | Flameshot, Espanso, HyperKeys, IMWheel, GParted, Wave/Warp Terminal, Superfile |
-| `media` | Google Chrome, Ferdium, Mailspring, Telegram, Obsidian, Calibre |
+| `media` | Google Chrome, Ferdium, Mailspring, Telegram, Obsidian, VLC, Inkscape, Calibre |
 | `fonts` | Fira Code |
 | `config` | Git config, SSH key, Gogh terminal |
 

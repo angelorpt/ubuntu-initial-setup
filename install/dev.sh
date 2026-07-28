@@ -46,6 +46,22 @@ install_vscode() {
   log_success "VSCode instalado"
 }
 
+install_go() {
+  # https://snapcraft.io/go
+  print_header "Go" "Linguagem de programação compilada — https://snapcraft.io/go"
+  log_info "↪ https://snapcraft.io/go"
+  sudo snap install go --classic
+  log_success "Go instalado"
+}
+
+install_postman() {
+  # https://snapcraft.io/postman
+  print_header "Postman" "Plataforma de API para desenvolvimento — https://snapcraft.io/postman"
+  log_info "↪ https://snapcraft.io/postman"
+  sudo snap install postman
+  log_success "Postman instalado"
+}
+
 install_antigravity2() {
   # https://storage.googleapis.com/antigravity-public/antigravity-hub/2.4.2-6711062033203200/linux-x64/Antigravity.tar.gz
   print_header "Antigravity 2.0" "Plataforma de desenvolvimento agente-first do Google — https://antigravity.google"
@@ -83,6 +99,8 @@ run_dev() {
   install_nvm
   install_java
   install_vscode
+  install_go
+  install_postman
   install_antigravity2
   install_antigravity_ide
 }
