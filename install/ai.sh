@@ -38,17 +38,6 @@ install_serena() {
   log_success "Serena instalado e inicializado"
 }
 
-install_hermes() {
-  # https://hermes-agent.nousresearch.com/docs/
-  print_header "Hermes Agent" "Agente de IA auto-melhorável da Nous Research"
-  print_details "https://hermes-agent.nousresearch.com" \
-    "Agente que aprende e melhora com o uso ao longo do tempo" \
-    "Integração com ferramentas do sistema, planejamento de tarefas" \
-    "Uso: hermes run 'crie um servidor web'"
-  curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash
-  log_success "Hermes Agent instalado"
-}
-
 install_antigravity_cli() {
   # https://antigravity.google/download#antigravity-cli
   print_header "Antigravity CLI" "CLI para desenvolvimento agente-first do Google"
@@ -71,14 +60,13 @@ install_claude_code() {
   log_success "Claude Code instalado"
 }
 
-_run_ai_total=6
+_run_ai_total=5
 
 run_ai() {
   init_module_progress $_run_ai_total "AI"
   track "AI" install_ollama "Ollama"
   track "AI" install_opencode "OpenCode"
   track "AI" install_serena "Serena"
-  track "AI" install_hermes "Hermes Agent"
   track "AI" install_antigravity_cli "Antigravity CLI"
   track "AI" install_claude_code "Claude Code"
   end_module_progress

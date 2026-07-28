@@ -23,35 +23,11 @@ install_brave() {
   log_success "Brave instalado: $(brave-browser --version 2>&1)"
 }
 
-install_blisk() {
-  # https://blisk.io/
-  print_header "Blisk" "Navegador para desenvolvimento web"
-  print_details "https://blisk.io" \
-    "Navegador feito para desenvolvedores web com emulador mobile" \
-    "Ferramentas de screenshot, grab de requisições, auto-refresh" \
-    "Uso: blisk (ou Blisk no menu)"
-
-  if command -v blisk &>/dev/null; then
-    log_info "Blisk já instalado"
-    return 0
-  fi
-
-  pushd /tmp > /dev/null
-  local url="https://blisk.io/download/installer/?os=linux-deb"
-  log_info "↪ Baixando: $url"
-  wget -q -O blisk.deb "$url" || { log_error "Falha ao baixar Blisk"; popd > /dev/null; return 1; }
-  sudo apt install -y ./blisk.deb || { log_error "Falha ao instalar Blisk"; popd > /dev/null; return 1; }
-  rm -f blisk.deb
-  popd > /dev/null
-  log_success "Blisk instalado"
-}
-
-_run_media_total=3
+_run_media_total=2
 
 run_media() {
   init_module_progress $_run_media_total "Media"
   track "MEDIA" install_chrome "Google Chrome"
   track "MEDIA" install_brave "Brave"
-  track "MEDIA" install_blisk "Blisk"
   end_module_progress
 }

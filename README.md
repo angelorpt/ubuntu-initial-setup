@@ -119,7 +119,6 @@ cd ubuntu-initial-setup
 | Ollama | https://ollama.com | Plataforma local para execução de modelos de linguagem |
 | OpenCode | https://opencode.ai | Assistente de engenharia de software no terminal |
 | Serena | https://github.com/oraios/serena | MCP toolkit semântico para agentes de código |
-| Hermes Agent | https://hermes-agent.nousresearch.com | Agente de IA auto-melhorável da Nous Research |
 | Antigravity CLI | https://antigravity.google | CLI para desenvolvimento agente-first do Google |
 | Claude Code | https://code.claude.com | Assistente de codificação IA da Anthropic |
 
@@ -178,7 +177,6 @@ cd ubuntu-initial-setup
 |----------|------|-----------|
 | Google Chrome | https://www.google.com/chrome | Navegador web do Google |
 | Brave | https://brave.com | Navegador focado em privacidade |
-| Blisk | https://blisk.io | Navegador para desenvolvimento web |
 
 ### Fonts
 
