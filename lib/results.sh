@@ -1,12 +1,23 @@
 RESULTS_DIR=""
 RESULTS_RETRY=false
+RESULTS_CONTINUE=false
 _FAILED_ITEMS=""
+_SKIPPED_ITEMS=""
 
 init_results() {
+  local fresh=false
+  if [[ "${1:-}" == "--fresh" ]]; then
+    fresh=true
+    shift
+  fi
   RESULTS_DIR="${1:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/.install-results}"
   mkdir -p "$RESULTS_DIR"
-  : > "$RESULTS_DIR/sucesso.txt"
-  : > "$RESULTS_DIR/falha.txt"
+  if $fresh; then
+    : > "$RESULTS_DIR/sucesso.txt"
+    : > "$RESULTS_DIR/falha.txt"
+  else
+    touch "$RESULTS_DIR/sucesso.txt" "$RESULTS_DIR/falha.txt"
+  fi
   log_info "Resultados salvos em $RESULTS_DIR"
 }
 
@@ -14,6 +25,13 @@ init_retry() {
   RESULTS_RETRY=true
   if [ -f "$RESULTS_DIR/falha.txt" ]; then
     _FAILED_ITEMS=$(sed 's/^[^:]*: //' "$RESULTS_DIR/falha.txt")
+  fi
+}
+
+init_continue() {
+  RESULTS_CONTINUE=true
+  if [ -f "$RESULTS_DIR/sucesso.txt" ]; then
+    _SKIPPED_ITEMS=$(sed 's/^[^:]*: //' "$RESULTS_DIR/sucesso.txt")
   fi
 }
 
@@ -25,6 +43,14 @@ track() {
 
   if $RESULTS_RETRY; then
     if ! echo "$_FAILED_ITEMS" | grep -q -F "$name"; then
+      log_info "${name} — já instalado anteriormente (pulado)"
+      update_progress "$name"
+      return 0
+    fi
+  fi
+
+  if $RESULTS_CONTINUE; then
+    if echo "$_SKIPPED_ITEMS" | grep -q -F "$name"; then
       log_info "${name} — já instalado anteriormente (pulado)"
       update_progress "$name"
       return 0

@@ -14,12 +14,13 @@ show_help() {
 Uso: ./install.sh [OPÇÃO]
 
 Opções:
-  --all       Instala todos os módulos (não interativo)
-  --update    Atualiza todos os programas instalados
-  --retry     Tenta novamente apenas os programas que falharam
-  --help      Mostra esta ajuda
+  --all        Instala todos os módulos (não interativo, limpa histórico)
+  --update     Atualiza todos os programas instalados (limpa histórico)
+  --retry      Tenta novamente apenas os programas que falharam
+  --continue   Continua instalação pulando programas já instalados com sucesso
+  --help       Mostra esta ajuda
 
-Sem opções: abre o menu interativo whiptail para selecionar módulos.
+Sem opções: abre o menu interativo whiptail.
 
 Relatórios salvos em .install-results/
   sucesso.txt   — programas instalados com sucesso
@@ -28,7 +29,8 @@ Relatórios salvos em .install-results/
 
 Exemplos:
   ./install.sh              # menu interativo
-  ./install.sh --all        # instala tudo
+  ./install.sh --all        # instala tudo (do zero)
+  ./install.sh --continue   # continua de onde parou
   ./install.sh --retry      # retenta falhas
 EOF
 }
@@ -38,24 +40,29 @@ MODE="install"
 case "${1:-}" in
   --all)
     CHOICES="BASE DEV AI TOOLS_TERMINAL TOOLS_DESKTOP TOOLS_UBUNTU MEDIA FONTS CONFIG NPM_GLOBALS"
-    init_results
+    init_results --fresh
     log_info "Modo automático: instalando todos os módulos..."
     ;;
   --update)
     CHOICES="BASE DEV AI TOOLS_TERMINAL TOOLS_DESKTOP TOOLS_UBUNTU MEDIA FONTS CONFIG NPM_GLOBALS"
-    init_results
+    init_results --fresh
     log_info "Modo update: reinstalando todos os programas..."
     ;;
   --retry)
-    local retry_falha="$(cd "$(dirname "$0")" && pwd)/.install-results/falha.txt"
+    init_results
+    init_retry
+    local retry_falha="$RESULTS_DIR/falha.txt"
     if [ ! -s "$retry_falha" ]; then
       log_info "Nenhuma falha anterior encontrada em $retry_falha"
       exit 0
     fi
     CHOICES=$(sed 's/:.*//' "$retry_falha" | sort -u | tr '\n' ' ')
-    init_results
-    init_retry
     log_info "Modo retry: tentando novamente apenas os programas que falharam..."
+    ;;
+  --continue)
+    init_results
+    init_continue
+    log_info "Modo continue: pulando programas já instalados com sucesso..."
     ;;
   --help|-h)
     show_help
@@ -63,25 +70,56 @@ case "${1:-}" in
     ;;
   *)
     ensure_whiptail
-    MODULES=(
-      "BASE"           "Utilitários essenciais (curl, git, zsh)" ON
-      "DEV"            "Ferramentas de desenvolvimento" ON
-      "AI"             "Inteligência Artificial (ollama, opencode)" ON
-      "TOOLS_TERMINAL" "Ferramentas de terminal (htop, tmux, fzf, vim)" ON
-      "TOOLS_DESKTOP"  "Aplicativos gráficos (Flameshot, DBeaver, Stacer)" ON
-      "TOOLS_UBUNTU"   "Manutenção do sistema (Nala, UFW, fastfetch)" ON
-      "MEDIA"          "Navegadores (Chrome, Brave)" ON
-      "FONTS"          "Fontes para programação (Fira Code)" ON
-      "CONFIG"         "Configuração Git, SSH e terminal" ON
-      "NPM_GLOBALS"    "Pacotes npm globais (Nest.js, Vue, OpenSpec)" ON
-    )
-    CHOICES=$(whiptail --title "ubuntu-initial-setup" \
-      --checklist "Selecione os módulos para instalar (espaço para marcar/desmarcar):" \
-      24 72 10 \
-      "${MODULES[@]}" \
+    MODE=$(whiptail --title "ubuntu-initial-setup" \
+      --menu "Escolha o modo de instalação:" \
+      15 60 3 \
+      "new"       "Nova instalação (limpa histórico)" \
+      "continue"  "Continuar de onde parou" \
+      "retry"     "Retentar apenas falhas" \
       3>&1 1>&2 2>&3)
-    [ -z "$CHOICES" ] && log_info "Nenhum módulo selecionado. Saindo." && exit 0
-    init_results
+    [ -z "$MODE" ] && log_info "Cancelado." && exit 0
+
+    case $MODE in
+      new)
+        init_results --fresh
+        ;;
+      continue)
+        init_results
+        init_continue
+        ;;
+      retry)
+        init_results
+        init_retry
+        local retry_falha="$RESULTS_DIR/falha.txt"
+        if [ ! -s "$retry_falha" ]; then
+          log_info "Nenhuma falha anterior encontrada."
+          exit 0
+        fi
+        CHOICES=$(sed 's/:.*//' "$retry_falha" | sort -u | tr '\n' ' ')
+        ;;
+    esac
+
+    if [ "$MODE" != "retry" ]; then
+      MODULES=(
+        "BASE"           "Utilitários essenciais (curl, git, zsh)" ON
+        "DEV"            "Ferramentas de desenvolvimento" ON
+        "AI"             "Inteligência Artificial (ollama, opencode)" ON
+        "TOOLS_TERMINAL" "Ferramentas de terminal (htop, tmux, fzf, vim)" ON
+        "TOOLS_DESKTOP"  "Aplicativos gráficos (Flameshot, DBeaver, Stacer)" ON
+        "TOOLS_UBUNTU"   "Manutenção do sistema (Nala, UFW, fastfetch)" ON
+        "MEDIA"          "Navegadores (Chrome, Brave)" ON
+        "FONTS"          "Fontes para programação (Fira Code)" ON
+        "CONFIG"         "Configuração Git, SSH e terminal" ON
+        "NPM_GLOBALS"    "Pacotes npm globais (Nest.js, Vue, OpenSpec)" ON
+      )
+      CHOICES=$(whiptail --title "ubuntu-initial-setup" \
+        --checklist "Selecione os módulos para instalar (espaço para marcar/desmarcar):" \
+        24 76 10 \
+        "${MODULES[@]}" \
+        3>&1 1>&2 2>&3)
+      CHOICES=$(echo "$CHOICES" | tr -d '"')
+      [ -z "$CHOICES" ] && log_info "Nenhum módulo selecionado. Saindo." && exit 0
+    fi
     ;;
 esac
 
