@@ -135,7 +135,41 @@ install_terraform() {
   log_success "Terraform instalado: $(terraform --version 2>&1 | head -1)"
 }
 
-_run_dev_total=11
+install_github_cli() {
+  # https://cli.github.com/
+  print_header "GitHub CLI" "CLI oficial do GitHub — https://cli.github.com"
+  log_info "↪ https://cli.github.com/"
+  (type -p wget >/dev/null || (sudo apt update && sudo apt install wget -y)) \
+    && sudo mkdir -p -m 755 /etc/apt/keyrings \
+    && out=$(mktemp) && wget -nv -O"$out" https://cli.github.com/packages/githubcli-archive-keyring.gpg \
+    && cat "$out" | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null \
+    && sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+    && sudo apt update \
+    && sudo apt install gh -y
+  log_success "GitHub CLI instalado: $(gh --version 2>&1 | head -1)"
+}
+
+install_aws_cli() {
+  # https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+  print_header "AWS CLI" "CLI oficial da Amazon Web Services — https://aws.amazon.com/cli"
+  log_info "↪ https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html"
+  sudo snap install aws-cli --classic
+  log_success "AWS CLI instalado: $(aws --version 2>&1)"
+}
+
+install_ansible() {
+  # https://docs.ansible.com/projects/ansible/latest/installation_guide/installation_distros.html
+  print_header "Ansible" "Automação de infraestrutura — https://www.ansible.com"
+  log_info "↪ https://docs.ansible.com/projects/ansible/latest/installation_guide/installation_distros.html"
+  sudo apt update
+  sudo apt install -y software-properties-common
+  sudo add-apt-repository --yes --update ppa:ansible/ansible
+  sudo apt install -y ansible
+  log_success "Ansible instalado: $(ansible --version 2>&1 | head -1)"
+}
+
+_run_dev_total=14
 
 run_dev() {
   init_module_progress $_run_dev_total "Dev"
@@ -150,5 +184,8 @@ run_dev() {
   track "DEV" install_antigravity2 "Antigravity 2.0"
   track "DEV" install_antigravity_ide "Antigravity IDE"
   track "DEV" install_terraform "Terraform"
+  track "DEV" install_github_cli "GitHub CLI"
+  track "DEV" install_aws_cli "AWS CLI"
+  track "DEV" install_ansible "Ansible"
   end_module_progress
 }
