@@ -128,7 +128,10 @@ install_superfile() {
   log_success "Superfile instalado"
 }
 
+_run_tools_total=11
+
 run_tools() {
+  init_module_progress $_run_tools_total "Tools"
   track "TOOLS" install_flameshot "Flameshot"
   track "TOOLS" install_espanso "Espanso"
   track "TOOLS" install_hyperkeys "HyperKeys"
@@ -140,4 +143,5 @@ run_tools() {
   track "TOOLS" install_dbeaver "DBeaver"
   track "TOOLS" install_anyquery "Anyquery"
   track "TOOLS" install_superfile "Superfile"
+  end_module_progress
 }

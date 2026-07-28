@@ -8,6 +8,10 @@ install_chrome() {
   log_success "Google Chrome instalado"
 }
 
+_run_media_total=1
+
 run_media() {
+  init_module_progress $_run_media_total "Media"
   track "MEDIA" install_chrome "Google Chrome"
+  end_module_progress
 }

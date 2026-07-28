@@ -21,6 +21,10 @@ install_firacode() {
   log_success "Fira Code ${version} instalado em $fonts_dir"
 }
 
+_run_fonts_total=1
+
 run_fonts() {
+  init_module_progress $_run_fonts_total "Fonts"
   track "FONTS" install_firacode "Fira Code"
+  end_module_progress
 }

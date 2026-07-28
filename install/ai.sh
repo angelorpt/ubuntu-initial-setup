@@ -45,10 +45,14 @@ install_antigravity_cli() {
   log_success "Antigravity CLI instalado"
 }
 
+_run_ai_total=5
+
 run_ai() {
+  init_module_progress $_run_ai_total "AI"
   track "AI" install_ollama "Ollama"
   track "AI" install_opencode "OpenCode"
   track "AI" install_serena "Serena"
   track "AI" install_hermes "Hermes Agent"
   track "AI" install_antigravity_cli "Antigravity CLI"
+  end_module_progress
 }

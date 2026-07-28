@@ -43,8 +43,12 @@ setup_ssh() {
   fi
 }
 
+_run_config_total=3
+
 run_config() {
+  init_module_progress $_run_config_total "Config"
   track "CONFIG" prompt_git_credentials "Git Config"
   track "CONFIG" setup_ssh "SSH Key"
   track "CONFIG" install_gogh "Gogh Terminal"
+  end_module_progress
 }

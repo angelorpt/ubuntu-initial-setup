@@ -135,7 +135,10 @@ install_terraform() {
   log_success "Terraform instalado: $(terraform --version 2>&1 | head -1)"
 }
 
+_run_dev_total=11
+
 run_dev() {
+  init_module_progress $_run_dev_total "Dev"
   track "DEV" install_python "Python"
   track "DEV" install_docker "Docker"
   track "DEV" install_nvm "NVM + Node"
@@ -147,4 +150,5 @@ run_dev() {
   track "DEV" install_antigravity2 "Antigravity 2.0"
   track "DEV" install_antigravity_ide "Antigravity IDE"
   track "DEV" install_terraform "Terraform"
+  end_module_progress
 }

@@ -30,6 +30,7 @@ track() {
     fi
   fi
 
+  update_progress "$name"
   "$func" "$@"
   local exit_code=$?
 

@@ -1,4 +1,4 @@
-# ubuntu-initial-setup
+# Ubuntu Initial Setup
 
 Setup automatizado para Ubuntu — instalação e configuração do ambiente de desenvolvimento com um único comando.
 
@@ -27,13 +27,14 @@ cd ubuntu-initial-setup
 
 | Módulo | Programas |
 |--------|-----------|
-| `base` | curl, git, zsh + oh-my-zsh |
-| `dev` | Docker, NVM + Node LTS, Java (JDK), VSCode, Go, Postman, VirtualBox, Antigravity 2.0, Antigravity IDE |
+| `base` | curl, git, gum, zsh + oh-my-zsh |
+| `dev` | Docker, NVM + Node LTS, Java (JDK), VSCode, Go, Postman, VirtualBox, Antigravity 2.0, Antigravity IDE, Terraform |
 | `ai` | Ollama, OpenCode, Serena, Hermes Agent, Antigravity CLI |
-| `tools` | Flameshot, Espanso, HyperKeys, IMWheel, GParted, Wave Terminal, Warp Terminal, Superfile |
-| `media` | Google Chrome, Ferdium, Mailspring, Telegram, Obsidian, VLC, Inkscape, Calibre |
+| `tools` | Flameshot, Espanso, HyperKeys, IMWheel, GParted, Wave Terminal, Warp Terminal, Draw.io, DBeaver, Anyquery, Superfile |
+| `media` | Google Chrome |
 | `fonts` | Fira Code |
 | `config` | Git config, SSH key, Gogh terminal themes |
+| `npm-globals` | TypeScript, Prettier, ESLint, pnpm, Yarn, tsx, Nodemon, Concurrently, Serve, Nest.js, Vue.js, Prisma, json-server, create-next-app, npm-check-updates, live-server, 9Router, OpenSpec |
 
 ## Flags
 
@@ -58,6 +59,22 @@ Cada execução gera `.install-results/` no diretório clonado:
 
 Se houver falhas, `./install.sh --retry` lê `falha.txt` e tenta novamente apenas os programas pendentes — útil para falhas temporárias (rede, repositório instável).
 
+## Progresso Visual
+
+Durante a instalação, duas barras de progresso são exibidas em tempo real:
+
+```
+  Dev          ████████████████████░░░░░░  75% (3/4)
+  → Docker
+  Total        ████████████████░░░░░░░░░░  25% (3/12)
+```
+
+- **Linha 1**: progresso do módulo atual com nome, barra, percentual e contagem
+- **Linha 2**: nome do programa sendo instalado no momento
+- **Linha 3**: progresso global (total de todos os módulos)
+
+O sistema detecta automaticamente o **gum** (instalado via `base.sh`), mas funciona sem ele com cores ANSI puras.
+
 ## Estrutura
 
 ```
@@ -65,17 +82,19 @@ ubuntu-initial-setup/
 ├── bootstrap.sh          # curl | bash — instala dependências e executa install.sh
 ├── install.sh            # Ponto de entrada com menu interativo e CLI flags
 ├── install/
-│   ├── base.sh           # curl, git, zsh
-│   ├── dev.sh            # Docker, NVM, Java, VSCode, Go, Postman, VirtualBox, Antigravity
+│   ├── base.sh           # curl, git, gum, zsh
+│   ├── dev.sh            # Docker, NVM, Java, VSCode, Go, Postman, VirtualBox, Antigravity, Terraform
 │   ├── ai.sh             # Ollama, OpenCode, Serena, Hermes, Antigravity CLI
-│   ├── tools.sh          # Flameshot, Espanso, HyperKeys, IMWheel, GParted, terminais
-│   ├── media.sh          # Chrome, Ferdium, Mailspring, Telegram, Obsidian, VLC, Inkscape, Calibre
+│   ├── tools.sh          # Flameshot, Espanso, HyperKeys, IMWheel, GParted, terminais, Draw.io, DBeaver, Anyquery
+│   ├── media.sh          # Chrome
 │   ├── fonts.sh          # Fira Code
-│   └── config.sh         # Git, SSH, Gogh
+│   ├── config.sh         # Git, SSH, Gogh
+│   └── npm-globals.sh    # TypeScript, Nest.js, Vue.js, Prisma e mais
 └── lib/
     ├── colors.sh         # Cores ANSI
     ├── log.sh            # log_info, log_success, log_error, print_header
     ├── utils.sh          # Utilitários (die_on_error, download_to_temp, install_deb)
+    ├── progress.sh       # Barras de progresso (módulo + total)
     └── results.sh        # Tracking de resultados, relatório e retry
 ```
 

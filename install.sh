@@ -7,6 +7,7 @@ source lib/colors.sh
 source lib/log.sh
 source lib/utils.sh
 source lib/results.sh
+source lib/progress.sh
 
 show_help() {
   cat << EOF
@@ -85,15 +86,45 @@ log_info "Iniciando instalação dos módulos selecionados..."
 
 for choice in $CHOICES; do
   case $choice in
-    BASE)   source install/base.sh   && run_base ;;
-    DEV)    source install/dev.sh    && run_dev ;;
-    AI)     source install/ai.sh     && run_ai ;;
-    TOOLS)  source install/tools.sh  && run_tools ;;
-    MEDIA)       source install/media.sh       && run_media ;;
-    FONTS)       source install/fonts.sh       && run_fonts ;;
-    CONFIG)      source install/config.sh      && run_config ;;
-    NPM_GLOBALS) source install/npm-globals.sh && run_npm_globals ;;
+    BASE)   source install/base.sh   ;;
+    DEV)    source install/dev.sh    ;;
+    AI)     source install/ai.sh     ;;
+    TOOLS)  source install/tools.sh  ;;
+    MEDIA)  source install/media.sh  ;;
+    FONTS)  source install/fonts.sh  ;;
+    CONFIG) source install/config.sh ;;
+    NPM_GLOBALS) source install/npm-globals.sh ;;
   esac
 done
 
+TOTAL=0
+for choice in $CHOICES; do
+  case $choice in
+    BASE)   TOTAL=$((TOTAL + _run_base_total))   ;;
+    DEV)    TOTAL=$((TOTAL + _run_dev_total))    ;;
+    AI)     TOTAL=$((TOTAL + _run_ai_total))     ;;
+    TOOLS)  TOTAL=$((TOTAL + _run_tools_total))  ;;
+    MEDIA)  TOTAL=$((TOTAL + _run_media_total))  ;;
+    FONTS)  TOTAL=$((TOTAL + _run_fonts_total))  ;;
+    CONFIG) TOTAL=$((TOTAL + _run_config_total)) ;;
+    NPM_GLOBALS) TOTAL=$((TOTAL + _run_npm_globals_total)) ;;
+  esac
+done
+
+init_progress $TOTAL
+
+for choice in $CHOICES; do
+  case $choice in
+    BASE)   run_base   ;;
+    DEV)    run_dev    ;;
+    AI)     run_ai     ;;
+    TOOLS)  run_tools  ;;
+    MEDIA)  run_media  ;;
+    FONTS)  run_fonts  ;;
+    CONFIG) run_config ;;
+    NPM_GLOBALS) run_npm_globals ;;
+  esac
+done
+
+end_progress
 generate_report

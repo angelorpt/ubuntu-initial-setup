@@ -142,7 +142,10 @@ install_openspec() {
   log_success "OpenSpec instalado"
 }
 
+_run_npm_globals_total=18
+
 run_npm_globals() {
+  init_module_progress $_run_npm_globals_total "NPM Globals"
   track "NPM_GLOBALS" install_typescript "TypeScript"
   track "NPM_GLOBALS" install_prettier "Prettier"
   track "NPM_GLOBALS" install_eslint "ESLint"
@@ -161,4 +164,5 @@ run_npm_globals() {
   track "NPM_GLOBALS" install_live_server "live-server"
   track "NPM_GLOBALS" install_9router "9Router"
   track "NPM_GLOBALS" install_openspec "OpenSpec"
+  end_module_progress
 }
