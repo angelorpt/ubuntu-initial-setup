@@ -28,7 +28,7 @@ install_zsh() {
 }
 
 run_base() {
-  install_curl
-  install_git
-  install_zsh
+  track "BASE" install_curl "Curl"
+  track "BASE" install_git "Git"
+  track "BASE" install_zsh "Zsh + Oh My Zsh"
 }

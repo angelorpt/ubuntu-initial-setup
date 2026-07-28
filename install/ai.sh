@@ -46,9 +46,9 @@ install_antigravity_cli() {
 }
 
 run_ai() {
-  install_ollama
-  install_opencode
-  install_serena
-  install_hermes
-  install_antigravity_cli
+  track "AI" install_ollama "Ollama"
+  track "AI" install_opencode "OpenCode"
+  track "AI" install_serena "Serena"
+  track "AI" install_hermes "Hermes Agent"
+  track "AI" install_antigravity_cli "Antigravity CLI"
 }

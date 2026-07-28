@@ -98,12 +98,12 @@ install_superfile() {
 }
 
 run_tools() {
-  install_flameshot
-  install_espanso
-  install_hyperkeys
-  install_imwheel
-  install_gparted
-  install_waveterm
-  install_warpreminal
-  install_superfile
+  track "TOOLS" install_flameshot "Flameshot"
+  track "TOOLS" install_espanso "Espanso"
+  track "TOOLS" install_hyperkeys "HyperKeys"
+  track "TOOLS" install_imwheel "IMWheel"
+  track "TOOLS" install_gparted "GParted"
+  track "TOOLS" install_waveterm "Wave Terminal"
+  track "TOOLS" install_warpreminal "Warp Terminal"
+  track "TOOLS" install_superfile "Superfile"
 }

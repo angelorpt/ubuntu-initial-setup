@@ -44,7 +44,7 @@ setup_ssh() {
 }
 
 run_config() {
-  prompt_git_credentials
-  setup_ssh
-  install_gogh
+  track "CONFIG" prompt_git_credentials "Git Config"
+  track "CONFIG" setup_ssh "SSH Key"
+  track "CONFIG" install_gogh "Gogh Terminal"
 }

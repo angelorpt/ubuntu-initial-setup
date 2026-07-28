@@ -72,12 +72,12 @@ install_calibre() {
 }
 
 run_media() {
-  install_chrome
-  install_ferdium
-  install_mailspring
-  install_telegram
-  install_obsidian
-  install_vlc
-  install_inkscape
-  install_calibre
+  track "MEDIA" install_chrome "Google Chrome"
+  track "MEDIA" install_ferdium "Ferdium"
+  track "MEDIA" install_mailspring "Mailspring"
+  track "MEDIA" install_telegram "Telegram"
+  track "MEDIA" install_obsidian "Obsidian"
+  track "MEDIA" install_vlc "VLC"
+  track "MEDIA" install_inkscape "Inkscape"
+  track "MEDIA" install_calibre "Calibre"
 }

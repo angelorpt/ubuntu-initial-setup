@@ -1,34 +1,84 @@
 #!/bin/bash
-set -euo pipefail
+set -uo pipefail
 
 cd "$(dirname "$0")"
 
 source lib/colors.sh
 source lib/log.sh
 source lib/utils.sh
+source lib/results.sh
 
-ensure_whiptail
+show_help() {
+  cat << EOF
+Uso: ./install.sh [OPÇÃO]
 
-MODULES=(
-  "BASE"      "Utilitários essenciais (curl, git, zsh)" ON
-  "DEV"       "Ferramentas de desenvolvimento" ON
-  "AI"        "Inteligência Artificial (ollama, opencode)" ON
-  "TOOLS"     "Utilitários de desktop (flameshot, espanso)" ON
-  "MEDIA"     "Aplicativos de mídia (Chrome, Telegram)" ON
-  "FONTS"     "Fontes para programação (Fira Code)" ON
-  "CONFIG"    "Configuração Git, SSH e terminal" ON
-)
+Opções:
+  --all       Instala todos os módulos (não interativo)
+  --update    Atualiza todos os programas instalados
+  --retry     Tenta novamente apenas os programas que falharam
+  --help      Mostra esta ajuda
 
-if [ "${1:-}" = "--all" ]; then
-  CHOICES="BASE DEV AI TOOLS MEDIA FONTS CONFIG"
-else
-  CHOICES=$(whiptail --title "ubuntu-initial-setup" \
-    --checklist "Selecione os módulos para instalar (espaço para marcar/desmarcar):" \
-    20 72 7 \
-    "${MODULES[@]}" \
-    3>&1 1>&2 2>&3)
-  [ -z "$CHOICES" ] && log_info "Nenhum módulo selecionado. Saindo." && exit 0
-fi
+Sem opções: abre o menu interativo whiptail para selecionar módulos.
+
+Relatórios salvos em .install-results/
+  sucesso.txt   — programas instalados com sucesso
+  falha.txt     — programas que falharam
+  relatorio.txt — relatório completo formatado
+
+Exemplos:
+  ./install.sh              # menu interativo
+  ./install.sh --all        # instala tudo
+  ./install.sh --retry      # retenta falhas
+EOF
+}
+
+MODE="install"
+
+case "${1:-}" in
+  --all)
+    CHOICES="BASE DEV AI TOOLS MEDIA FONTS CONFIG"
+    init_results
+    log_info "Modo automático: instalando todos os módulos..."
+    ;;
+  --update)
+    CHOICES="BASE DEV AI TOOLS MEDIA FONTS CONFIG"
+    init_results
+    log_info "Modo update: reinstalando todos os programas..."
+    ;;
+  --retry)
+    init_results
+    if [ ! -s "$RESULTS_DIR/falha.txt" ]; then
+      log_info "Nenhuma falha anterior encontrada em $RESULTS_DIR/falha.txt"
+      exit 0
+    fi
+    CHOICES=$(sed 's/:.*//' "$RESULTS_DIR/falha.txt" | sort -u | tr '\n' ' ')
+    init_retry
+    log_info "Modo retry: tentando novamente apenas os programas que falharam..."
+    ;;
+  --help|-h)
+    show_help
+    exit 0
+    ;;
+  *)
+    ensure_whiptail
+    MODULES=(
+      "BASE"      "Utilitários essenciais (curl, git, zsh)" ON
+      "DEV"       "Ferramentas de desenvolvimento" ON
+      "AI"        "Inteligência Artificial (ollama, opencode)" ON
+      "TOOLS"     "Utilitários de desktop (flameshot, espanso)" ON
+      "MEDIA"     "Aplicativos de mídia (Chrome, Telegram)" ON
+      "FONTS"     "Fontes para programação (Fira Code)" ON
+      "CONFIG"    "Configuração Git, SSH e terminal" ON
+    )
+    CHOICES=$(whiptail --title "ubuntu-initial-setup" \
+      --checklist "Selecione os módulos para instalar (espaço para marcar/desmarcar):" \
+      20 72 7 \
+      "${MODULES[@]}" \
+      3>&1 1>&2 2>&3)
+    [ -z "$CHOICES" ] && log_info "Nenhum módulo selecionado. Saindo." && exit 0
+    init_results
+    ;;
+esac
 
 log_info "Iniciando instalação dos módulos selecionados..."
 
@@ -44,5 +94,4 @@ for choice in $CHOICES; do
   esac
 done
 
-echo
-log_success "Instalação concluída!"
+generate_report

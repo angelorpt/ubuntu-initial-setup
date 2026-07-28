@@ -62,6 +62,29 @@ install_postman() {
   log_success "Postman instalado"
 }
 
+install_virtualbox() {
+  # https://www.virtualbox.org/wiki/Linux_Downloads
+  print_header "VirtualBox" "Hipervisor de código aberto para virtualização — https://www.virtualbox.org"
+  log_info "↪ https://www.virtualbox.org/wiki/Linux_Downloads"
+
+  local codename version page deb_name
+  codename=$(lsb_release -sc 2>/dev/null)
+  [ -z "$codename" ] && log_error "Não foi possível detectar versão do Ubuntu" && return 1
+
+  version=$(curl -s https://download.virtualbox.org/virtualbox/ | grep -oP 'href="\K[0-9]+\.[0-9]+\.[0-9]+(?=/")' | sort -V | tail -1)
+  [ -z "$version" ] && log_error "Não foi possível obter versão do VirtualBox" && return 1
+
+  page=$(curl -s "https://download.virtualbox.org/virtualbox/${version}/")
+  deb_name=$(echo "$page" | grep -oP "virtualbox-${version%.*}_[^\"]*~Ubuntu~${codename}[^\"]*_amd64\.deb" | head -1)
+  [ -z "$deb_name" ] && log_error "VirtualBox não disponível para Ubuntu ${codename}" && return 1
+
+  cd /tmp
+  wget -q "https://download.virtualbox.org/virtualbox/${version}/${deb_name}" -O virtualbox.deb
+  sudo dpkg -i virtualbox.deb 2>/dev/null || true
+  sudo apt install -f -y
+  log_success "VirtualBox ${version} instalado"
+}
+
 install_antigravity2() {
   # https://storage.googleapis.com/antigravity-public/antigravity-hub/2.4.2-6711062033203200/linux-x64/Antigravity.tar.gz
   print_header "Antigravity 2.0" "Plataforma de desenvolvimento agente-first do Google — https://antigravity.google"
@@ -95,12 +118,13 @@ install_antigravity_ide() {
 }
 
 run_dev() {
-  install_docker
-  install_nvm
-  install_java
-  install_vscode
-  install_go
-  install_postman
-  install_antigravity2
-  install_antigravity_ide
+  track "DEV" install_docker "Docker"
+  track "DEV" install_nvm "NVM + Node"
+  track "DEV" install_java "Java (JDK)"
+  track "DEV" install_vscode "VSCode"
+  track "DEV" install_go "Go"
+  track "DEV" install_postman "Postman"
+  track "DEV" install_virtualbox "VirtualBox"
+  track "DEV" install_antigravity2 "Antigravity 2.0"
+  track "DEV" install_antigravity_ide "Antigravity IDE"
 }

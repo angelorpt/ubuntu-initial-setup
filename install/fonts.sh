@@ -22,5 +22,5 @@ install_firacode() {
 }
 
 run_fonts() {
-  install_firacode
+  track "FONTS" install_firacode "Fira Code"
 }
