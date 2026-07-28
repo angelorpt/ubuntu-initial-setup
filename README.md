@@ -1,5 +1,26 @@
 # Ubuntu Initial Setup
 
+<p align="center">
+  <img src="https://img.shields.io/badge/licen%C3%A7a-MIT-green" alt="Licença MIT">
+  <img src="https://img.shields.io/badge/plataforma-Ubuntu-orange" alt="Ubuntu">
+  <img src="https://img.shields.io/badge/linguagem-Bash-blue" alt="Bash">
+</p>
+
+## Sumário
+
+- [Sobre](#ubuntu-initial-setup)
+- [Pré-requisitos](#pré-requisitos)
+- [Uso](#uso)
+- [Módulos](#módulos)
+- [Flags](#flags)
+- [Relatórios](#relatórios)
+- [Progresso Visual](#progresso-visual)
+- [Testes](#testes)
+- [Estrutura](#estrutura)
+- [Arquitetura](#arquitetura)
+- [FAQ / Troubleshooting](#faq--troubleshooting)
+- [Licença](#licença)
+
 **Projeto pessoal** de scripts modulares para automatizar a instalação e configuração do Ubuntu — criado por e para desenvolvedores que precisam montar seu ambiente de trabalho rápido, seja do zero ou após um formato.
 
 Ideal para usuários Ubuntu que:
@@ -8,6 +29,13 @@ Ideal para usuários Ubuntu que:
 - Querem um ponto de partida para customizar seu próprio instalador
 
 Fique à vontade para fazer um **fork**, remover o que não usa, adicionar seus programas favoritos e adaptar ao seu gosto.
+
+## Pré-requisitos
+
+- **Ubuntu** ou distribuição baseada em Debian
+- **Conexão com internet**
+- **Espaço em disco**: variável conforme os módulos selecionados (~5 GB para instalação completa)
+- **Privilégios sudo**: diversos módulos requerem permissão de superusuário
 
 ## Uso
 
@@ -137,6 +165,23 @@ ubuntu-initial-setup/
 - **Versões dinâmicas**: resolvidas via GitHub API (`releases/latest`) ou scraping da página oficial — sem versões fixas
 - **Cada função de instalação** segue o padrão `# <url>` + `print_header` + `log_info "↪ <url>"` + comandos + `log_success`
 - **Tracking independente**: `results.sh` registra em arquivo separadamente da saída do terminal
+
+## FAQ / Troubleshooting
+
+### `curl: command not found`
+O bootstrap.sh instala curl automaticamente. Se for executar manualmente, instale antes com `sudo apt install curl -y`.
+
+### Falha na instalação de algum pacote
+Pode ser rede instável, repositório temporariamente fora do ar ou pacote já instalado. Execute `./install.sh --retry` para tentar novamente apenas os programas que falharam.
+
+### Algum programa não aparece no menu
+Verifique se o módulo correspondente existe em `install/`. O menu whiptail lista automaticamente os módulos encontrados.
+
+### Erro de permissão
+Certifique-se de que seu usuário tem permissão sudo. Alguns módulos instalam pacotes via `apt`, `snap` ou scripts que exigem superusuário.
+
+### Quero adicionar meus próprios programas
+Faça um fork do projeto, crie um arquivo em `install/` seguindo o padrão dos existentes, adicione o `track` no `run_*()` e incremente o `_run_*_total`. Veja o template em `scripts-utils/template.sh` para referência.
 
 ## Licença
 
