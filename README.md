@@ -65,11 +65,11 @@ cd ubuntu-initial-setup
 |--------|-----------|-------|
 | `base` | curl, git, gum, zsh + oh-my-zsh | 4 |
 | `dev` | Python, Docker, NVM + Node LTS, Java (JDK), VSCode, Go, Postman, VirtualBox, Antigravity 2.0, Antigravity IDE, Terraform, GitHub CLI, AWS CLI, Ansible, build-essential, libssl-dev, kubectl, helm, minikube, Kiro CLI, ShellCheck, BATS | 22 |
-| `ai` | Ollama, OpenCode, Serena, Hermes Agent, Antigravity CLI, Claude Code | 6 |
+| `ai` | Ollama, OpenCode, Serena, Antigravity CLI, Claude Code | 5 |
 | `tools_terminal` | htop, tmux, ripgrep, fd, fzf, bat, eza, Starship, zoxide, nano, vim, Neovim, Anyquery, Superfile | 14 |
 | `tools_desktop` | Flameshot, Espanso, HyperKeys, IMWheel, GParted, Wave Terminal, Warp Terminal, Draw.io, DBeaver, Stacer, BleachBit, Timeshift | 12 |
 | `tools_ubuntu` | Nala, fastfetch, ncdu, duf, deborphan, lm-sensors, UFW, Unattended Upgrades | 8 |
-| `media` | Google Chrome, Brave, Blisk | 3 |
+| `media` | Google Chrome, Brave | 2 |
 | `fonts` | Fira Code, JetBrains Mono, Cascadia Code, IBM Plex, Victor Mono, Monaspace | 6 |
 | `config` | Git config, SSH key, Gogh terminal themes | 3 |
 | `npm-globals` | TypeScript, Prettier, ESLint, pnpm, Yarn, tsx, Nodemon, Concurrently, Serve, Nest.js, Vue.js, Prisma, json-server, create-next-app, npm-check-updates, live-server, 9Router, OpenSpec | 18 |
@@ -281,11 +281,11 @@ ubuntu-initial-setup/
 ├── install/
 │   ├── base.sh             # curl, git, gum, zsh
 │   ├── dev.sh              # Python, Docker, NVM, Java, VSCode, Go, kubectl, helm e mais
-│   ├── ai.sh               # Ollama, OpenCode, Serena, Hermes, Antigravity CLI
+│   ├── ai.sh               # Ollama, OpenCode, Serena, Antigravity CLI
 │   ├── tools_terminal.sh   # htop, tmux, ripgrep, fzf, vim, Neovim, Superfile
 │   ├── tools_desktop.sh    # Flameshot, Espanso, Draw.io, DBeaver, Stacer, Timeshift
 │   ├── tools_ubuntu.sh     # Nala, fastfetch, ncdu, duf, UFW
-│   ├── media.sh            # Chrome, Brave, Blisk
+│   ├── media.sh            # Chrome, Brave
 │   ├── fonts.sh            # Fira Code, JetBrains Mono, Cascadia Code, Victor Mono, Monaspace
 │   ├── config.sh           # Git, SSH, Gogh
 │   └── npm-globals.sh      # TypeScript, Nest.js, Vue.js, Prisma e mais
