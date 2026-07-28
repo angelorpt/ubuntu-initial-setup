@@ -1,5 +1,7 @@
 install_docker() {
+  # https://docs.docker.com/engine/install/ubuntu/
   print_header "Docker" "Plataforma de contêineres para desenvolvimento e deployment"
+  log_info "↪ https://docs.docker.com/engine/install/ubuntu/"
   for pkg in docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc; do
     sudo apt-get remove -y "$pkg" 2>/dev/null || true
   done
@@ -17,7 +19,9 @@ install_docker() {
 }
 
 install_nvm() {
+  # https://github.com/nvm-sh/nvm#installing-and-updating
   print_header "NVM + Node" "Gerenciador de versões do Node.js — https://github.com/nvm-sh/nvm"
+  log_info "↪ https://github.com/nvm-sh/nvm#installing-and-updating"
   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
   export NVM_DIR="$HOME/.nvm"
   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
@@ -27,19 +31,25 @@ install_nvm() {
 }
 
 install_java() {
+  # https://openjdk.org/
   print_header "Java (JDK)" "Kit de desenvolvimento Java padrão"
+  log_info "↪ https://openjdk.org/"
   sudo apt install default-jdk -y
   log_success "Java instalado: $(java -version 2>&1 | head -1)"
 }
 
 install_vscode() {
+  # https://code.visualstudio.com/
   print_header "VSCode" "Editor de código da Microsoft"
+  log_info "↪ https://code.visualstudio.com/"
   sudo snap install code --classic
   log_success "VSCode instalado"
 }
 
 install_antigravity2() {
+  # https://storage.googleapis.com/antigravity-public/antigravity-hub/2.4.2-6711062033203200/linux-x64/Antigravity.tar.gz
   print_header "Antigravity 2.0" "Plataforma de desenvolvimento agente-first do Google — https://antigravity.google"
+  log_info "↪ https://antigravity.google/download"
   cd /tmp
   local url
   url=$(curl -s https://antigravity.google/download | grep -oP 'https://storage\.googleapis\.com/antigravity-public/antigravity-hub/[^"]*/linux-x64/Antigravity\.tar\.gz' | head -1)
@@ -53,7 +63,9 @@ install_antigravity2() {
 }
 
 install_antigravity_ide() {
+  # https://edgedl.me.gvt1.com/edgedl/release2/j0qc3/antigravity/stable/2.1.1-6123990880747520/linux-x64/Antigravity%20IDE.tar.gz
   print_header "Antigravity IDE" "IDE para desenvolvimento agente-first — https://antigravity.google"
+  log_info "↪ https://antigravity.google/download"
   cd /tmp
   local url
   url=$(curl -s https://antigravity.google/download | grep -oP 'https://edgedl\.me\.gvt1\.com/edgedl/release2/[^"]*/linux-x64/Antigravity%20IDE\.tar\.gz' | head -1)

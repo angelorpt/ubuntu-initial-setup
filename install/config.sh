@@ -17,7 +17,9 @@ prompt_git_credentials() {
 }
 
 install_gogh() {
+  # https://github.com/Gogh-Co/Gogh
   print_header "Gogh Terminal" "Temas para o terminal GNOME"
+  log_info "↪ https://github.com/Gogh-Co/Gogh"
   sudo apt install -y dconf-cli uuid-runtime
   export TERMINAL=gnome-terminal
   bash -c "$(wget -qO- https://git.io/vQgMr)" 2>/dev/null || true

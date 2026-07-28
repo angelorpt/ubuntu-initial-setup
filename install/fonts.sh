@@ -1,6 +1,7 @@
 install_firacode() {
   # https://github.com/tonsky/FiraCode/wiki/Linux-instructions#manual-installation
   print_header "Fira Code" "Fonte monoespaçada com ligaduras para programação — https://github.com/tonsky/FiraCode"
+  log_info "↪ https://github.com/tonsky/FiraCode/wiki/Linux-instructions#manual-installation"
 
   local fonts_dir="${HOME}/.local/share/fonts"
   mkdir -p "$fonts_dir"
