@@ -169,7 +169,52 @@ install_ansible() {
   log_success "Ansible instalado: $(ansible --version 2>&1 | head -1)"
 }
 
-_run_dev_total=14
+install_build_essential() {
+  # https://packages.ubuntu.com/build-essential
+  print_header "build-essential" "Meta-pacote com gcc, g++, make e ferramentas de compilação"
+  log_info "↪ https://packages.ubuntu.com/build-essential"
+  sudo apt install -y build-essential
+  log_success "build-essential instalado: $(gcc --version 2>&1 | head -1)"
+}
+
+install_libssl_dev() {
+  # https://packages.ubuntu.com/libssl-dev
+  print_header "libssl-dev" "Headers do OpenSSL para compilação de pacotes"
+  log_info "↪ https://packages.ubuntu.com/libssl-dev"
+  sudo apt install -y libssl-dev
+  log_success "libssl-dev instalado"
+}
+
+install_kubectl() {
+  # https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/
+  print_header "kubectl" "CLI oficial do Kubernetes — https://kubernetes.io"
+  log_info "↪ https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/"
+  cd /tmp
+  curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+  chmod +x kubectl
+  sudo mv kubectl /usr/local/bin/kubectl
+  log_success "kubectl instalado: $(kubectl version --client 2>&1 | head -1)"
+}
+
+install_helm() {
+  # https://helm.sh/docs/intro/install/
+  print_header "Helm" "Gerenciador de pacotes Kubernetes — https://helm.sh"
+  log_info "↪ https://helm.sh/docs/intro/install/"
+  curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+  log_success "Helm instalado: $(helm version 2>&1 | head -1)"
+}
+
+install_minikube() {
+  # https://minikube.sigs.k8s.io/docs/start/
+  print_header "Minikube" "Kubernetes single-node local para estudos — https://minikube.sigs.k8s.io"
+  log_info "↪ https://minikube.sigs.k8s.io/docs/start/"
+  cd /tmp
+  curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+  sudo install minikube-linux-amd64 /usr/local/bin/minikube
+  log_success "Minikube instalado: $(minikube version 2>&1 | head -1)"
+}
+
+_run_dev_total=19
 
 run_dev() {
   init_module_progress $_run_dev_total "Dev"
@@ -187,5 +232,10 @@ run_dev() {
   track "DEV" install_github_cli "GitHub CLI"
   track "DEV" install_aws_cli "AWS CLI"
   track "DEV" install_ansible "Ansible"
+  track "DEV" install_build_essential "build-essential"
+  track "DEV" install_libssl_dev "libssl-dev"
+  track "DEV" install_kubectl "kubectl"
+  track "DEV" install_helm "Helm"
+  track "DEV" install_minikube "Minikube"
   end_module_progress
 }

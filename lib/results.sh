@@ -53,7 +53,7 @@ generate_report() {
     echo
   } > "$report"
 
-  for cat in BASE DEV AI TOOLS MEDIA FONTS CONFIG MEDIA_SERVER DOWNLOAD TORRENT; do
+  for cat in BASE DEV AI TOOLS_TERMINAL TOOLS_DESKTOP TOOLS_UBUNTU MEDIA FONTS CONFIG NPM_GLOBALS; do
     local items failed_items
     items=$(grep "^${cat}:" "$RESULTS_DIR/sucesso.txt" 2>/dev/null | sed "s/^${cat}: /  ✓ /")
     failed_items=$(grep "^${cat}:" "$RESULTS_DIR/falha.txt" 2>/dev/null | sed "s/^${cat}: /  ✗ /")

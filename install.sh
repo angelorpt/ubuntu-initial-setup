@@ -37,12 +37,12 @@ MODE="install"
 
 case "${1:-}" in
   --all)
-    CHOICES="BASE DEV AI TOOLS MEDIA FONTS CONFIG NPM_GLOBALS"
+    CHOICES="BASE DEV AI TOOLS_TERMINAL TOOLS_DESKTOP TOOLS_UBUNTU MEDIA FONTS CONFIG NPM_GLOBALS"
     init_results
     log_info "Modo automático: instalando todos os módulos..."
     ;;
   --update)
-    CHOICES="BASE DEV AI TOOLS MEDIA FONTS CONFIG NPM_GLOBALS"
+    CHOICES="BASE DEV AI TOOLS_TERMINAL TOOLS_DESKTOP TOOLS_UBUNTU MEDIA FONTS CONFIG NPM_GLOBALS"
     init_results
     log_info "Modo update: reinstalando todos os programas..."
     ;;
@@ -63,18 +63,20 @@ case "${1:-}" in
   *)
     ensure_whiptail
     MODULES=(
-      "BASE"      "Utilitários essenciais (curl, git, zsh)" ON
-      "DEV"       "Ferramentas de desenvolvimento" ON
-      "AI"        "Inteligência Artificial (ollama, opencode)" ON
-      "TOOLS"     "Utilitários de desktop (flameshot, espanso)" ON
-      "MEDIA"      "Aplicativos de mídia (Chrome)" ON
-      "FONTS"      "Fontes para programação (Fira Code)" ON
-      "CONFIG"     "Configuração Git, SSH e terminal" ON
-      "NPM_GLOBALS" "Pacotes npm globais (Nest.js, Vue, OpenSpec)" ON
+      "BASE"           "Utilitários essenciais (curl, git, zsh)" ON
+      "DEV"            "Ferramentas de desenvolvimento" ON
+      "AI"             "Inteligência Artificial (ollama, opencode)" ON
+      "TOOLS_TERMINAL" "Ferramentas de terminal (htop, tmux, fzf, vim)" ON
+      "TOOLS_DESKTOP"  "Aplicativos gráficos (Flameshot, DBeaver, Stacer)" ON
+      "TOOLS_UBUNTU"   "Manutenção do sistema (Nala, UFW, fastfetch)" ON
+      "MEDIA"          "Navegadores (Chrome, Brave)" ON
+      "FONTS"          "Fontes para programação (Fira Code)" ON
+      "CONFIG"         "Configuração Git, SSH e terminal" ON
+      "NPM_GLOBALS"    "Pacotes npm globais (Nest.js, Vue, OpenSpec)" ON
     )
     CHOICES=$(whiptail --title "ubuntu-initial-setup" \
       --checklist "Selecione os módulos para instalar (espaço para marcar/desmarcar):" \
-      22 72 8 \
+      24 72 10 \
       "${MODULES[@]}" \
       3>&1 1>&2 2>&3)
     [ -z "$CHOICES" ] && log_info "Nenhum módulo selecionado. Saindo." && exit 0
@@ -86,28 +88,32 @@ log_info "Iniciando instalação dos módulos selecionados..."
 
 for choice in $CHOICES; do
   case $choice in
-    BASE)   source install/base.sh   ;;
-    DEV)    source install/dev.sh    ;;
-    AI)     source install/ai.sh     ;;
-    TOOLS)  source install/tools.sh  ;;
-    MEDIA)  source install/media.sh  ;;
-    FONTS)  source install/fonts.sh  ;;
-    CONFIG) source install/config.sh ;;
-    NPM_GLOBALS) source install/npm-globals.sh ;;
+    BASE)            source install/base.sh            ;;
+    DEV)             source install/dev.sh             ;;
+    AI)              source install/ai.sh              ;;
+    TOOLS_TERMINAL)  source install/tools_terminal.sh  ;;
+    TOOLS_DESKTOP)   source install/tools_desktop.sh   ;;
+    TOOLS_UBUNTU)    source install/tools_ubuntu.sh    ;;
+    MEDIA)           source install/media.sh           ;;
+    FONTS)           source install/fonts.sh           ;;
+    CONFIG)          source install/config.sh          ;;
+    NPM_GLOBALS)     source install/npm-globals.sh     ;;
   esac
 done
 
 TOTAL=0
 for choice in $CHOICES; do
   case $choice in
-    BASE)   TOTAL=$((TOTAL + _run_base_total))   ;;
-    DEV)    TOTAL=$((TOTAL + _run_dev_total))    ;;
-    AI)     TOTAL=$((TOTAL + _run_ai_total))     ;;
-    TOOLS)  TOTAL=$((TOTAL + _run_tools_total))  ;;
-    MEDIA)  TOTAL=$((TOTAL + _run_media_total))  ;;
-    FONTS)  TOTAL=$((TOTAL + _run_fonts_total))  ;;
-    CONFIG) TOTAL=$((TOTAL + _run_config_total)) ;;
-    NPM_GLOBALS) TOTAL=$((TOTAL + _run_npm_globals_total)) ;;
+    BASE)            TOTAL=$((TOTAL + _run_base_total))            ;;
+    DEV)             TOTAL=$((TOTAL + _run_dev_total))             ;;
+    AI)              TOTAL=$((TOTAL + _run_ai_total))              ;;
+    TOOLS_TERMINAL)  TOTAL=$((TOTAL + _run_tools_terminal_total))  ;;
+    TOOLS_DESKTOP)   TOTAL=$((TOTAL + _run_tools_desktop_total))   ;;
+    TOOLS_UBUNTU)    TOTAL=$((TOTAL + _run_tools_ubuntu_total))    ;;
+    MEDIA)           TOTAL=$((TOTAL + _run_media_total))           ;;
+    FONTS)           TOTAL=$((TOTAL + _run_fonts_total))           ;;
+    CONFIG)          TOTAL=$((TOTAL + _run_config_total))          ;;
+    NPM_GLOBALS)     TOTAL=$((TOTAL + _run_npm_globals_total))     ;;
   esac
 done
 
@@ -115,14 +121,16 @@ init_progress $TOTAL
 
 for choice in $CHOICES; do
   case $choice in
-    BASE)   run_base   ;;
-    DEV)    run_dev    ;;
-    AI)     run_ai     ;;
-    TOOLS)  run_tools  ;;
-    MEDIA)  run_media  ;;
-    FONTS)  run_fonts  ;;
-    CONFIG) run_config ;;
-    NPM_GLOBALS) run_npm_globals ;;
+    BASE)            run_base            ;;
+    DEV)             run_dev             ;;
+    AI)              run_ai              ;;
+    TOOLS_TERMINAL)  run_tools_terminal  ;;
+    TOOLS_DESKTOP)   run_tools_desktop   ;;
+    TOOLS_UBUNTU)    run_tools_ubuntu    ;;
+    MEDIA)           run_media           ;;
+    FONTS)           run_fonts           ;;
+    CONFIG)          run_config          ;;
+    NPM_GLOBALS)     run_npm_globals     ;;
   esac
 done
 
