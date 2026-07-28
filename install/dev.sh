@@ -1,3 +1,11 @@
+install_python() {
+  # https://www.python.org/
+  print_header "Python" "Linguagem de programação — versão do repositório Ubuntu"
+  log_info "↪ https://www.python.org/"
+  sudo apt install -y python3 python3-pip python3-venv
+  log_success "Python instalado: $(python3 --version 2>&1)"
+}
+
 install_docker() {
   # https://docs.docker.com/engine/install/ubuntu/
   print_header "Docker" "Plataforma de contêineres para desenvolvimento e deployment"
@@ -117,7 +125,18 @@ install_antigravity_ide() {
   log_success "Antigravity IDE instalado"
 }
 
+install_terraform() {
+  # https://developer.hashicorp.com/terraform/install#linux
+  print_header "Terraform" "Infraestrutura como código pela HashiCorp"
+  log_info "↪ https://developer.hashicorp.com/terraform/install#linux"
+  wget -O - https://apt.releases.hashicorp.com/gpg 2>/dev/null | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg 2>/dev/null
+  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(grep -oP '(?<=UBUNTU_CODENAME=).*' /etc/os-release || lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list > /dev/null
+  sudo apt update && sudo apt install -y terraform
+  log_success "Terraform instalado: $(terraform --version 2>&1 | head -1)"
+}
+
 run_dev() {
+  track "DEV" install_python "Python"
   track "DEV" install_docker "Docker"
   track "DEV" install_nvm "NVM + Node"
   track "DEV" install_java "Java (JDK)"
@@ -127,4 +146,5 @@ run_dev() {
   track "DEV" install_virtualbox "VirtualBox"
   track "DEV" install_antigravity2 "Antigravity 2.0"
   track "DEV" install_antigravity_ide "Antigravity IDE"
+  track "DEV" install_terraform "Terraform"
 }
