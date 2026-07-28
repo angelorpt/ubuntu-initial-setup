@@ -1,6 +1,13 @@
 # Ubuntu Initial Setup
 
-Setup automatizado para Ubuntu — instalação e configuração do ambiente de desenvolvimento com um único comando.
+**Projeto pessoal** de scripts modulares para automatizar a instalação e configuração do Ubuntu — criado por e para desenvolvedores que precisam montar seu ambiente de trabalho rápido, seja do zero ou após um formato.
+
+Ideal para usuários Ubuntu que:
+- Formatam o computador com frequência e querem restaurar o setup em minutos
+- Preferem escolher o que instalar via menu interativo
+- Querem um ponto de partida para customizar seu próprio instalador
+
+Fique à vontade para fazer um **fork**, remover o que não usa, adicionar seus programas favoritos e adaptar ao seu gosto.
 
 ## Uso
 
@@ -133,4 +140,4 @@ ubuntu-initial-setup/
 
 ## Licença
 
-MIT
+[MIT](LICENSE) — use, modifique e compartilhe à vontade.
