@@ -214,7 +214,15 @@ install_minikube() {
   log_success "Minikube instalado: $(minikube version 2>&1 | head -1)"
 }
 
-_run_dev_total=19
+install_kiro_cli() {
+  # https://kiro.dev/cli/
+  print_header "Kiro CLI" "CLI da plataforma Kiro — https://kiro.dev"
+  log_info "↪ https://kiro.dev/cli/"
+  curl -fsSL https://cli.kiro.dev/install | bash
+  log_success "Kiro CLI instalado"
+}
+
+_run_dev_total=20
 
 run_dev() {
   init_module_progress $_run_dev_total "Dev"
@@ -237,5 +245,6 @@ run_dev() {
   track "DEV" install_kubectl "kubectl"
   track "DEV" install_helm "Helm"
   track "DEV" install_minikube "Minikube"
+  track "DEV" install_kiro_cli "Kiro CLI"
   end_module_progress
 }

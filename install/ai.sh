@@ -45,7 +45,15 @@ install_antigravity_cli() {
   log_success "Antigravity CLI instalado"
 }
 
-_run_ai_total=5
+install_claude_code() {
+  # https://code.claude.com/docs/en/quickstart
+  print_header "Claude Code" "Assistente de codificação IA da Anthropic — https://code.claude.com"
+  log_info "↪ https://code.claude.com/docs/en/quickstart"
+  curl -fsSL https://claude.ai/install.sh | bash
+  log_success "Claude Code instalado"
+}
+
+_run_ai_total=6
 
 run_ai() {
   init_module_progress $_run_ai_total "AI"
@@ -54,5 +62,6 @@ run_ai() {
   track "AI" install_serena "Serena"
   track "AI" install_hermes "Hermes Agent"
   track "AI" install_antigravity_cli "Antigravity CLI"
+  track "AI" install_claude_code "Claude Code"
   end_module_progress
 }
