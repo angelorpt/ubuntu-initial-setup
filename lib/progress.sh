@@ -7,7 +7,7 @@ _MODULE_NAME=""
 init_progress() {
   _PROGRESS_TOTAL=$1
   _PROGRESS_CURRENT=0
-  echo -ne "\n\n"
+  echo -ne "\n\n\n"
 }
 
 init_module_progress() {

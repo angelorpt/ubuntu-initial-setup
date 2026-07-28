@@ -1,4 +1,4 @@
-source "$(dirname "$0")/colors.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/colors.sh"
 
 log_info()    { echo -e "${BLUE}  →${NC} $1"; }
 log_success() { echo -e "${GREEN}  ✓${NC} $1"; }
@@ -11,6 +11,17 @@ print_header() {
   echo
   echo -e "${BOLD}${CYAN}── ${name}${NC}"
   echo -e "${BLUE}  ${desc}${NC}"
+  echo
+}
+
+print_details() {
+  local url="$1"
+  shift
+  local detail
+  for detail in "$@"; do
+    echo -e "  ${BLUE}•${NC} $detail"
+  done
+  [ -n "$url" ] && echo -e "  ${BLUE}Site:${NC} $url"
   echo
 }
 

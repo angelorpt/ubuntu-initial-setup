@@ -1,7 +1,8 @@
 die_on_error() {
+  local rc=$?
   local msg="$1"
   local code="${2:-1}"
-  if [ $? -ne 0 ]; then
+  if [ $rc -ne 0 ]; then
     log_error "$msg"
     exit "$code"
   fi

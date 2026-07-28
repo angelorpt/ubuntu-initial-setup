@@ -47,12 +47,13 @@ case "${1:-}" in
     log_info "Modo update: reinstalando todos os programas..."
     ;;
   --retry)
-    init_results
-    if [ ! -s "$RESULTS_DIR/falha.txt" ]; then
-      log_info "Nenhuma falha anterior encontrada em $RESULTS_DIR/falha.txt"
+    local retry_falha="$(cd "$(dirname "$0")" && pwd)/.install-results/falha.txt"
+    if [ ! -s "$retry_falha" ]; then
+      log_info "Nenhuma falha anterior encontrada em $retry_falha"
       exit 0
     fi
-    CHOICES=$(sed 's/:.*//' "$RESULTS_DIR/falha.txt" | sort -u | tr '\n' ' ')
+    CHOICES=$(sed 's/:.*//' "$retry_falha" | sort -u | tr '\n' ' ')
+    init_results
     init_retry
     log_info "Modo retry: tentando novamente apenas os programas que falharam..."
     ;;

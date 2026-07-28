@@ -1,7 +1,10 @@
 install_ollama() {
   # https://ollama.com/
   print_header "Ollama" "Plataforma local para execução de modelos de linguagem"
-  log_info "↪ https://ollama.com/"
+  print_details "https://ollama.com" \
+    "Roda LLMs (Llama, Mistral, Gemma, Phi) localmente sem nuvem" \
+    "API REST compatível com OpenAI, pull de modelos do hub" \
+    "Uso: ollama pull llama3, ollama run llama3"
   curl -fsSL https://ollama.com/install.sh | sh
   log_success "Ollama instalado"
 }
@@ -9,15 +12,21 @@ install_ollama() {
 install_opencode() {
   # https://opencode.ai/
   print_header "OpenCode" "Assistente de engenharia de software no terminal"
-  log_info "↪ https://opencode.ai/"
+  print_details "https://opencode.ai" \
+    "Agente de codificação que entende seu repositório inteiro" \
+    "Edita arquivos, executa comandos, gerencia git e deploys" \
+    "Uso: opencode -p 'refatore esta função'"
   curl -fsSL https://opencode.ai/install.sh | bash
   log_success "OpenCode instalado"
 }
 
 install_serena() {
   # https://github.com/oraios/serena
-  print_header "Serena" "MCP toolkit semântico para agentes de código — https://github.com/oraios/serena"
-  log_info "↪ https://github.com/oraios/serena"
+  print_header "Serena" "MCP toolkit semântico para agentes de código"
+  print_details "https://github.com/oraios/serena" \
+    "Toolkit semântico que permite agentes entenderem seu repositório" \
+    "Suporte a MCP (Model Context Protocol), init interativo" \
+    "Uso: serena init (primeira execução)"
   if ! command -v uv &>/dev/null; then
     log_info "Instalando uv (gerenciador de projetos Python)..."
     curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -31,24 +40,33 @@ install_serena() {
 
 install_hermes() {
   # https://hermes-agent.nousresearch.com/docs/
-  print_header "Hermes Agent" "Agente de IA auto-melhorável da Nous Research — https://hermes-agent.nousresearch.com"
-  log_info "↪ https://hermes-agent.nousresearch.com/docs/"
+  print_header "Hermes Agent" "Agente de IA auto-melhorável da Nous Research"
+  print_details "https://hermes-agent.nousresearch.com" \
+    "Agente que aprende e melhora com o uso ao longo do tempo" \
+    "Integração com ferramentas do sistema, planejamento de tarefas" \
+    "Uso: hermes run 'crie um servidor web'"
   curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash
   log_success "Hermes Agent instalado"
 }
 
 install_antigravity_cli() {
   # https://antigravity.google/download#antigravity-cli
-  print_header "Antigravity CLI" "CLI para desenvolvimento agente-first do Google — https://antigravity.google"
-  log_info "↪ https://antigravity.google/download#antigravity-cli"
+  print_header "Antigravity CLI" "CLI para desenvolvimento agente-first do Google"
+  print_details "https://antigravity.google" \
+    "Interface de linha de comando para o ecossistema Antigravity" \
+    "Gerencia projetos, agentes e deploys diretamente do terminal" \
+    "Uso: antigravity init, antigravity deploy"
   curl -fsSL https://antigravity.google/cli/install.sh | bash
   log_success "Antigravity CLI instalado"
 }
 
 install_claude_code() {
   # https://code.claude.com/docs/en/quickstart
-  print_header "Claude Code" "Assistente de codificação IA da Anthropic — https://code.claude.com"
-  log_info "↪ https://code.claude.com/docs/en/quickstart"
+  print_header "Claude Code" "Assistente de codificação IA da Anthropic"
+  print_details "https://code.claude.com" \
+    "Agente de codificação que entende contexto completo do projeto" \
+    "Edita arquivos, executa comandos, gerencia git" \
+    "Uso: claude code -p 'adicione testes'"
   curl -fsSL https://claude.ai/install.sh | bash
   log_success "Claude Code instalado"
 }

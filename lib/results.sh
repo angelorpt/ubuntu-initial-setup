@@ -26,6 +26,7 @@ track() {
   if $RESULTS_RETRY; then
     if ! echo "$_FAILED_ITEMS" | grep -q -F "$name"; then
       log_info "${name} — já instalado anteriormente (pulado)"
+      update_progress "$name"
       return 0
     fi
   fi
