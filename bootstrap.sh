@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-REPO_URL="https://github.com/user/ubuntu-initial-setup.git"
+REPO_URL="https://github.com/angelorpt/ubuntu-initial-setup.git"
 INSTALL_DIR="$HOME/ubuntu-initial-setup"
 
 # Detecta se está rodando via pipe

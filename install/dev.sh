@@ -17,14 +17,13 @@ install_docker() {
 }
 
 install_nvm() {
-  print_header "NVM + Node" "Gerenciador de versões do Node.js"
-  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+  print_header "NVM + Node" "Gerenciador de versões do Node.js — https://github.com/nvm-sh/nvm"
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
   export NVM_DIR="$HOME/.nvm"
   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-  nvm install 18
-  nvm install 20
-  nvm alias default 20
-  log_success "NVM + Node 18/20 instalado"
+  nvm install --lts
+  nvm alias default 'lts/*'
+  log_success "NVM + Node LTS instalado"
 }
 
 install_java() {
@@ -39,9 +38,39 @@ install_vscode() {
   log_success "VSCode instalado"
 }
 
+install_antigravity2() {
+  print_header "Antigravity 2.0" "Plataforma de desenvolvimento agente-first do Google — https://antigravity.google"
+  cd /tmp
+  local url
+  url=$(curl -s https://antigravity.google/download | grep -oP 'https://storage\.googleapis\.com/antigravity-public/antigravity-hub/[^"]*/linux-x64/Antigravity\.tar\.gz' | head -1)
+  if [ -z "$url" ]; then
+    log_error "Não foi possível obter URL do Antigravity 2.0"
+    return 1
+  fi
+  wget -q -O antigravity.tar.gz "$url"
+  sudo tar -xzf antigravity.tar.gz -C /opt
+  log_success "Antigravity 2.0 instalado"
+}
+
+install_antigravity_ide() {
+  print_header "Antigravity IDE" "IDE para desenvolvimento agente-first — https://antigravity.google"
+  cd /tmp
+  local url
+  url=$(curl -s https://antigravity.google/download | grep -oP 'https://edgedl\.me\.gvt1\.com/edgedl/release2/[^"]*/linux-x64/Antigravity%20IDE\.tar\.gz' | head -1)
+  if [ -z "$url" ]; then
+    log_error "Não foi possível obter URL do Antigravity IDE"
+    return 1
+  fi
+  wget -q -O antigravity-ide.tar.gz "$url"
+  sudo tar -xzf antigravity-ide.tar.gz -C /opt
+  log_success "Antigravity IDE instalado"
+}
+
 run_dev() {
   install_docker
   install_nvm
   install_java
   install_vscode
+  install_antigravity2
+  install_antigravity_ide
 }

@@ -6,10 +6,10 @@ Configuração inicial do Ubuntu — instala tudo que você precisa com um coman
 
 ```bash
 # Via curl (recomendado)
-curl -fsSL https://raw.githubusercontent.com/user/ubuntu-initial-setup/main/bootstrap.sh | bash
+curl -fsSL https://raw.githubusercontent.com/angelorpt/ubuntu-initial-setup/main/bootstrap.sh | bash
 
 # Ou localmente
-git clone https://github.com/user/ubuntu-initial-setup.git
+git clone https://github.com/angelorpt/ubuntu-initial-setup.git
 cd ubuntu-initial-setup
 ./install.sh
 ```
@@ -19,9 +19,9 @@ cd ubuntu-initial-setup
 | Módulo | Programas |
 |--------|-----------|
 | `base` | curl, git, zsh + oh-my-zsh |
-| `dev` | Docker, NVM + Node 18/20, Java, VSCode |
-| `ai` | Ollama, OpenCode, Serena |
-| `tools` | Flameshot, Espanso, HyperKeys, IMWheel, GParted |
+| `dev` | Docker, NVM + Node LTS, Java, VSCode, Antigravity 2.0, Antigravity IDE |
+| `ai` | Ollama, OpenCode, Serena, Hermes Agent, Antigravity CLI |
+| `tools` | Flameshot, Espanso, HyperKeys, IMWheel, GParted, Wave/Warp Terminal, Superfile |
 | `media` | Google Chrome, Ferdium, Mailspring, Telegram, Obsidian, Calibre |
 | `fonts` | Fira Code |
 | `config` | Git config, SSH key, Gogh terminal |
@@ -35,6 +35,5 @@ ubuntu-initial-setup/
 ├── bootstrap.sh          # curl | bash
 ├── install.sh            # menu interativo
 ├── install/              # módulos por categoria
-├── lib/                  # cores, log, utils
-└── config/settings.conf  # versões e defaults
+└── lib/                  # cores, log, utils
 ```

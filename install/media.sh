@@ -7,12 +7,15 @@ install_chrome() {
 }
 
 install_ferdium() {
-  print_header "Ferdium" "Agregador de mensagens e serviços em um só lugar"
+  print_header "Ferdium" "Agregador de mensagens e serviços em um só lugar — https://github.com/ferdium/ferdium-app"
   cd /tmp
-  wget -q https://github.com/ferdium/ferdium-app/releases/download/v6.7.6/Ferdium-linux-6.7.6-amd64.deb
-  sudo dpkg -i Ferdium-linux-6.7.6-amd64.deb 2>/dev/null || true
+  local tag url
+  tag=$(curl -s https://api.github.com/repos/ferdium/ferdium-app/releases/latest | grep '"tag_name":' | cut -d'"' -f4)
+  url="https://github.com/ferdium/ferdium-app/releases/download/${tag}/Ferdium-linux-${tag#v}-amd64.deb"
+  wget -q -O ferdium.deb "$url"
+  sudo dpkg -i ferdium.deb 2>/dev/null || true
   sudo apt install -f -y
-  log_success "Ferdium instalado"
+  log_success "Ferdium ${tag#v} instalado"
 }
 
 install_mailspring() {

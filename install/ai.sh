@@ -24,8 +24,24 @@ install_serena() {
   log_success "Serena instalado e inicializado"
 }
 
+install_hermes() {
+  # https://hermes-agent.nousresearch.com/docs/
+  print_header "Hermes Agent" "Agente de IA auto-melhorável da Nous Research — https://hermes-agent.nousresearch.com"
+  curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash
+  log_success "Hermes Agent instalado"
+}
+
+install_antigravity_cli() {
+  # https://antigravity.google/download#antigravity-cli
+  print_header "Antigravity CLI" "CLI para desenvolvimento agente-first do Google — https://antigravity.google"
+  curl -fsSL https://antigravity.google/cli/install.sh | bash
+  log_success "Antigravity CLI instalado"
+}
+
 run_ai() {
   install_ollama
   install_opencode
   install_serena
+  install_hermes
+  install_antigravity_cli
 }
