@@ -36,12 +36,12 @@ MODE="install"
 
 case "${1:-}" in
   --all)
-    CHOICES="BASE DEV AI TOOLS MEDIA FONTS CONFIG"
+    CHOICES="BASE DEV AI TOOLS MEDIA FONTS CONFIG NPM_GLOBALS"
     init_results
     log_info "Modo automático: instalando todos os módulos..."
     ;;
   --update)
-    CHOICES="BASE DEV AI TOOLS MEDIA FONTS CONFIG"
+    CHOICES="BASE DEV AI TOOLS MEDIA FONTS CONFIG NPM_GLOBALS"
     init_results
     log_info "Modo update: reinstalando todos os programas..."
     ;;
@@ -66,13 +66,14 @@ case "${1:-}" in
       "DEV"       "Ferramentas de desenvolvimento" ON
       "AI"        "Inteligência Artificial (ollama, opencode)" ON
       "TOOLS"     "Utilitários de desktop (flameshot, espanso)" ON
-      "MEDIA"     "Aplicativos de mídia (Chrome, Telegram)" ON
-      "FONTS"     "Fontes para programação (Fira Code)" ON
-      "CONFIG"    "Configuração Git, SSH e terminal" ON
+      "MEDIA"      "Aplicativos de mídia (Chrome)" ON
+      "FONTS"      "Fontes para programação (Fira Code)" ON
+      "CONFIG"     "Configuração Git, SSH e terminal" ON
+      "NPM_GLOBALS" "Pacotes npm globais (Nest.js, Vue, OpenSpec)" ON
     )
     CHOICES=$(whiptail --title "ubuntu-initial-setup" \
       --checklist "Selecione os módulos para instalar (espaço para marcar/desmarcar):" \
-      20 72 7 \
+      22 72 8 \
       "${MODULES[@]}" \
       3>&1 1>&2 2>&3)
     [ -z "$CHOICES" ] && log_info "Nenhum módulo selecionado. Saindo." && exit 0
@@ -88,9 +89,10 @@ for choice in $CHOICES; do
     DEV)    source install/dev.sh    && run_dev ;;
     AI)     source install/ai.sh     && run_ai ;;
     TOOLS)  source install/tools.sh  && run_tools ;;
-    MEDIA)  source install/media.sh  && run_media ;;
-    FONTS)  source install/fonts.sh  && run_fonts ;;
-    CONFIG) source install/config.sh && run_config ;;
+    MEDIA)       source install/media.sh       && run_media ;;
+    FONTS)       source install/fonts.sh       && run_fonts ;;
+    CONFIG)      source install/config.sh      && run_config ;;
+    NPM_GLOBALS) source install/npm-globals.sh && run_npm_globals ;;
   esac
 done
 
