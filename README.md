@@ -145,7 +145,7 @@ ubuntu-initial-setup/
 ├── lib/
 │   ├── colors.sh         # Cores ANSI
 │   ├── log.sh            # log_info, log_success, log_error, print_header
-│   ├── utils.sh          # Utilitários (die_on_error, download_to_temp, install_deb)
+│   ├── utils.sh          # Utilitários (die_on_error, download_to_temp, install_deb, ensure_snap, ensure_flatpak)
 │   ├── progress.sh       # Barras de progresso (módulo + total)
 │   └── results.sh        # Tracking de resultados, relatório e retry
 └── tests/
@@ -156,7 +156,7 @@ ubuntu-initial-setup/
         ├── log.bats        # Testes: print_header, print_details, log_*
         ├── progress.bats   # Testes: init_progress, update_progress
         ├── results.bats    # Testes: init_results, track
-        └── utils.bats      # Testes: die_on_error, ensure_whiptail
+        └── utils.bats      # Testes: die_on_error, ensure_whiptail, ensure_snap, ensure_flatpak
 ```
 
 ## Arquitetura
@@ -165,6 +165,7 @@ ubuntu-initial-setup/
 - **Versões dinâmicas**: resolvidas via GitHub API (`releases/latest`) ou scraping da página oficial — sem versões fixas
 - **Cada função de instalação** segue o padrão `# <url>` + `print_header` + `log_info "↪ <url>"` + comandos + `log_success`
 - **Tracking independente**: `results.sh` registra em arquivo separadamente da saída do terminal
+- **Snap/Flatpak**: funções que usam `snap install` ou `flatpak install` chamam `ensure_snap()` / `ensure_flatpak()` antes para garantir que o gerenciador esteja instalado
 
 ## FAQ / Troubleshooting
 

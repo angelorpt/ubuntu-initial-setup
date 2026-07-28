@@ -65,6 +65,7 @@ install_vscode() {
     "Editor multiplataforma com suporte a centenas de extensões" \
     "Terminal integrado, debugger, Git integrado, Intellisense" \
     "Uso: code . para abrir diretório atual"
+  ensure_snap
   sudo snap install code --classic
   log_success "VSCode instalado"
 }
@@ -76,6 +77,7 @@ install_go() {
     "Linguagem do Google focada em concorrência e performance" \
     "Compilação rápida, tipagem estática, goroutines" \
     "Uso: go run main.go, go build"
+  ensure_snap
   sudo snap install go --classic
   log_success "Go instalado"
 }
@@ -87,6 +89,7 @@ install_postman() {
     "Testar, documentar e depurar APIs REST, GraphQL e SOAP" \
     "Collections, environments, testes automatizados (Newman)" \
     "Uso: criar requisições com headers, auth e body"
+  ensure_snap
   sudo snap install postman
   log_success "Postman instalado"
 }
@@ -199,6 +202,7 @@ install_aws_cli() {
     "Gerencia serviços AWS (EC2, S3, Lambda, IAM) via terminal" \
     "Autenticação via aws configure, scripts de automação" \
     "Uso: aws s3 ls, aws ec2 describe-instances"
+  ensure_snap
   sudo snap install aws-cli --classic
   log_success "AWS CLI instalado: $(aws --version 2>&1)"
 }

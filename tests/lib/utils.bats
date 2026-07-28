@@ -23,3 +23,22 @@ setup() {
     skip "whiptail não instalado"
   fi
 }
+
+@test "ensure_snap detects existing snap" {
+  if command -v snap &>/dev/null; then
+    run ensure_snap
+    [ "$status" -eq 0 ]
+  else
+    skip "snap não instalado"
+  fi
+}
+
+@test "ensure_flatpak detects existing flatpak" {
+  if command -v flatpak &>/dev/null; then
+    run ensure_flatpak
+    [ "$status" -eq 0 ]
+  else
+    skip "flatpak não instalado"
+  fi
+}
+

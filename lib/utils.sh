@@ -29,3 +29,18 @@ ensure_whiptail() {
     sudo apt install -y whiptail
   fi
 }
+
+ensure_snap() {
+  if ! command -v snap &>/dev/null; then
+    log_info "Instalando snap..."
+    sudo apt install -y snapd
+  fi
+}
+
+ensure_flatpak() {
+  if ! command -v flatpak &>/dev/null; then
+    log_info "Instalando flatpak..."
+    sudo apt install -y flatpak
+    flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+  fi
+}

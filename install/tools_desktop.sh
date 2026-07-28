@@ -16,6 +16,7 @@ install_espanso() {
     "Substitui atalhos por texto completo: :email → user@gmail.com" \
     "Match triggers, scripts embutidos, pacotes pré-definidos da comunidade" \
     "Uso: digitar :trigger expande automaticamente"
+  ensure_snap
   sudo snap install espanso --classic
   log_success "Espanso instalado"
 }
@@ -136,6 +137,7 @@ install_dbeaver() {
     "Conecta em MySQL, PostgreSQL, SQLite, Oracle, SQL Server, etc" \
     "Editor SQL com autocomplete, visualizador de schema, exportação" \
     "Uso: dbeaver-ce (ou DBeaver no menu)"
+  ensure_snap
   sudo snap install dbeaver-ce --classic
   log_success "DBeaver instalado"
 }
