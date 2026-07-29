@@ -9,15 +9,15 @@ install_nala() {
   log_success "Nala instalado: $(nala --version 2>&1 | head -1)"
 }
 
-install_fastfetch() {
-  # https://github.com/fastfetch-cli/fastfetch
-  print_header "fastfetch" "Informações do sistema rápidas e bonitas"
-  print_details "https://github.com/fastfetch-cli/fastfetch" \
-    "Exibe info do sistema: kernel, CPU, GPU, memória, disco" \
-    "Mais rápido e mais detalhado que neofetch, suporte a logos" \
-    "Uso: fastfetch"
-  sudo apt install -y fastfetch
-  log_success "fastfetch instalado: $(fastfetch --version 2>&1)"
+install_neofetch() {
+  # https://github.com/dylanaraps/neofetch
+  print_header "Neofetch" "Informações do sistema estilosas"
+  print_details "https://github.com/dylanaraps/neofetch" \
+    "Exibe info do sistema com ASCII art da distro: kernel, CPU, GPU, memória" \
+    "Altamente customizável com flags, imagens e formatos de saída" \
+    "Uso: neofetch"
+  sudo apt install -y neofetch
+  log_success "Neofetch instalado"
 }
 
 install_ncdu() {
@@ -94,7 +94,7 @@ _run_tools_ubuntu_total=8
 run_tools_ubuntu() {
   init_module_progress $_run_tools_ubuntu_total "Tools Ubuntu"
   track "TOOLS_UBUNTU" install_nala "Nala"
-  track "TOOLS_UBUNTU" install_fastfetch "fastfetch"
+  track "TOOLS_UBUNTU" install_neofetch "Neofetch"
   track "TOOLS_UBUNTU" install_ncdu "ncdu"
   track "TOOLS_UBUNTU" install_duf "duf"
   track "TOOLS_UBUNTU" install_deborphan "deborphan"

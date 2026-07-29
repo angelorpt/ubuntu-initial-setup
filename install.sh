@@ -106,7 +106,7 @@ case "${1:-}" in
         "AI"             "Inteligência Artificial (ollama, opencode)" ON
         "TOOLS_TERMINAL" "Ferramentas de terminal (htop, tmux, fzf, vim)" ON
         "TOOLS_DESKTOP"  "Aplicativos gráficos (Flameshot, DBeaver, Stacer)" ON
-        "TOOLS_UBUNTU"   "Manutenção do sistema (Nala, UFW, fastfetch)" ON
+        "TOOLS_UBUNTU"   "Manutenção do sistema (Nala, UFW, neofetch)" ON
         "MEDIA"          "Navegadores (Chrome, Brave)" ON
         "FONTS"          "Fontes para programação (Fira Code)" ON
         "CONFIG"         "Configuração Git, SSH e terminal" ON

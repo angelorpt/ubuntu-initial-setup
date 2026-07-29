@@ -140,7 +140,7 @@ cd ubuntu-initial-setup
 | `ai` | 7 | Ollama, OpenCode, Serena, Hermes Agent, Antigravity CLI, Claude Code, GitHub Copilot CLI |
 | `tools_terminal` | 14 | htop, tmux, ripgrep, fd, fzf, bat, eza, Starship, zoxide, nano, vim, Neovim, Anyquery, Superfile |
 | `tools_desktop` | 12 | Flameshot, Espanso, HyperKeys, IMWheel, GParted, Wave Terminal, Warp Terminal, Draw.io, DBeaver, Stacer, BleachBit, Timeshift |
-| `tools_ubuntu` | 8 | Nala, fastfetch, ncdu, duf, deborphan, lm-sensors, UFW, Unattended Upgrades |
+| `tools_ubuntu` | 8 | Nala, neofetch, ncdu, duf, deborphan, lm-sensors, UFW, Unattended Upgrades |
 | `media` | 2 | Google Chrome, Brave |
 | `fonts` | 6 | Fira Code, JetBrains Mono, Cascadia Code, IBM Plex, Victor Mono, Monaspace |
 | `config` | 3 | Git config, SSH key, Gogh terminal themes |
@@ -236,7 +236,7 @@ cd ubuntu-initial-setup
 | Programa | Descrição | Site |
 |----------|-----------|------|
 | Nala | Frontend moderno para o apt | https://gitlab.com/volian/nala |
-| fastfetch | Informações do sistema rápidas e bonitas | https://github.com/fastfetch-cli/fastfetch |
+| neofetch | Informações do sistema com ASCII art da distro | https://github.com/dylanaraps/neofetch |
 | ncdu | Análise de uso de disco em TUI | https://dev.yorhel.nl/ncdu |
 | duf | df moderno com gráficos e cores | https://github.com/muesli/duf |
 | deborphan | Localiza pacotes órfãos no sistema | https://packages.debian.org/deborphan |
@@ -387,7 +387,7 @@ ubuntu-initial-setup/
 │   ├── ai.sh               # Ollama, OpenCode, Serena, Hermes, Antigravity CLI, Claude Code, GitHub Copilot CLI
 │   ├── tools_terminal.sh   # htop, tmux, ripgrep, fzf, vim, Neovim, Superfile
 │   ├── tools_desktop.sh    # Flameshot, Espanso, Draw.io, DBeaver, Stacer, Timeshift
-│   ├── tools_ubuntu.sh     # Nala, fastfetch, ncdu, duf, UFW
+│   ├── tools_ubuntu.sh     # Nala, neofetch, ncdu, duf, UFW
 │   ├── media.sh            # Chrome, Brave
 │   ├── fonts.sh            # Fira Code, JetBrains Mono, Cascadia Code, Victor Mono, Monaspace
 │   ├── config.sh           # Git, SSH, Gogh
