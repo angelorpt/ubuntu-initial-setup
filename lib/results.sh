@@ -61,6 +61,8 @@ track() {
   "$func" "$@"
   local exit_code=$?
 
+  print_divider
+
   if [ $exit_code -eq 0 ]; then
     echo "$category: $name" >> "$RESULTS_DIR/success.txt"
   else
