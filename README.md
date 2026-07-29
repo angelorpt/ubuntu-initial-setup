@@ -232,16 +232,16 @@ cd ubuntu-initial-setup
 
 ## Relatórios
 
-Cada execução gera `.install-results/` no diretório clonado:
+Cada execução gera `results/` no diretório clonado:
 
 ```
-.install-results/
-├── sucesso.txt     — programas instalados com sucesso
-├── falha.txt       — programas que falharam
-└── relatorio.txt   — relatório formatado com resumo por categoria
+results/
+├── success.txt     — programs installed successfully
+├── failure.txt     — programs that failed
+└── report.txt      — formatted report with summary by category
 ```
 
-Se houver falhas, `./install.sh --retry` lê `falha.txt` e tenta novamente apenas os programas pendentes — útil para falhas temporárias (rede, repositório instável).
+Se houver falhas, `./install.sh --retry` lê `failure.txt` e tenta novamente apenas os programas pendentes — útil para falhas temporárias (rede, repositório instável).
 
 ## Progresso Visual
 
