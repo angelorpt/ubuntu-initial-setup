@@ -10,7 +10,7 @@
   <img src="prints/print-01.png" alt="Demonstração do ubuntu-initial-setup" width="700">
 </p>
 
-**Projeto pessoal** de scripts modulares para automatizar a instalação e configuração do Ubuntu — criado por e para desenvolvedores que precisam montar seu ambiente de trabalho rápido, seja do zero ou após um formato.
+**Projeto pessoal** de scripts modulares para automatizar a instalação e configuração do Ubuntu — criado por e para desenvolvedores que precisam montar seu ambiente de trabalho rápido, seja do zero ou após formatá-lo.
 
 Ideal para usuários Ubuntu que:
 - Formatam o computador com frequência e querem restaurar o setup em minutos
@@ -25,6 +25,9 @@ Fique à vontade para fazer um **fork**, remover o que não usa, adicionar seus 
   - [Sumário](#sumário)
   - [Pré-requisitos](#pré-requisitos)
   - [Uso](#uso)
+    - [`bootstrap.sh` — Instalação rápida (recomendado para primeira vez)](#bootstrapsh--instalação-rápida-recomendado-para-primeira-vez)
+    - [`install.sh` — Controle total sobre o que instalar](#installsh--controle-total-sobre-o-que-instalar)
+    - [Comparação rápida](#comparação-rápida)
   - [Módulos](#módulos)
   - [Programas](#programas)
     - [Base](#base)
@@ -54,9 +57,9 @@ Fique à vontade para fazer um **fork**, remover o que não usa, adicionar seus 
 
 ## Pré-requisitos
 
-- **Ubuntu** ou distribuição baseada em Debian
+- **Sistema** ubuntu
 - **Conexão com internet**
-- **Espaço em disco**: variável conforme os módulos selecionados (~5 GB para instalação completa)
+- **Espaço em disco**: variável conforme os módulos selecionados
 - **Privilégios sudo**: diversos módulos requerem permissão de superusuário
 
 ## Uso
