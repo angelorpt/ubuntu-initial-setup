@@ -60,7 +60,18 @@ install_claude_code() {
   log_success "Claude Code instalado"
 }
 
-_run_ai_total=5
+install_github_copilot_cli() {
+  # https://github.com/features/copilot/cli?locale=pt-br
+  print_header "GitHub Copilot CLI" "Assistente de linha de comando com IA do GitHub"
+  print_details "https://github.com/features/copilot/cli" \
+    "Autocomplete e sugestões de comandos no terminal" \
+    "Explica comandos, sugere opções baseado no contexto" \
+    "Uso: copilot what-the-shell, copilot explain, copilot suggest"
+  curl -fsSL https://gh.io/copilot-install | bash
+  log_success "GitHub Copilot CLI instalado"
+}
+
+_run_ai_total=6
 
 run_ai() {
   init_module_progress $_run_ai_total "AI"
@@ -69,5 +80,6 @@ run_ai() {
   track "AI" install_serena "Serena"
   track "AI" install_antigravity_cli "Antigravity CLI"
   track "AI" install_claude_code "Claude Code"
+  track "AI" install_github_copilot_cli "GitHub Copilot CLI"
   end_module_progress
 }
