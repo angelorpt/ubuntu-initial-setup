@@ -6,6 +6,10 @@
   <img src="https://img.shields.io/badge/linguagem-Bash-blue" alt="Bash">
 </p>
 
+<p align="center">
+  <img src="prints/print-01.png" alt="Demonstração do ubuntu-initial-setup" width="700">
+</p>
+
 **Projeto pessoal** de scripts modulares para automatizar a instalação e configuração do Ubuntu — criado por e para desenvolvedores que precisam montar seu ambiente de trabalho rápido, seja do zero ou após um formato.
 
 Ideal para usuários Ubuntu que:
@@ -57,24 +61,72 @@ Fique à vontade para fazer um **fork**, remover o que não usa, adicionar seus 
 
 ## Uso
 
-```bash
-# Instalação rápida (recomendado)
-curl -fsSL https://raw.githubusercontent.com/angelorpt/ubuntu-initial-setup/main/bootstrap.sh | bash
+A instalação pode ser feita de duas formas, com objetivos diferentes:
 
-# Menu interativo
+---
+
+### `bootstrap.sh` — Instalação rápida (recomendado para primeira vez)
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/angelorpt/ubuntu-initial-setup/main/bootstrap.sh | bash
+```
+
+**O que faz:**
+1. Instala dependências mínimas (git, curl, wget, whiptail)
+2. Clona (ou atualiza) o repositório em `~/ubuntu-initial-setup`
+3. Executa `./install.sh --all` automaticamente (modo headless, sem perguntar)
+4. Se executado interativamente (não via pipe), abre o menu whiptail
+
+**Quando usar:** Você quer o ambiente completo rapidamente, sem clonar nada manualmente. Ideal para máquinas recém-formatadas. Basta colar o comando e aguardar.
+
+**Comportamento via pipe vs terminal:**
+- `curl ... | bash` → detecta pipe, executa `--all` automaticamente
+- Rodar localmente com `bash bootstrap.sh` → abre o menu interativo do `install.sh`
+
+---
+
+### `install.sh` — Controle total sobre o que instalar
+
+```bash
+# 1. Clone manualmente
 git clone https://github.com/angelorpt/ubuntu-initial-setup.git
 cd ubuntu-initial-setup
-./install.sh
 
-# Instalar tudo sem perguntar
-./install.sh --all
-
-# Tentar novamente apenas os programas que falharam
-./install.sh --retry
-
-# Ajuda
-./install.sh --help
+# 2. Escolha o modo
+./install.sh              # Menu interativo whiptail — você escolhe os módulos
+./install.sh --all        # Instala tudo sem perguntar (do zero)
+./install.sh --update     # Reinstala todos os programas (últimas versões)
+./install.sh --retry      # Tenta novamente apenas os que falharam
+./install.sh --continue   # Pula os que já deram certo, instala o resto
+./install.sh --help       # Mostra ajuda
 ```
+
+**O que faz:**
+- **Sem argumentos:** abre um menu whiptail onde você escolhe entre instalação nova, continuar de onde parou, ou retentar falhas, seguido da seleção dos módulos desejados
+- **`--all`:** execução headless — todos os módulos, do zero
+- **`--update`:** igual ao `--all`, mas pensado para reinstalar/atualizar programas já existentes
+- **`--retry`:** lê `results/failure.txt` da execução anterior e tenta apenas os programas que falharam
+- **`--continue`:** lê `results/success.txt` e pula os já instalados, executando apenas os pendentes
+
+**Quando usar:** Você quer controle granular — escolher exatamente quais módulos instalar, retentar falhas sem começar do zero, ou continuar uma instalação interrompida.
+
+<p align="center">
+  <img src="prints/print-04.png" alt="Seleção de módulos no whiptail" width="700">
+</p>
+
+---
+
+### Comparação rápida
+
+| | `bootstrap.sh` | `install.sh` |
+|---|---|---|
+| **Propósito** | One-liner para setup completo | Controle fino sobre instalação |
+| **Clonagem** | Automática | Manual (`git clone`) |
+| **Dependências** | Instala git, curl, wget, whiptail automaticamente | Assume repositório já clonado |
+| **Menu interativo** | Só se executado localmente (não via pipe) | Sim, sem argumentos |
+| **Headless** | Sim (via pipe) | `--all`, `--update` |
+| **Retry/Continue** | Não | `--retry`, `--continue` |
+| **Quando escolher** | Primeira instalação, máquina formatada | Manutenção, reinstalação seletiva, depuração |
 
 ## Módulos
 
@@ -240,13 +292,15 @@ cd ubuntu-initial-setup
 
 ## Flags
 
-| Flag | Comportamento |
-|------|---------------|
-| *(sem flag)* | Menu interativo whiptail para selecionar módulos |
-| `--all` | Instala todos os módulos sem interação |
-| `--retry` | Reexecuta apenas os programas que falharam na última execução |
-| `--update` | Reinstala todos os programas (efetivamente atualiza para última versão) |
-| `--help` | Exibe ajuda |
+| Flag / Modo | Script | Comando | O que faz | Quando usar |
+|---|---|---|---|---|
+| *(nenhuma)* | `install.sh` | `./install.sh` ou `bash bootstrap.sh` (terminal) | Menu whiptail: escolhe entre new/continue/retry, depois seleciona os módulos | Você quer escolher o que instalar, ou decidir entre fresh/continue/retry no momento |
+| `--all` | `install.sh` | `./install.sh --all` | Instala **todos** os módulos em modo headless. Limpa o histórico (`init_results --fresh`). | Máquina recém-formatada, você quer tudo do zero sem interagir |
+| `--update` | `install.sh` | `./install.sh --update` | Reinstala **todos** os programas (últimas versões). Também limpa o histórico. | Você já tem o setup instalado mas quer atualizar tudo para a versão mais recente |
+| `--retry` | `install.sh` | `./install.sh --retry` | Lê `results/failure.txt` da execução anterior e tenta **apenas** os programas que falharam. Pula os já instalados com sucesso. | Alguns programas falharam (rede instável, repositório offline) e você quer tentar de novo sem refazer tudo |
+| `--continue` | `install.sh` | `./install.sh --continue` | Lê `results/success.txt` e pula os já instalados. Executa **apenas** os programas que ainda não constam como sucesso. | A instalação foi interrompida no meio e você quer continuar de onde parou sem repetir os já instalados |
+| `--help` | `install.sh` | `./install.sh --help` | Exibe a ajuda com todas as opções disponíveis | Você esqueceu as opções ou está conhecendo o projeto |
+| via pipe | `bootstrap.sh` | `curl ... | bash` | Detecta pipe, clona o repositório e executa `install.sh --all` automaticamente. | Setup completo em um comando, sem clonar nada manualmente |
 
 ## Relatórios
 
@@ -277,10 +331,38 @@ Durante a instalação, duas barras de progresso são exibidas em tempo real:
 
 O sistema detecta automaticamente o **gum** (instalado via `base.sh`), mas funciona sem ele com cores ANSI puras.
 
+<p align="center">
+  <img src="prints/print-02.png" alt="Tela do menu interativo whiptail" width="700">
+</p>
+
 ## Testes
 
+O projeto possui testes com duas ferramentas:
+
+| Ferramenta | O que testa | Alvo |
+|---|---|---|
+| **ShellCheck** | Análise estática — detecta erros de sintaxe, variáveis não utilizadas, problemas de quoting e más práticas em shell script | Todos os `.sh` em `./`, `lib/` e `install/` |
+| **BATS** (Bash Automated Testing System) | Testes de unidade — verifica o comportamento isolado das funções das bibliotecas | `tests/lib/*.bats` |
+
+**Testes disponíveis (BATS):**
+
+| Arquivo | O que cobre |
+|---|---|
+| `tests/lib/log.bats` | `print_header`, `print_details`, `log_info`, `log_success`, `log_error` |
+| `tests/lib/progress.bats` | `init_progress`, `update_progress`, barras de progresso |
+| `tests/lib/results.bats` | `init_results`, `track`, registro de sucesso/falha |
+| `tests/lib/utils.bats` | `die_on_error`, `ensure_whiptail`, `ensure_snap`, `ensure_flatpak` |
+
+**Pré-requisitos:**
+
 ```bash
-# ShellCheck + BATS
+sudo apt install shellcheck bats
+```
+
+**Como executar:**
+
+```bash
+# ShellCheck + BATS (completo)
 bash tests/run.sh
 
 # Apenas ShellCheck
