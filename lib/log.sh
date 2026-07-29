@@ -9,8 +9,10 @@ print_header() {
   local name="$1"
   local desc="$2"
   echo
-  echo -e "${BOLD}${CYAN}── ${name}${NC}"
-  echo -e "${BLUE}  ${desc}${NC}"
+  echo
+  echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+  echo -e "${BOLD}${CYAN}  ${name}${NC} — ${BLUE}${desc}${NC}"
+  echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
   echo
 }
 
@@ -22,7 +24,7 @@ print_details() {
     echo -e "  ${BLUE}•${NC} $detail"
   done
   [ -n "$url" ] && echo -e "  ${BLUE}Site:${NC} $url"
-  echo
+  echo -e "  ${BLUE}╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌${NC}"
 }
 
 print_progress() {
