@@ -4,34 +4,37 @@ Shell scripts to automate Ubuntu setup. Modular, interactive menu (whiptail) or 
 
 ## Entrypoints
 
-- `./install.sh` — interactive menu (no args), `--all`, `--retry`, `--continue`, `--update`
+- `install.sh` — main entry. Must be run from repo root (uses `cd "$(dirname "$0")"` internally)
 - `bootstrap.sh` — curl-pipe-bash entry: clones repo, runs `install.sh --all` if piped
 
 ## Commands
 
 ```bash
-./install.sh              # whiptail menu
-./install.sh --all        # headless full install
-./install.sh --retry      # retry only previously failed items
-./install.sh --continue   # skip already successful items
-bash tests/run.sh         # ShellCheck + BATS
-bash tests/lint.sh        # ShellCheck only
-bats tests/lib/            # BATS only
+./install.sh                  # whiptail menu (new/continue/retry)
+./install.sh --all            # headless full install (fresh)
+./install.sh --update         # reinstall everything (fresh)
+./install.sh --retry          # retry only previously failed items
+./install.sh --continue       # skip already successful items
+bash tests/run.sh             # ShellCheck + BATS
+bash tests/lint.sh            # ShellCheck only
+bats tests/lib/               # BATS only
 ```
 
 ## Architecture
 
-- `install.sh` uses `set -uo pipefail` (intentionally no `set -e` — a module failure should not abort others)
-- Each module in `install/*.sh` defines install functions (`install_*`), a total var (`_run_MODULE_total=N`), and a `run_MODULE()` function
-- `track "CATEGORY" install_func "Display Name"` handles skip logic, progress bars, and result logging
-- Results go to `results/{success,failure,report}.txt` (gitignored)
-- `lib/{colors,log,utils,progress,results}.sh` — source dependencies
+- `install.sh`: `set -uo pipefail` (no `set -e` — module failure should not abort others)
+- `bootstrap.sh`: `set -euo pipefail` (has `-e`)
+- Each module in `install/*.sh` defines install functions, `_run_*_total=N`, and `run_*()`
+- `track "CATEGORY" install_func "Display Name"` handles skip/retry/continue logic, progress bars, and result logging
+- `init_module_progress $total "Name"` / `end_module_progress` wrap the `track` calls inside `run_*()`
+- `results/{success,failure,report}.txt` are auto-generated per run (gitignored)
+- `install/_template.sh` has full reference for adding programs and modules (not loaded at runtime)
 
 ## Adding a program
 
-1. Create `install_myapp()` in the right `install/*.sh`: `# <url>` → `print_header` → `print_details` → commands → `log_success`
+1. `install_myapp()` in right `install/*.sh`: `# <url>` → `print_header` → `print_details` (variadic bullets) → commands → `log_success`
 2. Bump `_run_MODULE_total`
-3. Add `track "MODULE" install_myapp "MyApp"` inside `run_MODULE()`
+3. Add `track "MODULE" install_myapp "MyApp"` inside `run_*()` (order determines install order)
 
 ## Adding a new module
 
@@ -40,10 +43,10 @@ bats tests/lib/            # BATS only
 
 ## Helpers (lib/utils.sh)
 
-- `ensure_snap`, `ensure_flatpak`, `install_deb`, `download_to_temp`
+- `ensure_snap`, `ensure_flatpak`, `install_deb`, `download_to_temp`, `die_on_error`, `ensure_whiptail`
 
 ## Style conventions
 
-- Every `install_*` function starts with a `# <url>` comment line
-- Use `print_header "Name" "Description"` then `print_details "url" "bullet1" "bullet2" "usage"` before install commands
+- Every `install_*` function starts with `# <url>` comment
+- `print_header "Name" "Desc"` before install commands, then `print_details "url" "bullet1" "bullet2" ...`
 - End with `log_success "Name installed"`
