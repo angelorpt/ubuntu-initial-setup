@@ -23,7 +23,7 @@ end_module_progress() {
 }
 
 end_progress() {
-  echo -ne "\033[3A\033[J"
+  echo
 }
 
 update_progress() {

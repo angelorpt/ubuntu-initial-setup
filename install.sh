@@ -22,10 +22,10 @@ Opções:
 
 Sem opções: abre o menu interativo whiptail.
 
-Relatórios salvos em .install-results/
-  sucesso.txt   — programas instalados com sucesso
-  falha.txt     — programas que falharam
-  relatorio.txt — relatório completo formatado
+Relatórios salvos em results/
+  success.txt   — programs installed successfully
+  failure.txt   — programs that failed
+  report.txt    — full formatted report
 
 Exemplos:
   ./install.sh              # menu interativo
@@ -51,7 +51,7 @@ case "${1:-}" in
   --retry)
     init_results
     init_retry
-    local retry_falha="$RESULTS_DIR/falha.txt"
+    local retry_falha="$RESULTS_DIR/failure.txt"
     if [ ! -s "$retry_falha" ]; then
       log_info "Nenhuma falha anterior encontrada em $retry_falha"
       exit 0
@@ -90,7 +90,7 @@ case "${1:-}" in
       retry)
         init_results
         init_retry
-        local retry_falha="$RESULTS_DIR/falha.txt"
+        local retry_falha="$RESULTS_DIR/failure.txt"
         if [ ! -s "$retry_falha" ]; then
           log_info "Nenhuma falha anterior encontrada."
           exit 0

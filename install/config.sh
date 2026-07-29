@@ -37,10 +37,7 @@ setup_ssh() {
 
   if [ ! -f "$ssh_dir/id_rsa" ]; then
     local email
-    email=$(git config --global user.email || echo "user@example.com")
-    if [ -z "$email" ]; then
-      email="user@example.com"
-    fi
+    email=$(git config --global user.email 2>/dev/null || echo "user@example.com")
     ssh-keygen -t rsa -b 4096 -C "$email" -N "" -f "$ssh_dir/id_rsa"
     log_success "Chave SSH gerada em $ssh_dir/id_rsa.pub"
     echo

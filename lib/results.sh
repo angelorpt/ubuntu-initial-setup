@@ -10,28 +10,28 @@ init_results() {
     fresh=true
     shift
   fi
-  RESULTS_DIR="${1:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/.install-results}"
+  RESULTS_DIR="${1:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/results}"
   mkdir -p "$RESULTS_DIR"
   if $fresh; then
-    : > "$RESULTS_DIR/sucesso.txt"
-    : > "$RESULTS_DIR/falha.txt"
+    : > "$RESULTS_DIR/success.txt"
+    : > "$RESULTS_DIR/failure.txt"
   else
-    touch "$RESULTS_DIR/sucesso.txt" "$RESULTS_DIR/falha.txt"
+    touch "$RESULTS_DIR/success.txt" "$RESULTS_DIR/failure.txt"
   fi
   log_info "Resultados salvos em $RESULTS_DIR"
 }
 
 init_retry() {
   RESULTS_RETRY=true
-  if [ -f "$RESULTS_DIR/falha.txt" ]; then
-    _FAILED_ITEMS=$(sed 's/^[^:]*: //' "$RESULTS_DIR/falha.txt")
+  if [ -f "$RESULTS_DIR/failure.txt" ]; then
+    _FAILED_ITEMS=$(sed 's/^[^:]*: //' "$RESULTS_DIR/failure.txt")
   fi
 }
 
 init_continue() {
   RESULTS_CONTINUE=true
-  if [ -f "$RESULTS_DIR/sucesso.txt" ]; then
-    _SKIPPED_ITEMS=$(sed 's/^[^:]*: //' "$RESULTS_DIR/sucesso.txt")
+  if [ -f "$RESULTS_DIR/success.txt" ]; then
+    _SKIPPED_ITEMS=$(sed 's/^[^:]*: //' "$RESULTS_DIR/success.txt")
   fi
 }
 
@@ -61,16 +61,18 @@ track() {
   "$func" "$@"
   local exit_code=$?
 
+  print_divider
+
   if [ $exit_code -eq 0 ]; then
-    echo "$category: $name" >> "$RESULTS_DIR/sucesso.txt"
+    echo "$category: $name" >> "$RESULTS_DIR/success.txt"
   else
-    echo "$category: $name" >> "$RESULTS_DIR/falha.txt"
+    echo "$category: $name" >> "$RESULTS_DIR/failure.txt"
   fi
   return $exit_code
 }
 
 generate_report() {
-  local report="$RESULTS_DIR/relatorio.txt"
+  local report="$RESULTS_DIR/report.txt"
 
   {
     echo "╔══════════════════════════════════════╗"
@@ -82,8 +84,8 @@ generate_report() {
 
   for cat in BASE DEV AI TOOLS_TERMINAL TOOLS_DESKTOP TOOLS_UBUNTU MEDIA FONTS CONFIG NPM_GLOBALS; do
     local items failed_items
-    items=$(grep "^${cat}:" "$RESULTS_DIR/sucesso.txt" 2>/dev/null | sed "s/^${cat}: /  ✓ /")
-    failed_items=$(grep "^${cat}:" "$RESULTS_DIR/falha.txt" 2>/dev/null | sed "s/^${cat}: /  ✗ /")
+    items=$(grep "^${cat}:" "$RESULTS_DIR/success.txt" 2>/dev/null | sed "s/^${cat}: /  ✓ /")
+    failed_items=$(grep "^${cat}:" "$RESULTS_DIR/failure.txt" 2>/dev/null | sed "s/^${cat}: /  ✗ /")
 
     if [ -n "$items" ] || [ -n "$failed_items" ]; then
       echo "[${cat}]" >> "$report"
@@ -94,18 +96,18 @@ generate_report() {
   done
 
   local total success failed
-  total=$(( $(wc -l < "$RESULTS_DIR/sucesso.txt" 2>/dev/null || echo 0) + $(wc -l < "$RESULTS_DIR/falha.txt" 2>/dev/null || echo 0) ))
-  success=$(wc -l < "$RESULTS_DIR/sucesso.txt" 2>/dev/null || echo 0)
-  failed=$(wc -l < "$RESULTS_DIR/falha.txt" 2>/dev/null || echo 0)
+  total=$(( $(wc -l < "$RESULTS_DIR/success.txt" 2>/dev/null || echo 0) + $(wc -l < "$RESULTS_DIR/failure.txt" 2>/dev/null || echo 0) ))
+  success=$(wc -l < "$RESULTS_DIR/success.txt" 2>/dev/null || echo 0)
+  failed=$(wc -l < "$RESULTS_DIR/failure.txt" 2>/dev/null || echo 0)
 
   {
     echo "Resumo:"
     echo "  Total: $total | Sucesso: $success | Falha: $failed"
     echo
     echo "Arquivos gerados em $RESULTS_DIR:"
-    echo "  sucesso.txt   — programas instalados com sucesso"
-    echo "  falha.txt     — programas que falharam"
-    echo "  relatorio.txt — este relatório completo"
+    echo "  success.txt   — programs installed successfully"
+    echo "  failure.txt   — programs that failed"
+    echo "  report.txt    — full report"
     echo
     if [ "$failed" -gt 0 ]; then
       echo "Para tentar novamente apenas as falhas:"

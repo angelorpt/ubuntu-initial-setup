@@ -111,7 +111,13 @@ install_warpreminal() {
   fi
 
   pushd /tmp > /dev/null
-  local url="https://app.warp.dev/download/linux/deb"
+  local page_url="https://app.warp.dev/download?package=deb"
+  local url
+  url=$(curl -sI "$page_url" | grep -i "location:" | awk '{print $2}' | tr -d '\r')
+  if [ -z "$url" ]; then
+    url="$page_url"
+  fi
+
   log_info "↪ Baixando: $url"
   wget -q -O warp.deb "$url" || { log_error "Falha ao baixar Warp Terminal"; popd > /dev/null; return 1; }
   sudo apt install -y ./warp.deb || { log_error "Falha ao instalar Warp Terminal"; popd > /dev/null; return 1; }

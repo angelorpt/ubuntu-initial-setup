@@ -9,8 +9,10 @@ print_header() {
   local name="$1"
   local desc="$2"
   echo
-  echo -e "${BOLD}${CYAN}── ${name}${NC}"
-  echo -e "${BLUE}  ${desc}${NC}"
+  echo
+  echo -e "${CYAN}================================================================================${NC}"
+  echo -e "${BOLD}${BLUE}  ${name}${NC} — ${BLUE}${desc}${NC}"
+  echo -e "${CYAN}================================================================================${NC}"
   echo
 }
 
@@ -22,9 +24,13 @@ print_details() {
     echo -e "  ${BLUE}•${NC} $detail"
   done
   [ -n "$url" ] && echo -e "  ${BLUE}Site:${NC} $url"
-  echo
+  echo -e "${CYAN}--------------------------------------------------------------------------------${NC}"
 }
 
 print_progress() {
   echo -ne "  ${YELLOW}...${NC} $1\r"
+}
+
+print_divider() {
+  echo -e "${CYAN}--------------------------------------------------------------------------------${NC}"
 }

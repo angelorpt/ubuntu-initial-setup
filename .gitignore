@@ -1,6 +1,6 @@
 # Resultados de instalação
-.install-results/
-*.install-results/
+results/
+*results/
 
 # Logs
 *_history.log
