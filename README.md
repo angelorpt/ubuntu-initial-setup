@@ -120,175 +120,175 @@ cd ubuntu-initial-setup
 
 | | `bootstrap.sh` | `install.sh` |
 |---|---|---|
-| **Propósito** | One-liner para setup completo | Controle fino sobre instalação |
-| **Clonagem** | Automática | Manual (`git clone`) |
-| **Dependências** | Instala git, curl, wget, whiptail automaticamente | Assume repositório já clonado |
-| **Menu interativo** | Só se executado localmente (não via pipe) | Sim, sem argumentos |
-| **Headless** | Sim (via pipe) | `--all`, `--update` |
-| **Retry/Continue** | Não | `--retry`, `--continue` |
-| **Quando escolher** | Primeira instalação, máquina formatada | Manutenção, reinstalação seletiva, depuração |
+| **Propósito** | Controle fino sobre instalação | One-liner para setup completo |
+| **Clonagem** | Manual (`git clone`) | Automática |
+| **Dependências** | Assume repositório já clonado | Instala git, curl, wget, whiptail automaticamente |
+| **Menu interativo** | Sim, sem argumentos | Só se executado localmente (não via pipe) |
+| **Headless** | `--all`, `--update` | Sim (via pipe) |
+| **Retry/Continue** | `--retry`, `--continue` | Não |
+| **Quando escolher** | Manutenção, reinstalação seletiva, depuração | Primeira instalação, máquina formatada |
 
 ## Módulos
 
-| Módulo | Programas | Total |
+| Módulo | Total | Programas |
 |--------|-----------|-------|
-| `base` | curl, git, gum, zsh + oh-my-zsh | 4 |
-| `dev` | Python, Docker, NVM + Node LTS, Java (JDK), VSCode, Go, Postman, VirtualBox, Antigravity 2.0, Antigravity IDE, Terraform, GitHub CLI, AWS CLI, Ansible, build-essential, libssl-dev, kubectl, helm, minikube, Kiro CLI, ShellCheck, BATS | 22 |
-| `ai` | Ollama, OpenCode, Serena, Hermes Agent, Antigravity CLI, Claude Code, GitHub Copilot CLI | 7 |
-| `tools_terminal` | htop, tmux, ripgrep, fd, fzf, bat, eza, Starship, zoxide, nano, vim, Neovim, Anyquery, Superfile | 14 |
-| `tools_desktop` | Flameshot, Espanso, HyperKeys, IMWheel, GParted, Wave Terminal, Warp Terminal, Draw.io, DBeaver, Stacer, BleachBit, Timeshift | 12 |
-| `tools_ubuntu` | Nala, fastfetch, ncdu, duf, deborphan, lm-sensors, UFW, Unattended Upgrades | 8 |
-| `media` | Google Chrome, Brave | 2 |
-| `fonts` | Fira Code, JetBrains Mono, Cascadia Code, IBM Plex, Victor Mono, Monaspace | 6 |
-| `config` | Git config, SSH key, Gogh terminal themes | 3 |
-| `npm-globals` | TypeScript, Prettier, ESLint, pnpm, Yarn, tsx, Nodemon, Concurrently, Serve, Nest.js, Vue.js, Prisma, json-server, create-next-app, npm-check-updates, live-server, 9Router, OpenSpec | 18 |
+| `base` | 4 | curl, git, gum, zsh + oh-my-zsh |
+| `dev` | 22 | Python, Docker, NVM + Node LTS, Java (JDK), VSCode, Go, Postman, VirtualBox, Antigravity 2.0, Antigravity IDE, Terraform, GitHub CLI, AWS CLI, Ansible, build-essential, libssl-dev, kubectl, helm, minikube, Kiro CLI, ShellCheck, BATS |
+| `ai` | 7 | Ollama, OpenCode, Serena, Hermes Agent, Antigravity CLI, Claude Code, GitHub Copilot CLI |
+| `tools_terminal` | 14 | htop, tmux, ripgrep, fd, fzf, bat, eza, Starship, zoxide, nano, vim, Neovim, Anyquery, Superfile |
+| `tools_desktop` | 12 | Flameshot, Espanso, HyperKeys, IMWheel, GParted, Wave Terminal, Warp Terminal, Draw.io, DBeaver, Stacer, BleachBit, Timeshift |
+| `tools_ubuntu` | 8 | Nala, fastfetch, ncdu, duf, deborphan, lm-sensors, UFW, Unattended Upgrades |
+| `media` | 2 | Google Chrome, Brave |
+| `fonts` | 6 | Fira Code, JetBrains Mono, Cascadia Code, IBM Plex, Victor Mono, Monaspace |
+| `config` | 3 | Git config, SSH key, Gogh terminal themes |
+| `npm-globals` | 18 | TypeScript, Prettier, ESLint, pnpm, Yarn, tsx, Nodemon, Concurrently, Serve, Nest.js, Vue.js, Prisma, json-server, create-next-app, npm-check-updates, live-server, 9Router, OpenSpec |
 
 ## Programas
 
 ### Base
 
-| Programa | Site | Descrição |
-|----------|------|-----------|
-| Curl | https://curl.se | Ferramenta de transferência de dados via URL |
-| Git | https://git-scm.com | Sistema de controle de versão distribuído |
-| Gum | https://github.com/charmbracelet/gum | Ferramenta de UI para shell scripts |
-| Zsh + Oh My Zsh | https://ohmyz.sh | Terminal aprimorado com plugins e temas |
+| Programa | Descrição | Site |
+|----------|-----------|------|
+| Curl | Ferramenta de transferência de dados via URL | https://curl.se |
+| Git | Sistema de controle de versão distribuído | https://git-scm.com |
+| Gum | Ferramenta de UI para shell scripts | https://github.com/charmbracelet/gum |
+| Zsh + Oh My Zsh | Terminal aprimorado com plugins e temas | https://ohmyz.sh |
 
 ### Dev
 
-| Programa | Site | Descrição |
-|----------|------|-----------|
-| build-essential | https://packages.ubuntu.com/build-essential | Meta-pacote com gcc, g++, make e ferramentas de compilação |
-| libssl-dev | https://packages.ubuntu.com/libssl-dev | Headers do OpenSSL para compilação de pacotes |
-| Python | https://www.python.org | Linguagem de programação versátil |
-| Docker | https://docs.docker.com/engine/install/ubuntu | Plataforma de contêineres para desenvolvimento e deployment |
-| NVM + Node | https://github.com/nvm-sh/nvm | Gerenciador de versões do Node.js + Node LTS |
-| Java (JDK) | https://openjdk.org | Kit de desenvolvimento Java padrão (OpenJDK) |
-| VSCode | https://code.visualstudio.com | Editor de código da Microsoft com extensões |
-| Go | https://snapcraft.io/go | Linguagem de programação compilada do Google |
-| Postman | https://snapcraft.io/postman | Plataforma de API para desenvolvimento |
-| VirtualBox | https://www.virtualbox.org | Hipervisor de código aberto para virtualização |
-| Antigravity 2.0 | https://antigravity.google | Plataforma de desenvolvimento agente-first do Google |
-| Antigravity IDE | https://antigravity.google | IDE para desenvolvimento agente-first |
-| Terraform | https://developer.hashicorp.com/terraform/install#linux | Infraestrutura como código pela HashiCorp |
-| GitHub CLI | https://cli.github.com | CLI oficial do GitHub |
-| AWS CLI | https://aws.amazon.com/cli | CLI oficial da Amazon Web Services |
-| Ansible | https://www.ansible.com | Automação de infraestrutura |
-| kubectl | https://kubernetes.io | CLI oficial do Kubernetes |
-| Helm | https://helm.sh | Gerenciador de pacotes Kubernetes |
-| Minikube | https://minikube.sigs.k8s.io | Kubernetes single-node local para estudos |
-| Kiro CLI | https://kiro.dev/cli | CLI da plataforma Kiro |
-| ShellCheck | https://www.shellcheck.net | Análise estática para scripts shell |
-| BATS | https://bats-core.readthedocs.io | Testes automatizados para Bash |
+| Programa | Descrição | Site |
+|----------|-----------|------|
+| build-essential | Meta-pacote com gcc, g++, make e ferramentas de compilação | https://packages.ubuntu.com/build-essential |
+| libssl-dev | Headers do OpenSSL para compilação de pacotes | https://packages.ubuntu.com/libssl-dev |
+| Python | Linguagem de programação versátil | https://www.python.org |
+| Docker | Plataforma de contêineres para desenvolvimento e deployment | https://docs.docker.com/engine/install/ubuntu |
+| NVM + Node | Gerenciador de versões do Node.js + Node LTS | https://github.com/nvm-sh/nvm |
+| Java (JDK) | Kit de desenvolvimento Java padrão (OpenJDK) | https://openjdk.org |
+| VSCode | Editor de código da Microsoft com extensões | https://code.visualstudio.com |
+| Go | Linguagem de programação compilada do Google | https://snapcraft.io/go |
+| Postman | Plataforma de API para desenvolvimento | https://snapcraft.io/postman |
+| VirtualBox | Hipervisor de código aberto para virtualização | https://www.virtualbox.org |
+| Antigravity 2.0 | Plataforma de desenvolvimento agente-first do Google | https://antigravity.google |
+| Antigravity IDE | IDE para desenvolvimento agente-first | https://antigravity.google |
+| Terraform | Infraestrutura como código pela HashiCorp | https://developer.hashicorp.com/terraform/install#linux |
+| GitHub CLI | CLI oficial do GitHub | https://cli.github.com |
+| AWS CLI | CLI oficial da Amazon Web Services | https://aws.amazon.com/cli |
+| Ansible | Automação de infraestrutura | https://www.ansible.com |
+| kubectl | CLI oficial do Kubernetes | https://kubernetes.io |
+| Helm | Gerenciador de pacotes Kubernetes | https://helm.sh |
+| Minikube | Kubernetes single-node local para estudos | https://minikube.sigs.k8s.io |
+| Kiro CLI | CLI da plataforma Kiro | https://kiro.dev/cli |
+| ShellCheck | Análise estática para scripts shell | https://www.shellcheck.net |
+| BATS | Testes automatizados para Bash | https://bats-core.readthedocs.io |
 
 ### AI
 
-| Programa | Site | Descrição |
-|----------|------|-----------|
-| Ollama | https://ollama.com | Plataforma local para execução de modelos de linguagem |
-| OpenCode | https://opencode.ai | Assistente de engenharia de software no terminal |
-| Serena | https://github.com/oraios/serena | MCP toolkit semântico para agentes de código |
-| Antigravity CLI | https://antigravity.google | CLI para desenvolvimento agente-first do Google |
-| Claude Code | https://code.claude.com | Assistente de codificação IA da Anthropic |
-| GitHub Copilot CLI | https://github.com/features/copilot/cli | Assistente de linha de comando com IA do GitHub |
+| Programa | Descrição | Site |
+|----------|-----------|------|
+| Ollama | Plataforma local para execução de modelos de linguagem | https://ollama.com |
+| OpenCode | Assistente de engenharia de software no terminal | https://opencode.ai |
+| Serena | MCP toolkit semântico para agentes de código | https://github.com/oraios/serena |
+| Antigravity CLI | CLI para desenvolvimento agente-first do Google | https://antigravity.google |
+| Claude Code | Assistente de codificação IA da Anthropic | https://code.claude.com |
+| GitHub Copilot CLI | Assistente de linha de comando com IA do GitHub | https://github.com/features/copilot/cli |
 
 ### Tools Terminal
 
-| Programa | Site | Descrição |
-|----------|------|-----------|
-| htop | https://htop.dev | Monitor de processos interativo |
-| tmux | https://github.com/tmux/tmux | Multiplexador de terminal com sessões persistentes |
-| ripgrep | https://github.com/BurntSushi/ripgrep | Ferramenta de busca turbo em Rust |
-| fd | https://github.com/sharkdp/fd | Alternativa moderna ao find |
-| fzf | https://github.com/junegunn/fzf | Buscador fuzzy generalizado para terminal |
-| bat | https://github.com/sharkdp/bat | cat com syntax highlight |
-| eza | https://github.com/eza-community/eza | ls moderno com ícones e git status |
-| Starship | https://starship.rs | Prompt minimalista e personalizável |
-| zoxide | https://github.com/ajeetdsouza/zoxide | cd inteligente que aprende seus diretórios |
-| Nano | https://www.nano-editor.org | Editor de texto simples para terminal |
-| Vim | https://www.vim.org | Editor de texto clássico e poderoso |
-| Neovim | https://neovim.io | Fork moderno do Vim com suporte a Lua |
-| Anyquery | https://anyquery.dev | Ferramenta de consulta SQL para qualquer fonte de dados |
-| Superfile | https://superfile.dev | Gerenciador de arquivos no terminal |
+| Programa | Descrição | Site |
+|----------|-----------|------|
+| htop | Monitor de processos interativo | https://htop.dev |
+| tmux | Multiplexador de terminal com sessões persistentes | https://github.com/tmux/tmux |
+| ripgrep | Ferramenta de busca turbo em Rust | https://github.com/BurntSushi/ripgrep |
+| fd | Alternativa moderna ao find | https://github.com/sharkdp/fd |
+| fzf | Buscador fuzzy generalizado para terminal | https://github.com/junegunn/fzf |
+| bat | cat com syntax highlight | https://github.com/sharkdp/bat |
+| eza | ls moderno com ícones e git status | https://github.com/eza-community/eza |
+| Starship | Prompt minimalista e personalizável | https://starship.rs |
+| zoxide | cd inteligente que aprende seus diretórios | https://github.com/ajeetdsouza/zoxide |
+| Nano | Editor de texto simples para terminal | https://www.nano-editor.org |
+| Vim | Editor de texto clássico e poderoso | https://www.vim.org |
+| Neovim | Fork moderno do Vim com suporte a Lua | https://neovim.io |
+| Anyquery | Ferramenta de consulta SQL para qualquer fonte de dados | https://anyquery.dev |
+| Superfile | Gerenciador de arquivos no terminal | https://superfile.dev |
 
 ### Tools Desktop
 
-| Programa | Site | Descrição |
-|----------|------|-----------|
-| Flameshot | https://flameshot.org | Ferramenta de captura de tela com anotações |
-| Espanso | https://espanso.org | Expansor de texto para produtividade |
-| HyperKeys | https://hyperkeys.xureilab.com | Atalhos de teclado personalizados |
-| IMWheel | https://imwheel.sourceforge.net | Ajuste de velocidade do scroll do mouse |
-| GParted | https://gparted.org | Gerenciador de partições de disco |
-| Wave Terminal | https://www.waveterm.dev | Terminal moderno com widgets integrados |
-| Warp Terminal | https://www.warp.dev | Terminal moderno com IA integrada |
-| Draw.io | https://www.drawio.com | Editor de diagramas e fluxogramas |
-| DBeaver | https://dbeaver.io | Gerenciador de bancos de dados universal |
-| Stacer | https://github.com/oguzhaninan/Stacer | Otimizador e monitor do sistema |
-| BleachBit | https://www.bleachbit.org | Limpeza de cache e lixo do sistema |
-| Timeshift | https://github.com/linuxmint/timeshift | Backup incremental do sistema com snapshots |
+| Programa | Descrição | Site |
+|----------|-----------|------|
+| Flameshot | Ferramenta de captura de tela com anotações | https://flameshot.org |
+| Espanso | Expansor de texto para produtividade | https://espanso.org |
+| HyperKeys | Atalhos de teclado personalizados | https://hyperkeys.xureilab.com |
+| IMWheel | Ajuste de velocidade do scroll do mouse | https://imwheel.sourceforge.net |
+| GParted | Gerenciador de partições de disco | https://gparted.org |
+| Wave Terminal | Terminal moderno com widgets integrados | https://www.waveterm.dev |
+| Warp Terminal | Terminal moderno com IA integrada | https://www.warp.dev |
+| Draw.io | Editor de diagramas e fluxogramas | https://www.drawio.com |
+| DBeaver | Gerenciador de bancos de dados universal | https://dbeaver.io |
+| Stacer | Otimizador e monitor do sistema | https://github.com/oguzhaninan/Stacer |
+| BleachBit | Limpeza de cache e lixo do sistema | https://www.bleachbit.org |
+| Timeshift | Backup incremental do sistema com snapshots | https://github.com/linuxmint/timeshift |
 
 ### Tools Ubuntu
 
-| Programa | Site | Descrição |
-|----------|------|-----------|
-| Nala | https://gitlab.com/volian/nala | Frontend moderno para o apt |
-| fastfetch | https://github.com/fastfetch-cli/fastfetch | Informações do sistema rápidas e bonitas |
-| ncdu | https://dev.yorhel.nl/ncdu | Análise de uso de disco em TUI |
-| duf | https://github.com/muesli/duf | df moderno com gráficos e cores |
-| deborphan | https://packages.debian.org/deborphan | Localiza pacotes órfãos no sistema |
-| lm-sensors | https://github.com/lm-sensors/lm-sensors | Monitoramento de temperatura da CPU/GPU |
-| UFW | https://help.ubuntu.com/community/UFW | Firewall simples para Ubuntu |
-| Unattended Upgrades | https://wiki.debian.org/UnattendedUpgrades | Atualizações automáticas de segurança |
+| Programa | Descrição | Site |
+|----------|-----------|------|
+| Nala | Frontend moderno para o apt | https://gitlab.com/volian/nala |
+| fastfetch | Informações do sistema rápidas e bonitas | https://github.com/fastfetch-cli/fastfetch |
+| ncdu | Análise de uso de disco em TUI | https://dev.yorhel.nl/ncdu |
+| duf | df moderno com gráficos e cores | https://github.com/muesli/duf |
+| deborphan | Localiza pacotes órfãos no sistema | https://packages.debian.org/deborphan |
+| lm-sensors | Monitoramento de temperatura da CPU/GPU | https://github.com/lm-sensors/lm-sensors |
+| UFW | Firewall simples para Ubuntu | https://help.ubuntu.com/community/UFW |
+| Unattended Upgrades | Atualizações automáticas de segurança | https://wiki.debian.org/UnattendedUpgrades |
 
 ### Media
 
-| Programa | Site | Descrição |
-|----------|------|-----------|
-| Google Chrome | https://www.google.com/chrome | Navegador web do Google |
-| Brave | https://brave.com | Navegador focado em privacidade |
+| Programa | Descrição | Site |
+|----------|-----------|------|
+| Google Chrome | Navegador web do Google | https://www.google.com/chrome |
+| Brave | Navegador focado em privacidade | https://brave.com |
 
 ### Fonts
 
-| Programa | Site | Descrição |
-|----------|------|-----------|
-| Fira Code | https://github.com/tonsky/FiraCode | Fonte monoespaçada com ligaduras para programação |
-| JetBrains Mono | https://www.jetbrains.com/lp/mono | Fonte para programação desenhada pela JetBrains |
-| Cascadia Code | https://github.com/microsoft/cascadia-code | Fonte monoespaçada da Microsoft com ligaduras |
-| IBM Plex | https://www.ibm.com/plex | Família de fontes da IBM com design elegante |
-| Victor Mono | https://rubjo.github.io/victor-mono | Fonte com itálico cursivo e ligaduras |
-| Monaspace | https://monaspace.githubnext.com | Família de fontes do GitHub com 5 variantes |
+| Programa | Descrição | Site |
+|----------|-----------|------|
+| Fira Code | Fonte monoespaçada com ligaduras para programação | https://github.com/tonsky/FiraCode |
+| JetBrains Mono | Fonte para programação desenhada pela JetBrains | https://www.jetbrains.com/lp/mono |
+| Cascadia Code | Fonte monoespaçada da Microsoft com ligaduras | https://github.com/microsoft/cascadia-code |
+| IBM Plex | Família de fontes da IBM com design elegante | https://www.ibm.com/plex |
+| Victor Mono | Fonte com itálico cursivo e ligaduras | https://rubjo.github.io/victor-mono |
+| Monaspace | Família de fontes do GitHub com 5 variantes | https://monaspace.githubnext.com |
 
 ### Config
 
-| Programa | Site | Descrição |
-|----------|------|-----------|
-| Git Config | — | Identificação para commits Git |
-| SSH Key | — | Chave SSH para autenticação em serviços remotos |
-| Gogh Terminal | https://github.com/Gogh-Co/Gogh | Temas para o terminal GNOME |
+| Programa | Descrição | Site |
+|----------|-----------|------|
+| Git Config | Identificação para commits Git | — |
+| SSH Key | Chave SSH para autenticação em serviços remotos | — |
+| Gogh Terminal | Temas para o terminal GNOME | https://github.com/Gogh-Co/Gogh |
 
 ### NPM Globals
 
-| Programa | Site | Descrição |
-|----------|------|-----------|
-| TypeScript | https://www.typescriptlang.org | Compilador TypeScript |
-| Prettier | https://prettier.io | Formatador de código opinativo |
-| ESLint | https://eslint.org | Linter de JavaScript/TypeScript |
-| pnpm | https://pnpm.io | Gerenciador de pacotes rápido e eficiente |
-| Yarn | https://yarnpkg.com | Gerenciador de pacotes alternativo |
-| tsx | https://github.com/privatenumber/tsx | Executar TypeScript diretamente sem compilar |
-| Nodemon | https://nodemon.io | Auto-restart em alterações de código |
-| Concurrently | https://github.com/open-cli-tools/concurrently | Rodar múltiplos comandos em paralelo |
-| Serve | https://github.com/vercel/serve | Servidor estático moderno pela Vercel |
-| Nest.js | https://nestjs.com | Framework Node.js progressivo |
-| Vue.js | https://vuejs.org | Framework JS progressivo |
-| Prisma | https://www.prisma.io | ORM moderno para Node.js e TypeScript |
-| json-server | https://github.com/typicode/json-server | API REST fake com zero configuração |
-| create-next-app | https://nextjs.org | Scaffolding de projetos Next.js |
-| npm-check-updates | https://github.com/raineorshine/npm-check-updates | Atualizar versões de dependências no package.json |
-| live-server | https://github.com/tapio/live-server | Servidor com live reload para páginas estáticas |
-| 9Router | https://github.com/decolua/9router | Roteador CLI |
-| OpenSpec | https://github.com/Fission-AI/OpenSpec | Gerenciador de mudanças para projetos de IA |
+| Programa | Descrição | Site |
+|----------|-----------|------|
+| TypeScript | Compilador TypeScript | https://www.typescriptlang.org |
+| Prettier | Formatador de código opinativo | https://prettier.io |
+| ESLint | Linter de JavaScript/TypeScript | https://eslint.org |
+| pnpm | Gerenciador de pacotes rápido e eficiente | https://pnpm.io |
+| Yarn | Gerenciador de pacotes alternativo | https://yarnpkg.com |
+| tsx | Executar TypeScript diretamente sem compilar | https://github.com/privatenumber/tsx |
+| Nodemon | Auto-restart em alterações de código | https://nodemon.io |
+| Concurrently | Rodar múltiplos comandos em paralelo | https://github.com/open-cli-tools/concurrently |
+| Serve | Servidor estático moderno pela Vercel | https://github.com/vercel/serve |
+| Nest.js | Framework Node.js progressivo | https://nestjs.com |
+| Vue.js | Framework JS progressivo | https://vuejs.org |
+| Prisma | ORM moderno para Node.js e TypeScript | https://www.prisma.io |
+| json-server | API REST fake com zero configuração | https://github.com/typicode/json-server |
+| create-next-app | Scaffolding de projetos Next.js | https://nextjs.org |
+| npm-check-updates | Atualizar versões de dependências no package.json | https://github.com/raineorshine/npm-check-updates |
+| live-server | Servidor com live reload para páginas estáticas | https://github.com/tapio/live-server |
+| 9Router | Roteador CLI | https://github.com/decolua/9router |
+| OpenSpec | Gerenciador de mudanças para projetos de IA | https://github.com/Fission-AI/OpenSpec |
 
 ## Flags
 
@@ -339,10 +339,10 @@ O sistema detecta automaticamente o **gum** (instalado via `base.sh`), mas funci
 
 O projeto possui testes com duas ferramentas:
 
-| Ferramenta | O que testa | Alvo |
+| Ferramenta | Alvo | O que testa |
 |---|---|---|
-| **ShellCheck** | Análise estática — detecta erros de sintaxe, variáveis não utilizadas, problemas de quoting e más práticas em shell script | Todos os `.sh` em `./`, `lib/` e `install/` |
-| **BATS** (Bash Automated Testing System) | Testes de unidade — verifica o comportamento isolado das funções das bibliotecas | `tests/lib/*.bats` |
+| **ShellCheck** | Todos os `.sh` em `./`, `lib/` e `install/` | Análise estática — detecta erros de sintaxe, variáveis não utilizadas, problemas de quoting e más práticas em shell script |
+| **BATS** (Bash Automated Testing System) | `tests/lib/*.bats` | Testes de unidade — verifica o comportamento isolado das funções das bibliotecas |
 
 **Testes disponíveis (BATS):**
 
