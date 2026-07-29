@@ -6,22 +6,6 @@
   <img src="https://img.shields.io/badge/linguagem-Bash-blue" alt="Bash">
 </p>
 
-## Sumário
-
-- [Sobre](#ubuntu-initial-setup)
-- [Pré-requisitos](#pré-requisitos)
-- [Uso](#uso)
-- [Módulos](#módulos)
-- [Programas](#programas)
-- [Flags](#flags)
-- [Relatórios](#relatórios)
-- [Progresso Visual](#progresso-visual)
-- [Testes](#testes)
-- [Estrutura](#estrutura)
-- [Arquitetura](#arquitetura)
-- [FAQ / Troubleshooting](#faq--troubleshooting)
-- [Licença](#licença)
-
 **Projeto pessoal** de scripts modulares para automatizar a instalação e configuração do Ubuntu — criado por e para desenvolvedores que precisam montar seu ambiente de trabalho rápido, seja do zero ou após um formato.
 
 Ideal para usuários Ubuntu que:
@@ -30,6 +14,39 @@ Ideal para usuários Ubuntu que:
 - Querem um ponto de partida para customizar seu próprio instalador
 
 Fique à vontade para fazer um **fork**, remover o que não usa, adicionar seus programas favoritos e adaptar ao seu gosto.
+
+## Sumário
+
+- [Ubuntu Initial Setup](#ubuntu-initial-setup)
+  - [Sumário](#sumário)
+  - [Pré-requisitos](#pré-requisitos)
+  - [Uso](#uso)
+  - [Módulos](#módulos)
+  - [Programas](#programas)
+    - [Base](#base)
+    - [Dev](#dev)
+    - [AI](#ai)
+    - [Tools Terminal](#tools-terminal)
+    - [Tools Desktop](#tools-desktop)
+    - [Tools Ubuntu](#tools-ubuntu)
+    - [Media](#media)
+    - [Fonts](#fonts)
+    - [Config](#config)
+    - [NPM Globals](#npm-globals)
+  - [Flags](#flags)
+  - [Relatórios](#relatórios)
+  - [Progresso Visual](#progresso-visual)
+  - [Testes](#testes)
+  - [Estrutura](#estrutura)
+  - [Arquitetura](#arquitetura)
+  - [FAQ / Troubleshooting](#faq--troubleshooting)
+    - [`curl: command not found`](#curl-command-not-found)
+    - [Falha na instalação de algum pacote](#falha-na-instalação-de-algum-pacote)
+    - [Algum programa não aparece no menu](#algum-programa-não-aparece-no-menu)
+    - [Erro de permissão](#erro-de-permissão)
+    - [Quero adicionar meus próprios programas](#quero-adicionar-meus-próprios-programas)
+  - [Licença](#licença)
+
 
 ## Pré-requisitos
 
@@ -65,7 +82,7 @@ cd ubuntu-initial-setup
 |--------|-----------|-------|
 | `base` | curl, git, gum, zsh + oh-my-zsh | 4 |
 | `dev` | Python, Docker, NVM + Node LTS, Java (JDK), VSCode, Go, Postman, VirtualBox, Antigravity 2.0, Antigravity IDE, Terraform, GitHub CLI, AWS CLI, Ansible, build-essential, libssl-dev, kubectl, helm, minikube, Kiro CLI, ShellCheck, BATS | 22 |
-| `ai` | Ollama, OpenCode, Serena, Hermes Agent, Antigravity CLI, Claude Code | 6 |
+| `ai` | Ollama, OpenCode, Serena, Hermes Agent, Antigravity CLI, Claude Code, GitHub Copilot CLI | 7 |
 | `tools_terminal` | htop, tmux, ripgrep, fd, fzf, bat, eza, Starship, zoxide, nano, vim, Neovim, Anyquery, Superfile | 14 |
 | `tools_desktop` | Flameshot, Espanso, HyperKeys, IMWheel, GParted, Wave Terminal, Warp Terminal, Draw.io, DBeaver, Stacer, BleachBit, Timeshift | 12 |
 | `tools_ubuntu` | Nala, fastfetch, ncdu, duf, deborphan, lm-sensors, UFW, Unattended Upgrades | 8 |
@@ -121,6 +138,7 @@ cd ubuntu-initial-setup
 | Serena | https://github.com/oraios/serena | MCP toolkit semântico para agentes de código |
 | Antigravity CLI | https://antigravity.google | CLI para desenvolvimento agente-first do Google |
 | Claude Code | https://code.claude.com | Assistente de codificação IA da Anthropic |
+| GitHub Copilot CLI | https://github.com/features/copilot/cli | Assistente de linha de comando com IA do GitHub |
 
 ### Tools Terminal
 
@@ -281,7 +299,7 @@ ubuntu-initial-setup/
 ├── install/
 │   ├── base.sh             # curl, git, gum, zsh
 │   ├── dev.sh              # Python, Docker, NVM, Java, VSCode, Go, kubectl, helm e mais
-│   ├── ai.sh               # Ollama, OpenCode, Serena, Hermes, Antigravity CLI
+│   ├── ai.sh               # Ollama, OpenCode, Serena, Hermes, Antigravity CLI, Claude Code, GitHub Copilot CLI
 │   ├── tools_terminal.sh   # htop, tmux, ripgrep, fzf, vim, Neovim, Superfile
 │   ├── tools_desktop.sh    # Flameshot, Espanso, Draw.io, DBeaver, Stacer, Timeshift
 │   ├── tools_ubuntu.sh     # Nala, fastfetch, ncdu, duf, UFW
@@ -329,7 +347,7 @@ Verifique se o módulo correspondente existe em `install/`. O menu whiptail list
 Certifique-se de que seu usuário tem permissão sudo. Alguns módulos instalam pacotes via `apt`, `snap` ou scripts que exigem superusuário.
 
 ### Quero adicionar meus próprios programas
-Faça um fork do projeto, crie um arquivo em `install/` seguindo o padrão dos existentes, adicione o `track` no `run_*()` e incremente o `_run_*_total`. Veja o template em `scripts-utils/template.sh` para referência.
+Faça um fork do projeto, veja o template guiado em `install/_template.sh` com exemplos práticos para adicionar programas ou criar módulos novos.
 
 ## Licença
 
