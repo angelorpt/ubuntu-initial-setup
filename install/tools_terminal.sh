@@ -152,7 +152,18 @@ install_superfile() {
   log_success "Superfile instalado"
 }
 
-_run_tools_terminal_total=14
+install_fdupes() {
+  # https://github.com/adrianlopezroche/fdupes
+  print_header "fdupes" "Localizador de arquivos duplicados"
+  print_details "https://github.com/adrianlopezroche/fdupes" \
+    "Encontra e remove arquivos duplicados no sistema" \
+    "Modo recursivo para varrer diretórios inteiros" \
+    "Uso: fdupes -r DIRETORIO"
+  sudo apt install -y fdupes
+  log_success "fdupes instalado: $(fdupes --version 2>&1 | head -1)"
+}
+
+_run_tools_terminal_total=15
 
 run_tools_terminal() {
   init_module_progress $_run_tools_terminal_total "Tools Terminal"
@@ -170,5 +181,6 @@ run_tools_terminal() {
   track "TOOLS_TERMINAL" install_neovim "Neovim"
   track "TOOLS_TERMINAL" install_anyquery "Anyquery"
   track "TOOLS_TERMINAL" install_superfile "Superfile"
+  track "TOOLS_TERMINAL" install_fdupes "fdupes"
   end_module_progress
 }
