@@ -128,7 +128,12 @@ install_antigravity2() {
     "Antigravity Hub: interface visual central para seu workspace agente-first" \
     "Integração com ferramentas do Google (Gemini, Cloud, IDEs)" \
     "Uso: Antigravity para gerenciar agentes e fluxos de trabalho"
-  pushd /tmp > /dev/null
+
+  log_info "Limpando instalações anteriores de Antigravity..."
+  sudo rm -f /usr/local/bin/antigravity || true
+  sudo rm -rf /opt/antigravity || true
+
+  pushd /tmp > /dev/null || return 1
   local url
   url=$(curl -s https://antigravity.google/download | grep -oP 'https://storage\.googleapis\.com/antigravity-public/antigravity-hub/[^"]*/linux-x64/Antigravity\.tar\.gz' | head -1)
   if [ -z "$url" ]; then
@@ -136,9 +141,51 @@ install_antigravity2() {
     popd > /dev/null
     return 1
   fi
-  wget -q -O antigravity.tar.gz "$url"
-  sudo tar -xzf antigravity.tar.gz -C /opt
-  popd > /dev/null
+
+  log_info "Baixando Antigravity 2.0..."
+  if ! wget -q -O antigravity.tar.gz "$url"; then
+    log_error "Falha ao baixar o Antigravity 2.0"
+    popd > /dev/null
+    return 1
+  fi
+
+  log_info "Extraindo Antigravity 2.0..."
+  local extract_dir
+  extract_dir="antigravity_extract_$$"
+  mkdir -p "$extract_dir"
+  if ! tar -xzf antigravity.tar.gz -C "$extract_dir"; then
+    log_error "Falha ao extrair o Antigravity 2.0"
+    rm -rf "$extract_dir" antigravity.tar.gz
+    popd > /dev/null
+    return 1
+  fi
+
+  local extracted_folder
+  extracted_folder=$(find "$extract_dir" -mindepth 1 -maxdepth 1 -type d | head -1)
+  if [ -z "$extracted_folder" ]; then
+    log_error "Pasta extraída do Antigravity 2.0 não encontrada"
+    rm -rf "$extract_dir" antigravity.tar.gz
+    popd > /dev/null
+    return 1
+  fi
+
+  log_info "Instalando Antigravity 2.0 em /opt/antigravity..."
+  if ! sudo mv "$extracted_folder" /opt/antigravity; then
+    log_error "Falha ao mover Antigravity 2.0 para /opt/antigravity"
+    rm -rf "$extract_dir" antigravity.tar.gz
+    popd > /dev/null
+    return 1
+  fi
+
+  rm -rf "$extract_dir" antigravity.tar.gz
+  popd > /dev/null || return 1
+
+  log_info "Criando link simbólico para Antigravity..."
+  if ! sudo ln -sf /opt/antigravity/antigravity /usr/local/bin/antigravity; then
+    log_error "Falha ao criar link simbólico /usr/local/bin/antigravity"
+    return 1
+  fi
+
   log_success "Antigravity 2.0 instalado"
 }
 
@@ -149,7 +196,12 @@ install_antigravity_ide() {
     "Ambiente de desenvolvimento integrado com suporte nativo a agentes" \
     "Baseado no VS Code com extensões exclusivas Antigravity" \
     "Uso: Antigravity IDE para codificar com assistência de IA integrada"
-  pushd /tmp > /dev/null
+
+  log_info "Limpando instalações anteriores do Antigravity IDE..."
+  sudo rm -f /usr/local/bin/antigravity-ide || true
+  sudo rm -rf /opt/antigravity-ide || true
+
+  pushd /tmp > /dev/null || return 1
   local url
   url=$(curl -s https://antigravity.google/download | grep -oP 'https://edgedl\.me\.gvt1\.com/edgedl/release2/[^"]*/linux-x64/Antigravity%20IDE\.tar\.gz' | head -1)
   if [ -z "$url" ]; then
@@ -157,9 +209,65 @@ install_antigravity_ide() {
     popd > /dev/null
     return 1
   fi
-  wget -q -O antigravity-ide.tar.gz "$url"
-  sudo tar -xzf antigravity-ide.tar.gz -C /opt
-  popd > /dev/null
+
+  log_info "Baixando Antigravity IDE..."
+  if ! wget -q -O antigravity-ide.tar.gz "$url"; then
+    log_error "Falha ao baixar o Antigravity IDE"
+    popd > /dev/null
+    return 1
+  fi
+
+  log_info "Extraindo Antigravity IDE..."
+  local extract_dir
+  extract_dir="antigravity_ide_extract_$$"
+  mkdir -p "$extract_dir"
+  if ! tar -xzf antigravity-ide.tar.gz -C "$extract_dir"; then
+    log_error "Falha ao extrair o Antigravity IDE"
+    rm -rf "$extract_dir" antigravity-ide.tar.gz
+    popd > /dev/null
+    return 1
+  fi
+
+  local extracted_folder
+  extracted_folder=$(find "$extract_dir" -mindepth 1 -maxdepth 1 -type d | head -1)
+  if [ -z "$extracted_folder" ]; then
+    log_error "Pasta extraída do Antigravity IDE não encontrada"
+    rm -rf "$extract_dir" antigravity-ide.tar.gz
+    popd > /dev/null
+    return 1
+  fi
+
+  log_info "Instalando Antigravity IDE em /opt/antigravity-ide..."
+  if ! sudo mv "$extracted_folder" /opt/antigravity-ide; then
+    log_error "Falha ao mover Antigravity IDE para /opt/antigravity-ide"
+    rm -rf "$extract_dir" antigravity-ide.tar.gz
+    popd > /dev/null
+    return 1
+  fi
+
+  rm -rf "$extract_dir" antigravity-ide.tar.gz
+  popd > /dev/null || return 1
+
+  log_info "Criando link simbólico para Antigravity IDE..."
+  local ide_bin=""
+  if [ -f "/opt/antigravity-ide/bin/antigravity-ide" ]; then
+    ide_bin="/opt/antigravity-ide/bin/antigravity-ide"
+  elif [ -f "/opt/antigravity-ide/antigravity-ide" ]; then
+    ide_bin="/opt/antigravity-ide/antigravity-ide"
+  else
+    ide_bin=$(find /opt/antigravity-ide -type f -name "antigravity-ide" | head -1)
+  fi
+
+  if [ -z "$ide_bin" ]; then
+    log_error "Executável antigravity-ide não encontrado em /opt/antigravity-ide"
+    return 1
+  fi
+
+  if ! sudo ln -sf "$ide_bin" /usr/local/bin/antigravity-ide; then
+    log_error "Falha ao criar link simbólico /usr/local/bin/antigravity-ide"
+    return 1
+  fi
+
   log_success "Antigravity IDE instalado"
 }
 
@@ -175,6 +283,20 @@ install_terraform() {
   echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(grep -oP '(?<=UBUNTU_CODENAME=).*' /etc/os-release || lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list > /dev/null
   sudo apt update && sudo apt install -y terraform
   log_success "Terraform instalado: $(terraform --version 2>&1 | head -1)"
+}
+
+install_vagrant() {
+  # https://developer.hashicorp.com/vagrant/install#linux
+  print_header "Vagrant" "Ambientes de desenvolvimento reproduzíveis"
+  print_details "https://developer.hashicorp.com/vagrant/install" \
+    "Cria e gerencia ambientes de desenvolvimento reproduzíveis" \
+    "Compatível com VirtualBox, KVM, Docker como providers" \
+    "Uso: vagrant init, vagrant up, vagrant ssh"
+  sudo mkdir -p /etc/apt/keyrings
+  wget -O - https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/hashicorp-archive-keyring.gpg
+  echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(grep -oP '(?<=UBUNTU_CODENAME=).*' /etc/os-release || lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list > /dev/null
+  sudo apt update && sudo apt install -y vagrant
+  log_success "Vagrant instalado: $(vagrant --version 2>&1 | head -1)"
 }
 
 install_github_cli() {
@@ -316,7 +438,7 @@ install_bats() {
   log_success "BATS instalado: $(bats --version 2>&1)"
 }
 
-_run_dev_total=22
+_run_dev_total=23
 
 run_dev() {
   init_module_progress $_run_dev_total "Dev"
@@ -333,6 +455,7 @@ run_dev() {
   track "DEV" install_antigravity2 "Antigravity 2.0"
   track "DEV" install_antigravity_ide "Antigravity IDE"
   track "DEV" install_terraform "Terraform"
+  track "DEV" install_vagrant "Vagrant"
   track "DEV" install_github_cli "GitHub CLI"
   track "DEV" install_aws_cli "AWS CLI"
   track "DEV" install_ansible "Ansible"
