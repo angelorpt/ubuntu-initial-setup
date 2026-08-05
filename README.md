@@ -136,9 +136,9 @@ cd ubuntu-initial-setup
 | Módulo | Total | Programas |
 |--------|-----------|-------|
 | `base` | 4 | curl, git, gum, zsh + oh-my-zsh |
-| `dev` | 22 | Python, Docker, NVM + Node LTS, Java (JDK), VSCode, Go, Postman, VirtualBox, Antigravity 2.0, Antigravity IDE, Terraform, GitHub CLI, AWS CLI, Ansible, build-essential, libssl-dev, kubectl, helm, minikube, Kiro CLI, ShellCheck, BATS |
+| `dev` | 23 | Python, Docker, NVM + Node LTS, Java (JDK), VSCode, Go, Postman, VirtualBox, Antigravity 2.0, Antigravity IDE, Terraform, Vagrant, GitHub CLI, AWS CLI, Ansible, build-essential, libssl-dev, kubectl, helm, minikube, Kiro CLI, ShellCheck, BATS |
 | `ai` | 7 | Ollama, OpenCode, Serena, Hermes Agent, Antigravity CLI, Claude Code, GitHub Copilot CLI |
-| `tools_terminal` | 14 | htop, tmux, ripgrep, fd, fzf, bat, eza, Starship, zoxide, nano, vim, Neovim, Anyquery, Superfile |
+| `tools_terminal` | 15 | htop, tmux, ripgrep, fd, fzf, bat, eza, Starship, zoxide, nano, vim, Neovim, Anyquery, Superfile, fdupes |
 | `tools_desktop` | 12 | Flameshot, Espanso, HyperKeys, IMWheel, GParted, Wave Terminal, Warp Terminal, Draw.io, DBeaver, Stacer, BleachBit, Timeshift |
 | `tools_ubuntu` | 8 | Nala, neofetch, ncdu, duf, deborphan, lm-sensors, UFW, Unattended Upgrades |
 | `media` | 2 | Google Chrome, Brave |
@@ -174,6 +174,7 @@ cd ubuntu-initial-setup
 | Antigravity 2.0 | Plataforma de desenvolvimento agente-first do Google | https://antigravity.google |
 | Antigravity IDE | IDE para desenvolvimento agente-first | https://antigravity.google |
 | Terraform | Infraestrutura como código pela HashiCorp | https://developer.hashicorp.com/terraform/install#linux |
+| Vagrant | Ambientes de desenvolvimento reproduzíveis | https://developer.hashicorp.com/vagrant/install |
 | GitHub CLI | CLI oficial do GitHub | https://cli.github.com |
 | AWS CLI | CLI oficial da Amazon Web Services | https://aws.amazon.com/cli |
 | Ansible | Automação de infraestrutura | https://www.ansible.com |
@@ -213,6 +214,7 @@ cd ubuntu-initial-setup
 | Neovim | Fork moderno do Vim com suporte a Lua | https://neovim.io |
 | Anyquery | Ferramenta de consulta SQL para qualquer fonte de dados | https://anyquery.dev |
 | Superfile | Gerenciador de arquivos no terminal | https://superfile.dev |
+| fdupes | Localizador de arquivos duplicados | https://github.com/adrianlopezroche/fdupes |
 
 ### Tools Desktop
 
@@ -385,7 +387,7 @@ ubuntu-initial-setup/
 │   ├── base.sh             # curl, git, gum, zsh
 │   ├── dev.sh              # Python, Docker, NVM, Java, VSCode, Go, kubectl, helm e mais
 │   ├── ai.sh               # Ollama, OpenCode, Serena, Hermes, Antigravity CLI, Claude Code, GitHub Copilot CLI
-│   ├── tools_terminal.sh   # htop, tmux, ripgrep, fzf, vim, Neovim, Superfile
+│   ├── tools_terminal.sh   # htop, tmux, ripgrep, fzf, vim, Neovim, Superfile, fdupes
 │   ├── tools_desktop.sh    # Flameshot, Espanso, Draw.io, DBeaver, Stacer, Timeshift
 │   ├── tools_ubuntu.sh     # Nala, neofetch, ncdu, duf, UFW
 │   ├── media.sh            # Chrome, Brave
