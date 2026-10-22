@@ -5,10 +5,11 @@ install_chrome() {
     "Navegador mais usado do mundo, com sincronização de contas Google" \
     "Ferramentas de desenvolvedor, extensões, V8 rápido" \
     "Uso: google-chrome"
-  pushd /tmp > /dev/null
+  pushd /tmp > /dev/null || return 1
   wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-  sudo apt install -y ./google-chrome-stable_current_amd64.deb
-  popd > /dev/null
+  install_deb ./google-chrome-stable_current_amd64.deb
+  rm -f google-chrome-stable_current_amd64.deb
+  popd > /dev/null || return 1
   log_success "Google Chrome instalado"
 }
 

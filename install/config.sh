@@ -5,8 +5,8 @@ prompt_git_credentials() {
   local USER_GIT="User"
 
   if [ -t 0 ]; then
-    read -p "  Email para Git (${EMAIL_GIT}): " input_email
-    read -p "  Nome de usuário Git (${USER_GIT}): " input_user
+    read -r -p "  Email para Git (${EMAIL_GIT}): " input_email
+    read -r -p "  Nome de usuário Git (${USER_GIT}): " input_user
     EMAIL_GIT="${input_email:-$EMAIL_GIT}"
     USER_GIT="${input_user:-$USER_GIT}"
   fi

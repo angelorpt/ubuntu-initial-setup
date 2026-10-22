@@ -55,12 +55,12 @@ install_victor_mono() {
   tag=$(curl -s https://api.github.com/repos/rubjo/victor-mono/releases/latest | grep '"tag_name":' | cut -d'"' -f4)
   [ -z "$tag" ] && log_error "Não foi possível obter versão do Victor Mono" && return 1
   url="https://github.com/rubjo/victor-mono/releases/download/${tag}/VictorMonoAll.zip"
-  pushd /tmp > /dev/null
+  pushd /tmp > /dev/null || return 1
   wget -q -O victormono.zip "$url"
   unzip -o -q victormono.zip -d victormono
   cp victormono/*.ttf "$fonts_dir/" 2>/dev/null || true
   rm -rf victormono victormono.zip
-  popd > /dev/null
+  popd > /dev/null || return 1
   fc-cache -f
   log_success "Victor Mono ${tag#v} instalado em $fonts_dir"
 }
@@ -78,12 +78,12 @@ install_monaspace() {
   tag=$(curl -s https://api.github.com/repos/githubnext/monaspace/releases/latest | grep '"tag_name":' | cut -d'"' -f4)
   [ -z "$tag" ] && log_error "Não foi possível obter versão do Monaspace" && return 1
   url="https://github.com/githubnext/monaspace/releases/download/${tag}/monaspace-${tag#v}.zip"
-  pushd /tmp > /dev/null
+  pushd /tmp > /dev/null || return 1
   wget -q -O monaspace.zip "$url"
   unzip -o -q monaspace.zip -d monaspace
   find monaspace -name '*.ttf' -exec cp {} "$fonts_dir/" \; 2>/dev/null || true
   rm -rf monaspace monaspace.zip
-  popd > /dev/null
+  popd > /dev/null || return 1
   fc-cache -f
   log_success "Monaspace ${tag#v} instalado em $fonts_dir"
 }

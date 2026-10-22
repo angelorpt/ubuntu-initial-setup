@@ -113,11 +113,11 @@ install_virtualbox() {
   deb_name=$(echo "$page" | grep -oP "virtualbox-${version%.*}_[^\"]*~Ubuntu~${codename}[^\"]*_amd64\.deb" | head -1)
   [ -z "$deb_name" ] && log_error "VirtualBox não disponível para Ubuntu ${codename}" && return 1
 
-  pushd /tmp > /dev/null
+  pushd /tmp > /dev/null || return 1
   wget -q "https://download.virtualbox.org/virtualbox/${version}/${deb_name}" -O virtualbox.deb
-  sudo dpkg -i virtualbox.deb 2>/dev/null || true
-  sudo apt install -f -y
-  popd > /dev/null
+  install_deb ./virtualbox.deb
+  rm -f virtualbox.deb
+  popd > /dev/null || return 1
   log_success "VirtualBox ${version} instalado"
 }
 
@@ -372,11 +372,11 @@ install_kubectl() {
     "Gerencia clusters Kubernetes: pods, services, deployments" \
     "Comandos para aplicar manifestos, debugar pods, escalar cargas" \
     "Uso: kubectl get pods, kubectl apply -f deployment.yaml"
-  pushd /tmp > /dev/null
+  pushd /tmp > /dev/null || return 1
   curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
   chmod +x kubectl
   sudo mv kubectl /usr/local/bin/kubectl
-  popd > /dev/null
+  popd > /dev/null || return 1
   log_success "kubectl instalado: $(kubectl version --client 2>&1 | head -1)"
 }
 
@@ -398,10 +398,10 @@ install_minikube() {
     "Roda cluster Kubernetes completo em VM ou Docker local" \
     "Ideal para desenvolvimento, aprendizado e testes offline" \
     "Uso: minikube start, minikube dashboard, minikube stop"
-  pushd /tmp > /dev/null
+  pushd /tmp > /dev/null || return 1
   curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
   sudo install minikube-linux-amd64 /usr/local/bin/minikube
-  popd > /dev/null
+  popd > /dev/null || return 1
   log_success "Minikube instalado: $(minikube version 2>&1 | head -1)"
 }
 
