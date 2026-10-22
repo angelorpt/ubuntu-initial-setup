@@ -27,7 +27,7 @@ cd "$INSTALL_DIR"
 # 3. Executar instalador
 if $PIPE_MODE; then
   echo ">>> Modo automático: instalando todos os módulos..."
-  bash install.sh --all
+  bash install.sh --all --yes
 else
   bash install.sh
 fi

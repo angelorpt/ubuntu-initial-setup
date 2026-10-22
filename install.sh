@@ -1,26 +1,34 @@
 #!/bin/bash
 set -uo pipefail
 
-cd "$(dirname "$0")"
+cd "$(dirname "$0")" || exit 1
 
 source lib/colors.sh
 source lib/log.sh
 source lib/utils.sh
+source lib/selection.sh
+source lib/catalog.sh
 source lib/results.sh
 source lib/progress.sh
+
+RESULTS_PATH="$(pwd)/results"
 
 show_help() {
   cat << EOF
 Uso: ./install.sh [OPÇÃO]
 
 Opções:
-  --all        Instala todos os módulos (não interativo, limpa histórico)
-  --update     Atualiza todos os programas instalados (limpa histórico)
-  --retry      Tenta novamente apenas os programas que falharam
+  --all        Seleciona todos os módulos e itens (pede confirmação)
+  --update     Seleciona todos os módulos e itens e limpa histórico
+  --retry      Pré-seleciona apenas os programas que falharam
   --continue   Continua instalação pulando programas já instalados com sucesso
+  --yes, -y    Dispensa a confirmação final (obrigatório em automação)
   --help       Mostra esta ajuda
 
-Sem opções: abre o menu interativo whiptail.
+Sem opções: abre o menu interativo whiptail (modo → categorias → itens).
+
+A instalação só começa após o resumo da seleção ser confirmado. Para execução
+não interativa use --all --yes; sem terminal e sem --yes o script encerra com erro.
 
 Relatórios salvos em results/
   success.txt   — programs installed successfully
@@ -28,104 +36,220 @@ Relatórios salvos em results/
   report.txt    — full formatted report
 
 Exemplos:
-  ./install.sh              # menu interativo
-  ./install.sh --all        # instala tudo (do zero)
-  ./install.sh --continue   # continua de onde parou
-  ./install.sh --retry      # retenta falhas
+  ./install.sh                 # menu interativo
+  ./install.sh --all           # seleciona tudo e pede confirmação
+  ./install.sh --all --yes     # instala tudo sem perguntar
+  ./install.sh --continue      # continua de onde parou
+  ./install.sh --retry         # retenta falhas
 EOF
 }
 
-MODE="install"
+SELECTION_ENABLED=true
+MODE=""
+ASSUME_YES=false
 
-case "${1:-}" in
-  --all)
-    CHOICES="BASE DEV AI TOOLS_TERMINAL TOOLS_DESKTOP TOOLS_UBUNTU MEDIA FONTS CONFIG NPM_GLOBALS"
-    init_results --fresh
-    log_info "Modo automático: instalando todos os módulos..."
-    ;;
-  --update)
-    CHOICES="BASE DEV AI TOOLS_TERMINAL TOOLS_DESKTOP TOOLS_UBUNTU MEDIA FONTS CONFIG NPM_GLOBALS"
-    init_results --fresh
-    log_info "Modo update: reinstalando todos os programas..."
-    ;;
-  --retry)
-    init_results
-    init_retry
-    local retry_falha="$RESULTS_DIR/failure.txt"
-    if [ ! -s "$retry_falha" ]; then
-      log_info "Nenhuma falha anterior encontrada em $retry_falha"
-      exit 0
-    fi
-    CHOICES=$(sed 's/:.*//' "$retry_falha" | sort -u | tr '\n' ' ')
-    log_info "Modo retry: tentando novamente apenas os programas que falharam..."
-    ;;
-  --continue)
-    init_results
-    init_continue
-    log_info "Modo continue: pulando programas já instalados com sucesso..."
-    ;;
-  --help|-h)
-    show_help
+for arg in "$@"; do
+  case "$arg" in
+    --all)      MODE="all"      ;;
+    --update)   MODE="update"   ;;
+    --retry)    MODE="retry"    ;;
+    --continue) MODE="continue" ;;
+    --yes|-y)   ASSUME_YES=true ;;
+    --help|-h)  show_help; exit 0 ;;
+    *)
+      log_error "Opção desconhecida: $arg"
+      echo
+      show_help
+      exit 1
+      ;;
+  esac
+done
+
+if ! $ASSUME_YES && { [ ! -t 0 ] || [ ! -t 1 ]; }; then
+  log_error "Terminal não interativo detectado."
+  log_info "Use --all --yes para instalar sem nenhuma pergunta."
+  exit 1
+fi
+
+FROM_MENU=false
+if [ -z "$MODE" ]; then
+  ensure_whiptail
+  FROM_MENU=true
+  MODE=$(whiptail --title "ubuntu-initial-setup" \
+    --menu "Escolha o modo de instalação:" \
+    15 60 3 \
+    "new"       "Nova instalação (limpa histórico)" \
+    "continue"  "Continuar de onde parou" \
+    "retry"     "Retentar apenas falhas" \
+    3>&1 1>&2 2>&3) || true
+  if [ -z "$MODE" ]; then
+    log_info "Cancelado."
     exit 0
-    ;;
-  *)
-    ensure_whiptail
-    MODE=$(whiptail --title "ubuntu-initial-setup" \
-      --menu "Escolha o modo de instalação:" \
-      15 60 3 \
-      "new"       "Nova instalação (limpa histórico)" \
-      "continue"  "Continuar de onde parou" \
-      "retry"     "Retentar apenas falhas" \
-      3>&1 1>&2 2>&3)
-    [ -z "$MODE" ] && log_info "Cancelado." && exit 0
+  fi
+fi
 
-    case $MODE in
-      new)
-        init_results --fresh
-        ;;
-      continue)
-        init_results
-        init_continue
-        ;;
-      retry)
-        init_results
-        init_retry
-        local retry_falha="$RESULTS_DIR/failure.txt"
-        if [ ! -s "$retry_falha" ]; then
-          log_info "Nenhuma falha anterior encontrada."
-          exit 0
-        fi
-        CHOICES=$(sed 's/:.*//' "$retry_falha" | sort -u | tr '\n' ' ')
-        ;;
-    esac
+if [ "$MODE" = "retry" ] && [ ! -s "$RESULTS_PATH/failure.txt" ]; then
+  log_info "Nenhuma falha anterior encontrada em $RESULTS_PATH/failure.txt"
+  exit 0
+fi
 
-    if [ "$MODE" != "retry" ]; then
-      MODULES=(
-        "BASE"           "Utilitários essenciais (curl, git, zsh)" ON
-        "DEV"            "Ferramentas de desenvolvimento" ON
-        "AI"             "Inteligência Artificial (ollama, opencode)" ON
-        "TOOLS_TERMINAL" "Ferramentas de terminal (htop, tmux, fzf, vim)" ON
-        "TOOLS_DESKTOP"  "Aplicativos gráficos (Flameshot, DBeaver, Stacer)" ON
-        "TOOLS_UBUNTU"   "Manutenção do sistema (Nala, UFW, neofetch)" ON
-        "MEDIA"          "Navegadores (Chrome, Brave)" ON
-        "FONTS"          "Fontes para programação (Fira Code)" ON
-        "CONFIG"         "Configuração Git, SSH e terminal" ON
-        "NPM_GLOBALS"    "Pacotes npm globais (Nest.js, Vue, OpenSpec)" ON
-      )
-      CHOICES=$(whiptail --title "ubuntu-initial-setup" \
-        --checklist "Selecione os módulos para instalar (espaço para marcar/desmarcar):" \
-        24 76 10 \
-        "${MODULES[@]}" \
-        3>&1 1>&2 2>&3)
-      CHOICES=$(echo "$CHOICES" | tr -d '"')
-      [ -z "$CHOICES" ] && log_info "Nenhum módulo selecionado. Saindo." && exit 0
+declare -a SELECTED_MODULES=()
+select_clear
+
+_preselect_all() {
+  local module func name _desc
+  SELECTED_MODULES=()
+  for module in "${MODULES[@]}"; do
+    SELECTED_MODULES+=("$module")
+    while IFS='|' read -r func name _desc; do
+      [ -n "$func" ] && select_add "$(catalog_tag "$module" "$func")"
+    done < <(catalog_items "$module")
+  done
+}
+
+_preselect_retry() {
+  local module func name _desc matched
+  SELECTED_MODULES=()
+  for module in "${MODULES[@]}"; do
+    grep -q "^${module}:" "$RESULTS_PATH/failure.txt" || continue
+    matched=false
+    while IFS='|' read -r func name _desc; do
+      [ -n "$func" ] || continue
+      if grep -qxF "$module: $name" "$RESULTS_PATH/failure.txt"; then
+        select_add "$(catalog_tag "$module" "$func")"
+        matched=true
+      fi
+    done < <(catalog_items "$module")
+    $matched && SELECTED_MODULES+=("$module")
+  done
+}
+
+_select_categories() {
+  local module output height
+  local -a entries=()
+  for module in "${MODULES[@]}"; do
+    if [ "$MODE" = "retry" ] && ! grep -q "^${module}:" "$RESULTS_PATH/failure.txt"; then
+      continue
     fi
-    ;;
+    entries+=("$module" "$(catalog_module_label "$module") — $(catalog_module_desc "$module")" "ON")
+  done
+
+  height=$(( ${#MODULES[@]} + 8 ))
+  [ "$height" -gt 30 ] && height=30
+
+  output=$(whiptail --title "ubuntu-initial-setup" \
+    --separate-output \
+    --checklist "Selecione as categorias (espaço marca/desmarca):" \
+    "$height" 78 10 \
+    "${entries[@]}" \
+    3>&1 1>&2 2>&3) || return 1
+  printf '%s\n' "$output"
+}
+
+_select_items() {
+  local module="$1"
+  local func name desc state output
+  local -a entries=()
+  while IFS='|' read -r func name desc; do
+    [ -n "$func" ] || continue
+    state="ON"
+    if [ "$MODE" = "retry" ] && ! grep -qxF "$module: $name" "$RESULTS_PATH/failure.txt"; then
+      state="OFF"
+    fi
+    entries+=("$func" "$name — $desc" "$state")
+  done < <(catalog_items "$module")
+
+  local count=$(( ${#entries[@]} / 3 ))
+  local height=$(( count + 8 ))
+  [ "$height" -gt 30 ] && height=30
+  local list_height=$count
+  [ "$list_height" -gt 20 ] && list_height=20
+
+  output=$(whiptail --title "$(catalog_module_label "$module")" \
+    --separate-output \
+    --checklist "Selecione os itens (espaço marca/desmarca):" \
+    "$height" 78 "$list_height" \
+    "${entries[@]}" \
+    3>&1 1>&2 2>&3) || return 1
+  printf '%s\n' "$output"
+}
+
+_select_via_menu() {
+  local module category_output item_output func
+  SELECTED_MODULES=()
+  category_output=$(_select_categories) || return 1
+  for module in $category_output; do
+    item_output=$(_select_items "$module") || return 1
+    [ -z "$item_output" ] && continue
+    for func in $item_output; do
+      select_add "$(catalog_tag "$module" "$func")"
+    done
+    SELECTED_MODULES+=("$module")
+  done
+}
+
+if $FROM_MENU; then
+  _select_via_menu || { log_info "Cancelado."; exit 0; }
+else
+  case "$MODE" in
+    all|update|continue) _preselect_all ;;
+    retry)               _preselect_retry ;;
+  esac
+fi
+
+TOTAL=$(catalog_selected_total "${SELECTED_MODULES[@]}")
+
+if [ "$TOTAL" -eq 0 ]; then
+  log_info "Nenhum item selecionado. Nada a instalar."
+  exit 0
+fi
+
+SUMMARY=""
+for module in "${SELECTED_MODULES[@]}"; do
+  names=()
+  while IFS='|' read -r func name _desc; do
+    select_has "$(catalog_tag "$module" "$func")" && names+=("$name")
+  done < <(catalog_items "$module")
+  SUMMARY+="${module} (${#names[@]}): ${names[*]}"$'\n'
+done
+
+echo
+log_info "Resumo da seleção:"
+while IFS= read -r line; do
+  [ -n "$line" ] && echo -e "  ${BOLD}•${NC} $line"
+done <<< "$SUMMARY"
+log_info "Total: $TOTAL item(ns) em ${#SELECTED_MODULES[@]} categoria(s)"
+echo
+
+if ! $ASSUME_YES; then
+  summary_height=$(( $(printf '%s' "$SUMMARY" | grep -c .) + 10 ))
+  [ "$summary_height" -gt 30 ] && summary_height=30
+  if ! whiptail --title "Confirmar instalação" \
+    --yesno "${SUMMARY}
+Total: $TOTAL item(ns) em ${#SELECTED_MODULES[@]} categoria(s)
+
+Iniciar a instalação?" \
+    "$summary_height" 78 3>&1 1>&2 2>&3; then
+    log_info "Instalação cancelada. Nada foi instalado."
+    exit 0
+  fi
+else
+  log_info "Confirmação dispensada (--yes)."
+fi
+
+case "$MODE" in
+  new|all|update) init_results --fresh "$RESULTS_PATH" ;;
+  *)              init_results "$RESULTS_PATH" ;;
 esac
 
-log_info "Iniciando instalação dos módulos selecionados..."
+case "$MODE" in
+  retry)    init_retry ;;
+  continue) init_continue ;;
+esac
 
-for choice in $CHOICES; do
+log_info "Iniciando instalação de $TOTAL item(ns)..."
+
+for choice in "${SELECTED_MODULES[@]}"; do
   case $choice in
     BASE)            source install/base.sh            ;;
     DEV)             source install/dev.sh             ;;
@@ -140,25 +264,9 @@ for choice in $CHOICES; do
   esac
 done
 
-TOTAL=0
-for choice in $CHOICES; do
-  case $choice in
-    BASE)            TOTAL=$((TOTAL + _run_base_total))            ;;
-    DEV)             TOTAL=$((TOTAL + _run_dev_total))             ;;
-    AI)              TOTAL=$((TOTAL + _run_ai_total))              ;;
-    TOOLS_TERMINAL)  TOTAL=$((TOTAL + _run_tools_terminal_total))  ;;
-    TOOLS_DESKTOP)   TOTAL=$((TOTAL + _run_tools_desktop_total))   ;;
-    TOOLS_UBUNTU)    TOTAL=$((TOTAL + _run_tools_ubuntu_total))    ;;
-    MEDIA)           TOTAL=$((TOTAL + _run_media_total))           ;;
-    FONTS)           TOTAL=$((TOTAL + _run_fonts_total))           ;;
-    CONFIG)          TOTAL=$((TOTAL + _run_config_total))          ;;
-    NPM_GLOBALS)     TOTAL=$((TOTAL + _run_npm_globals_total))     ;;
-  esac
-done
+init_progress "$TOTAL"
 
-init_progress $TOTAL
-
-for choice in $CHOICES; do
+for choice in "${SELECTED_MODULES[@]}"; do
   case $choice in
     BASE)            run_base            ;;
     DEV)             run_dev             ;;
