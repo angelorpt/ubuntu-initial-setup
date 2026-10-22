@@ -36,12 +36,12 @@ install_hyperkeys() {
     return 1
   fi
   url="https://github.com/xurei/hyperkeys/releases/download/${tag}/HyperKeys-${tag#v}.AppImage"
-  pushd /tmp > /dev/null
+  pushd /tmp > /dev/null || return 1
   wget -q -O HyperKeys.AppImage "$url"
   chmod 755 HyperKeys.AppImage
   mkdir -p "$HOME/Progs"
   cp HyperKeys.AppImage "$HOME/Progs"
-  popd > /dev/null
+  popd > /dev/null || return 1
   log_success "HyperKeys ${tag#v} instalado em ~/Progs"
 }
 
@@ -90,10 +90,11 @@ install_waveterm() {
     log_error "Não foi possível obter URL do Wave Terminal"
     return 1
   fi
-  pushd /tmp > /dev/null
+  pushd /tmp > /dev/null || return 1
   wget -q -O waveterm.deb "$url"
-  sudo apt install -y ./waveterm.deb
-  popd > /dev/null
+  install_deb ./waveterm.deb
+  rm -f waveterm.deb
+  popd > /dev/null || return 1
   log_success "Wave Terminal instalado"
 }
 
@@ -110,7 +111,7 @@ install_warpreminal() {
     return 0
   fi
 
-  pushd /tmp > /dev/null
+  pushd /tmp > /dev/null || return 1
   local page_url="https://app.warp.dev/download?package=deb"
   local url
   url=$(curl -sI "$page_url" | grep -i "location:" | awk '{print $2}' | tr -d '\r')
@@ -119,10 +120,10 @@ install_warpreminal() {
   fi
 
   log_info "↪ Baixando: $url"
-  wget -q -O warp.deb "$url" || { log_error "Falha ao baixar Warp Terminal"; popd > /dev/null; return 1; }
-  sudo apt install -y ./warp.deb || { log_error "Falha ao instalar Warp Terminal"; popd > /dev/null; return 1; }
+  wget -q -O warp.deb "$url" || { log_error "Falha ao baixar Warp Terminal"; popd > /dev/null || true; return 1; }
+  install_deb ./warp.deb || { log_error "Falha ao instalar Warp Terminal"; popd > /dev/null || true; return 1; }
   rm -f warp.deb
-  popd > /dev/null
+  popd > /dev/null || return 1
   log_success "Warp Terminal instalado"
 }
 
@@ -137,11 +138,11 @@ install_drawio() {
   tag=$(curl -s https://api.github.com/repos/jgraph/drawio-desktop/releases/latest | grep '"tag_name":' | cut -d'"' -f4)
   [ -z "$tag" ] && log_error "Não foi possível obter versão do Draw.io" && return 1
   url="https://github.com/jgraph/drawio-desktop/releases/download/${tag}/drawio-amd64-${tag#v}.deb"
-  pushd /tmp > /dev/null
+  pushd /tmp > /dev/null || return 1
   wget -q -O drawio.deb "$url"
-  sudo dpkg -i drawio.deb 2>/dev/null || true
-  sudo apt install -f -y
-  popd > /dev/null
+  install_deb ./drawio.deb
+  rm -f drawio.deb
+  popd > /dev/null || return 1
   log_success "Draw.io ${tag#v} instalado"
 }
 
