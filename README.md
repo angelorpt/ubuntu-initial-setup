@@ -77,13 +77,13 @@ curl -fsSL https://raw.githubusercontent.com/angelorpt/ubuntu-initial-setup/main
 **O que faz:**
 1. Instala dependências mínimas (git, curl, wget, whiptail)
 2. Clona (ou atualiza) o repositório em `~/ubuntu-initial-setup`
-3. Executa `./install.sh --all` automaticamente (modo headless, sem perguntar)
+3. Executa `./install.sh --all --yes` automaticamente (modo headless, sem perguntar)
 4. Se executado interativamente (não via pipe), abre o menu whiptail
 
 **Quando usar:** Você quer o ambiente completo rapidamente, sem clonar nada manualmente. Ideal para máquinas recém-formatadas. Basta colar o comando e aguardar.
 
 **Comportamento via pipe vs terminal:**
-- `curl ... | bash` → detecta pipe, executa `--all` automaticamente
+- `curl ... | bash` → detecta pipe, executa `--all --yes` automaticamente
 - Rodar localmente com `bash bootstrap.sh` → abre o menu interativo do `install.sh`
 
 ---
@@ -96,8 +96,9 @@ git clone https://github.com/angelorpt/ubuntu-initial-setup.git
 cd ubuntu-initial-setup
 
 # 2. Escolha o modo
-./install.sh              # Menu interativo whiptail — você escolhe os módulos
-./install.sh --all        # Instala tudo sem perguntar (do zero)
+./install.sh              # Menu interativo: modo → categorias → itens → confirmação
+./install.sh --all        # Seleciona tudo e pede confirmação
+./install.sh --all --yes  # Instala tudo sem perguntar (automação)
 ./install.sh --update     # Reinstala todos os programas (últimas versões)
 ./install.sh --retry      # Tenta novamente apenas os que falharam
 ./install.sh --continue   # Pula os que já deram certo, instala o resto
@@ -105,13 +106,16 @@ cd ubuntu-initial-setup
 ```
 
 **O que faz:**
-- **Sem argumentos:** abre um menu whiptail onde você escolhe entre instalação nova, continuar de onde parou, ou retentar falhas, seguido da seleção dos módulos desejados
-- **`--all`:** execução headless — todos os módulos, do zero
+- **Sem argumentos:** menu whiptail em etapas — escolhe o modo (nova instalação, continuar, retentar), marca as categorias e, para cada categoria, marca os programas individuais. Ao final, exibe um resumo e só instala após confirmação
+- **`--all`:** pré-seleciona todos os módulos e itens, exibe o resumo e pede confirmação
 - **`--update`:** igual ao `--all`, mas pensado para reinstalar/atualizar programas já existentes
-- **`--retry`:** lê `results/failure.txt` da execução anterior e tenta apenas os programas que falharam
+- **`--yes`:** dispensa apenas a confirmação final; use junto de `--all` em automação
+- **`--retry`:** lê `results/failure.txt` da execução anterior e pré-seleciona apenas os programas que falharam (o resumo continua sendo exibido)
 - **`--continue`:** lê `results/success.txt` e pula os já instalados, executando apenas os pendentes
 
-**Quando usar:** Você quer controle granular — escolher exatamente quais módulos instalar, retentar falhas sem começar do zero, ou continuar uma instalação interrompida.
+Sem terminal interativo e sem `--yes`, o instalador encerra com erro em vez de instalar às cegas.
+
+**Quando usar:** Você quer controle granular — escolher exatamente quais módulos **e programas** instalar, retentar falhas sem começar do zero, ou continuar uma instalação interrompida.
 
 <p align="center">
   <img src="prints/print-04.png" alt="Seleção de módulos no whiptail" width="700">
@@ -127,9 +131,12 @@ cd ubuntu-initial-setup
 | **Clonagem** | Manual (`git clone`) | Automática |
 | **Dependências** | Assume repositório já clonado | Instala git, curl, wget, whiptail automaticamente |
 | **Menu interativo** | Sim, sem argumentos | Só se executado localmente (não via pipe) |
-| **Headless** | `--all`, `--update` | Sim (via pipe) |
+| **Headless** | `--all --yes`, `--update --yes` | Sim (via pipe, com `--yes`) |
+| **Seleção por item** | Sim | Sim |
 | **Retry/Continue** | `--retry`, `--continue` | Não |
 | **Quando escolher** | Manutenção, reinstalação seletiva, depuração | Primeira instalação, máquina formatada |
+
+> O catálogo de módulos e itens fica em `lib/catalog.sh`; o menu, a contagem e a execução são todos derivados dele.
 
 ## Módulos
 
@@ -144,7 +151,7 @@ cd ubuntu-initial-setup
 | `media` | 2 | Google Chrome, Brave |
 | `fonts` | 6 | Fira Code, JetBrains Mono, Cascadia Code, IBM Plex, Victor Mono, Monaspace |
 | `config` | 3 | Git config, SSH key, Gogh terminal themes |
-| `npm-globals` | 18 | TypeScript, Prettier, ESLint, pnpm, Yarn, tsx, Nodemon, Concurrently, Serve, Nest.js, Vue.js, Prisma, json-server, create-next-app, npm-check-updates, live-server, 9Router, OpenSpec |
+| `npm-globals` | 12 | TypeScript, pnpm, Yarn Classic, Yarn Berry, Nodemon, Concurrently, Serve, Nest.js, npm-check-updates, live-server, 9Router, OpenSpec |
 
 ## Programas
 
@@ -277,35 +284,32 @@ cd ubuntu-initial-setup
 | Programa | Descrição | Site |
 |----------|-----------|------|
 | TypeScript | Compilador TypeScript | https://www.typescriptlang.org |
-| Prettier | Formatador de código opinativo | https://prettier.io |
-| ESLint | Linter de JavaScript/TypeScript | https://eslint.org |
-| pnpm | Gerenciador de pacotes rápido e eficiente | https://pnpm.io |
-| Yarn | Gerenciador de pacotes alternativo | https://yarnpkg.com |
-| tsx | Executar TypeScript diretamente sem compilar | https://github.com/privatenumber/tsx |
+| pnpm | Gerenciador de pacotes rápido e eficiente | https://pnpm.io/installation |
+| Yarn Classic | Gerenciador de pacotes (linha 1.22.x) | https://classic.yarnpkg.com |
+| Yarn Berry | Gerenciador de pacotes moderno (4.x, via Corepack) | https://yarnpkg.com |
 | Nodemon | Auto-restart em alterações de código | https://nodemon.io |
 | Concurrently | Rodar múltiplos comandos em paralelo | https://github.com/open-cli-tools/concurrently |
 | Serve | Servidor estático moderno pela Vercel | https://github.com/vercel/serve |
 | Nest.js | Framework Node.js progressivo | https://nestjs.com |
-| Vue.js | Framework JS progressivo | https://vuejs.org |
-| Prisma | ORM moderno para Node.js e TypeScript | https://www.prisma.io |
-| json-server | API REST fake com zero configuração | https://github.com/typicode/json-server |
-| create-next-app | Scaffolding de projetos Next.js | https://nextjs.org |
 | npm-check-updates | Atualizar versões de dependências no package.json | https://github.com/raineorshine/npm-check-updates |
 | live-server | Servidor com live reload para páginas estáticas | https://github.com/tapio/live-server |
 | 9Router | Roteador CLI | https://github.com/decolua/9router |
-| OpenSpec | Gerenciador de mudanças para projetos de IA | https://github.com/Fission-AI/OpenSpec |
+| OpenSpec | Gerenciador de mudanças para projetos de IA | https://openspec.dev/docs/installation |
 
 ## Flags
 
 | Flag / Modo | Script | Comando | O que faz | Quando usar |
 |---|---|---|---|---|
-| *(nenhuma)* | `install.sh` | `./install.sh` ou `bash bootstrap.sh` (terminal) | Menu whiptail: escolhe entre new/continue/retry, depois seleciona os módulos | Você quer escolher o que instalar, ou decidir entre fresh/continue/retry no momento |
-| `--all` | `install.sh` | `./install.sh --all` | Instala **todos** os módulos em modo headless. Limpa o histórico (`init_results --fresh`). | Máquina recém-formatada, você quer tudo do zero sem interagir |
-| `--update` | `install.sh` | `./install.sh --update` | Reinstala **todos** os programas (últimas versões). Também limpa o histórico. | Você já tem o setup instalado mas quer atualizar tudo para a versão mais recente |
-| `--retry` | `install.sh` | `./install.sh --retry` | Lê `results/failure.txt` da execução anterior e tenta **apenas** os programas que falharam. Pula os já instalados com sucesso. | Alguns programas falharam (rede instável, repositório offline) e você quer tentar de novo sem refazer tudo |
-| `--continue` | `install.sh` | `./install.sh --continue` | Lê `results/success.txt` e pula os já instalados. Executa **apenas** os programas que ainda não constam como sucesso. | A instalação foi interrompida no meio e você quer continuar de onde parou sem repetir os já instalados |
+| *(nenhuma)* | `install.sh` | `./install.sh` ou `bash bootstrap.sh` (terminal) | Menu whiptail em etapas: modo (new/continue/retry) → categorias → itens de cada categoria → resumo + confirmação | Você quer escolher exatamente o que instalar, item por item |
+| `--all` | `install.sh` | `./install.sh --all` | Pré-seleciona **todos** os módulos e itens, limpa o histórico (`init_results --fresh`) e pede confirmação | Máquina recém-formatada, você quer tudo do zero revisando o resumo |
+| `--yes`, `-y` | `install.sh` | `./install.sh --all --yes` | Dispensa **apenas** a confirmação final. Obrigatório quando não há terminal interativo | Automação, scripts e `bootstrap.sh` |
+| `--update` | `install.sh` | `./install.sh --update` | Reinstala **todos** os programas (últimas versões). Também limpa o histórico e pede confirmação | Você já tem o setup instalado mas quer atualizar tudo para a versão mais recente |
+| `--retry` | `install.sh` | `./install.sh --retry` | Lê `results/failure.txt` da execução anterior e **pré-seleciona** apenas os programas que falharam. O resumo continua aparecendo | Alguns programas falharam (rede instável, repositório offline) e você quer tentar de novo sem refazer tudo |
+| `--continue` | `install.sh` | `./install.sh --continue` | Lê `results/success.txt` e pula os já instalados. Executa **apenas** os programas que ainda não constam como sucesso | A instalação foi interrompida no meio e você quer continuar de onde parou sem repetir os já instalados |
 | `--help` | `install.sh` | `./install.sh --help` | Exibe a ajuda com todas as opções disponíveis | Você esqueceu as opções ou está conhecendo o projeto |
-| via pipe | `bootstrap.sh` | `curl ... | bash` | Detecta pipe, clona o repositório e executa `install.sh --all` automaticamente. | Setup completo em um comando, sem clonar nada manualmente |
+| via pipe | `bootstrap.sh` | `curl ... | bash` | Detecta pipe, clona o repositório e executa `install.sh --all --yes` automaticamente. | Setup completo em um comando, sem clonar nada manualmente |
+
+**Breaking change:** `--all` sozinho não é mais 100% não interativo — ele mostra o resumo e pede confirmação. Para automação, use `--all --yes`.
 
 ## Relatórios
 
@@ -356,6 +360,8 @@ O projeto possui testes com duas ferramentas:
 | `tests/lib/log.bats` | `print_header`, `print_details`, `log_info`, `log_success`, `log_error` |
 | `tests/lib/progress.bats` | `init_progress`, `update_progress`, barras de progresso |
 | `tests/lib/results.bats` | `init_results`, `track`, registro de sucesso/falha |
+| `tests/lib/catalog.bats` | Catálogo de módulos/itens, totais, ordem de execução e seleção |
+| `tests/lib/selection.bats` | `select_add`, `select_has`, `select_clear`, filtro de `track` |
 | `tests/lib/utils.bats` | `die_on_error`, `ensure_whiptail`, `ensure_snap`, `ensure_flatpak` |
 
 **Pré-requisitos:**
@@ -393,10 +399,12 @@ ubuntu-initial-setup/
 │   ├── media.sh            # Chrome, Brave
 │   ├── fonts.sh            # Fira Code, JetBrains Mono, Cascadia Code, Victor Mono, Monaspace
 │   ├── config.sh           # Git, SSH, Gogh
-│   └── npm-globals.sh      # TypeScript, Nest.js, Vue.js, Prisma e mais
+│   └── npm-globals.sh      # TypeScript, pnpm, Yarn, Nest.js, OpenSpec e mais
 ├── lib/
 │   ├── colors.sh         # Cores ANSI
 │   ├── log.sh            # log_info, log_success, log_error, print_header
+│   ├── catalog.sh        # Catálogo único de módulos e itens (fonte de verdade)
+│   ├── selection.sh      # Seleção por item (tags MODULO:funcao)
 │   ├── utils.sh          # Utilitários (die_on_error, download_to_temp, install_deb, ensure_snap, ensure_flatpak)
 │   ├── progress.sh       # Barras de progresso (módulo + total)
 │   └── results.sh        # Tracking de resultados, relatório e retry
@@ -407,6 +415,8 @@ ubuntu-initial-setup/
     └── lib/
         ├── log.bats        # Testes: print_header, print_details, log_*
         ├── progress.bats   # Testes: init_progress, update_progress
+        ├── catalog.bats    # Testes: catálogo, totais e ordem
+        ├── selection.bats  # Testes: seleção e filtro de track
         ├── results.bats    # Testes: init_results, track
         └── utils.bats      # Testes: die_on_error, ensure_whiptail, ensure_snap, ensure_flatpak
 ```
@@ -414,9 +424,11 @@ ubuntu-initial-setup/
 ## Arquitetura
 
 - **Strict mode** (`set -uo pipefail`) em `install.sh` — sem `set -e` para não abortar em caso de erro em um módulo
+- **Catálogo como fonte de verdade**: `lib/catalog.sh` declara `MODULES` e `_ITEMS_<MODULO>` (`funcao|Nome|descrição`); menu, contagem e execução derivam dele
+- **Execução orientada pelo catálogo**: cada `run_*()` delega para `catalog_run_module MODULO`, que percorre os itens na ordem declarada e respeita a seleção
 - **Versões dinâmicas**: resolvidas via GitHub API (`releases/latest`) ou scraping da página oficial — sem versões fixas
 - **Cada função de instalação** segue o padrão `# <url>` + `print_header` + `log_info "↪ <url>"` + comandos + `log_success`
-- **Tracking independente**: `results.sh` registra em arquivo separadamente da saída do terminal
+- **Tracking independente**: `results.sh` registra em arquivo separadamente da saída do terminal e ignora itens fora da seleção
 - **Snap/Flatpak**: funções que usam `snap install` ou `flatpak install` chamam `ensure_snap()` / `ensure_flatpak()` antes para garantir que o gerenciador esteja instalado
 
 ## FAQ / Troubleshooting
