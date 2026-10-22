@@ -75,23 +75,29 @@ curl -fsSL https://raw.githubusercontent.com/angelorpt/ubuntu-initial-setup/main
 ```
 
 **O que faz:**
-1. Instala dependências mínimas (git, curl, wget, whiptail)
+1. Instala dependências mínimas (`git`, `curl`, `wget`, `whiptail`)
 2. Clona (ou atualiza) o repositório em `~/ubuntu-initial-setup`
-3. Executa `./install.sh --all --yes` automaticamente (modo headless, sem perguntar)
-4. Se executado interativamente (não via pipe), abre o menu whiptail
+3. Reconecta o terminal (`/dev/tty`) e abre diretamente o **menu interativo** do `install.sh` para você escolher o que instalar
+4. Se executado em ambiente sem TTY (CI/scripts) e sem parâmetros, apenas prepara o repositório e mostra as instruções de execução
 
-**Quando usar:** Você quer o ambiente completo rapidamente, sem clonar nada manualmente. Ideal para máquinas recém-formatadas. Basta colar o comando e aguardar.
+**Automação headless (sem perguntas):**
+```bash
+curl -fsSL https://raw.githubusercontent.com/angelorpt/ubuntu-initial-setup/main/bootstrap.sh | bash -s -- --all --yes
+```
 
-**Comportamento via pipe vs terminal:**
-- `curl ... | bash` → detecta pipe, executa `--all --yes` automaticamente
-- Rodar localmente com `bash bootstrap.sh` → abre o menu interativo do `install.sh`
+**Reabrir o menu a qualquer momento:**
+Após a primeira execução do bootstrap, o repositório já estará clonado. Para rodar o instalador novamente:
+```bash
+cd ~/ubuntu-initial-setup
+./install.sh
+```
 
 ---
 
 ### `install.sh` — Controle total sobre o que instalar
 
 ```bash
-# 1. Clone manualmente
+# 1. Clone manualmente (caso não tenha usado o bootstrap.sh)
 git clone https://github.com/angelorpt/ubuntu-initial-setup.git
 cd ubuntu-initial-setup
 
@@ -127,14 +133,14 @@ Sem terminal interativo e sem `--yes`, o instalador encerra com erro em vez de i
 
 | | `bootstrap.sh` | `install.sh` |
 |---|---|---|
-| **Propósito** | Controle fino sobre instalação | One-liner para setup completo |
-| **Clonagem** | Manual (`git clone`) | Automática |
-| **Dependências** | Assume repositório já clonado | Instala git, curl, wget, whiptail automaticamente |
-| **Menu interativo** | Sim, sem argumentos | Só se executado localmente (não via pipe) |
-| **Headless** | `--all --yes`, `--update --yes` | Sim (via pipe, com `--yes`) |
-| **Seleção por item** | Sim | Sim |
-| **Retry/Continue** | `--retry`, `--continue` | Não |
-| **Quando escolher** | Manutenção, reinstalação seletiva, depuração | Primeira instalação, máquina formatada |
+| **Propósito** | One-liner para início rápido | Execução e controle fino do instalador |
+| **Clonagem** | Automática em `~/ubuntu-initial-setup` | Manual (`git clone`) |
+| **Dependências** | Instala git, curl, wget, whiptail automaticamente | Assume dependências instaladas |
+| **Menu interativo** | Sim (abre por padrão via `/dev/tty`) | Sim (sem argumentos) |
+| **Headless** | Sim (via repasse: `bash -s -- --all --yes`) | Sim (`--all --yes`) |
+| **Seleção por item** | Sim (via menu) | Sim |
+| **Retry/Continue** | Sim (via repasse: `bash -s -- --retry`) | Sim (`--retry`, `--continue`) |
+| **Quando escolher** | Primeira instalação, máquina recém-formatada | Reexecução, manutenção, reinstalação seletiva |
 
 > O catálogo de módulos e itens fica em `lib/catalog.sh`; o menu, a contagem e a execução são todos derivados dele.
 

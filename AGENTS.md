@@ -5,7 +5,7 @@ Shell scripts to automate Ubuntu setup. Modular, interactive menu (whiptail) or 
 ## Entrypoints
 
 - `install.sh` — main entry. Must be run from repo root (uses `cd "$(dirname "$0")"` internally)
-- `bootstrap.sh` — curl-pipe-bash entry: clones repo, runs `install.sh --all --yes` if piped
+- `bootstrap.sh` — curl-pipe-bash entry: installs prerequisites, clones repo, and launches interactive `install.sh` menu via `/dev/tty` (supports passing flags like `--all --yes`)
 
 ## Commands
 
