@@ -55,3 +55,20 @@ bats tests/lib/               # BATS only
 - Every `install_*` function starts with `# <url>` comment
 - `print_header "Name" "Desc"` before install commands, then `print_details "url" "bullet1" "bullet2" ...`
 - End with `log_success "Name installed"`
+
+## Engineering Principles & Best Practices
+
+- **SOLID (Shell Adaptation)**:
+  - *Single Responsibility (SRP)*: cada função `install_*` instala exclusivamente uma ferramenta; funções de infraestrutura ficam em `lib/`.
+  - *Open/Closed (OCP)*: novos módulos e ferramentas são estendidos declarativamente via `lib/catalog.sh` sem modificar os laços do instalador.
+  - *Dependency Inversion / Segregation*: módulos não dependem diretamente de detalhes da TUI ou de outros módulos; a interface de execução é padronizada via `catalog_run_module` e `track`.
+- **DRY (Don't Repeat Yourself)**:
+  - Nunca duplicar a sequência `dpkg -i` + `apt install -f`; utilize sempre `install_deb <caminho>`.
+  - Reutilize helpers de `lib/utils.sh` (`ensure_snap`, `ensure_flatpak`, `download_to_temp`, `ensure_whiptail`).
+- **KISS (Keep It Simple, Stupid)**:
+  - Mantenha funções lineares, concisas e legíveis.
+  - Evite fluxos condicionais complexos quando uma checagem simples ou fallback limpo for suficiente.
+- **Clean Code & Shell Safety**:
+  - Sempre proteja navegações de diretório: `pushd <dir> > /dev/null || return 1` e `popd > /dev/null || return 1`.
+  - Use `read -r` ao ler entradas do usuário para evitar mangling de contra-barras.
+  - Assegure conformidade contínua com o ShellCheck e mantenha todos os testes BATS verdes (`bash tests/run.sh`).
