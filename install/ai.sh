@@ -71,15 +71,8 @@ install_github_copilot_cli() {
   log_success "GitHub Copilot CLI instalado"
 }
 
-_run_ai_total=6
+_run_ai_total=$(catalog_module_total AI)
 
 run_ai() {
-  init_module_progress $_run_ai_total "AI"
-  track "AI" install_ollama "Ollama"
-  track "AI" install_opencode "OpenCode"
-  track "AI" install_serena "Serena"
-  track "AI" install_antigravity_cli "Antigravity CLI"
-  track "AI" install_claude_code "Claude Code"
-  track "AI" install_github_copilot_cli "GitHub Copilot CLI"
-  end_module_progress
+  catalog_run_module AI
 }

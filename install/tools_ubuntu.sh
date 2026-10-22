@@ -89,17 +89,8 @@ install_unattended_upgrades() {
   log_success "Unattended Upgrades configurado"
 }
 
-_run_tools_ubuntu_total=8
+_run_tools_ubuntu_total=$(catalog_module_total TOOLS_UBUNTU)
 
 run_tools_ubuntu() {
-  init_module_progress $_run_tools_ubuntu_total "Tools Ubuntu"
-  track "TOOLS_UBUNTU" install_nala "Nala"
-  track "TOOLS_UBUNTU" install_neofetch "Neofetch"
-  track "TOOLS_UBUNTU" install_ncdu "ncdu"
-  track "TOOLS_UBUNTU" install_duf "duf"
-  track "TOOLS_UBUNTU" install_deborphan "deborphan"
-  track "TOOLS_UBUNTU" install_lm_sensors "lm-sensors"
-  track "TOOLS_UBUNTU" install_ufw "UFW"
-  track "TOOLS_UBUNTU" install_unattended_upgrades "Unattended Upgrades"
-  end_module_progress
+  catalog_run_module TOOLS_UBUNTU
 }

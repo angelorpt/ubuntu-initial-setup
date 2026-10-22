@@ -46,13 +46,8 @@ install_zsh() {
   log_success "Zsh + Oh My Zsh instalado"
 }
 
-_run_base_total=4
+_run_base_total=$(catalog_module_total BASE)
 
 run_base() {
-  init_module_progress $_run_base_total "Base"
-  track "BASE" install_curl "Curl"
-  track "BASE" install_git "Git"
-  track "BASE" install_gum "Gum"
-  track "BASE" install_zsh "Zsh + Oh My Zsh"
-  end_module_progress
+  catalog_run_module BASE
 }

@@ -1,3 +1,5 @@
+# shellcheck shell=bash
+
 install_typescript() {
   # https://www.typescriptlang.org/
   print_header "TypeScript" "Compilador TypeScript"
@@ -9,59 +11,73 @@ install_typescript() {
   log_success "TypeScript instalado: $(tsc --version)"
 }
 
-install_prettier() {
-  # https://prettier.io/
-  print_header "Prettier" "Formatador de código opinativo"
-  print_details "https://prettier.io" \
-    "Formata código JS/TS/CSS/JSON/MD/YAML consistentemente" \
-    "Sem opções de estilo — formato único pré-definido" \
-    "Uso: prettier --write src/"
-  npm i -g prettier
-  log_success "Prettier instalado: $(prettier --version)"
-}
-
-install_eslint() {
-  # https://eslint.org/
-  print_header "ESLint" "Linter de JavaScript/TypeScript"
-  print_details "https://eslint.org" \
-    "Encontra e corrige problemas em JS/TS com regras customizáveis" \
-    "Integra com Prettier, suporte a plugins (React, Vue)" \
-    "Uso: eslint src/ --fix"
-  npm i -g eslint
-  log_success "ESLint instalado: $(eslint --version)"
-}
-
 install_pnpm() {
-  # https://pnpm.io/
+  # https://pnpm.io/installation
   print_header "pnpm" "Gerenciador de pacotes rápido e eficiente"
-  print_details "https://pnpm.io" \
+  print_details "https://pnpm.io/installation" \
     "3x mais rápido que npm, economia de disco com hard links" \
     "Workspaces nativos, lockfile rigoroso, suporte a monorepo" \
-    "Uso: pnpm add react, pnpm install"
-  npm i -g pnpm
+    "Instalação standalone: binário em ~/.local/share/pnpm, independente da versão do Node" \
+    "Uso: pnpm add react, pnpm install, pnpm self-update"
+  npm uninstall -g pnpm >/dev/null 2>&1 || true
+  curl -fsSL https://get.pnpm.io/install.sh | sh -
+  export PNPM_HOME="${PNPM_HOME:-$HOME/.local/share/pnpm}"
+  export PATH="$PNPM_HOME:$PATH"
+  command -v pnpm >/dev/null || { log_error "pnpm não encontrado no PATH após a instalação"; return 1; }
+  local rc
+  for rc in "$HOME/.bashrc" "$HOME/.zshrc"; do
+    [ -f "$rc" ] || continue
+    grep -q 'PNPM_HOME' "$rc" && continue
+    cat >> "$rc" <<'EOF'
+
+# pnpm
+export PNPM_HOME="${PNPM_HOME:-$HOME/.local/share/pnpm}"
+export PATH="$PNPM_HOME:$PATH"
+EOF
+  done
   log_success "pnpm instalado: $(pnpm --version)"
 }
 
-install_yarn() {
-  # https://yarnpkg.com/
-  print_header "Yarn" "Gerenciador de pacotes alternativo"
-  print_details "https://yarnpkg.com" \
+install_yarn_classic() {
+  # https://classic.yarnpkg.com
+  print_header "Yarn Classic" "Gerenciador de pacotes (linha 1.22.x)"
+  print_details "https://classic.yarnpkg.com" \
+    "Versão clássica mantida em 1.22.x, instalada globalmente via npm" \
     "Alternativa ao npm com cache offline e instalação paralela" \
-    "Yarn Berry (v4): PnP, workspaces, plugins" \
+    "Para o Yarn moderno (4.x), use o item Yarn Berry" \
     "Uso: yarn add react, yarn install"
-  npm i -g yarn
-  log_success "Yarn instalado: $(yarn --version)"
+  npm install --global yarn@1
+  local yarn_version
+  yarn_version=$(yarn --version 2>/dev/null || true)
+  if [[ "$yarn_version" == 1.* ]]; then
+    log_success "Yarn Classic instalado: $yarn_version"
+  else
+    log_success "Yarn Classic instalado via npm (shim do Corepack ativo: yarn --version = ${yarn_version:-indisponível})"
+  fi
 }
 
-install_tsx() {
-  # https://github.com/privatenumber/tsx
-  print_header "tsx" "Executar TypeScript diretamente sem compilar"
-  print_details "https://github.com/privatenumber/tsx" \
-    "Node.js enhanced que roda .ts e .tsx sem ts-node ou build" \
-    "Baseado no esbuild (rápido), watch mode nativo" \
-    "Uso: tsx script.ts"
-  npm i -g tsx
-  log_success "tsx instalado"
+install_yarn_berry() {
+  # https://yarnpkg.com/getting-started/install
+  print_header "Yarn Berry" "Yarn moderno (4.x) via Corepack"
+  print_details "https://yarnpkg.com/getting-started/install" \
+    "Yarn 4.x gerenciado pelo Corepack (distribuído com o Node)" \
+    "Ativa o canal stable globalmente; projetos podem pinar a versão" \
+    "Fluxo por projeto: yarn init -2 ou yarn set version stable (grava packageManager)" \
+    "O Corepack respeita o packageManager do projeto, inclusive yarn@1.22.x"
+  command -v corepack >/dev/null || npm install -g corepack
+  corepack enable || { log_error "Falha ao habilitar o Corepack"; return 1; }
+  corepack prepare yarn@stable --activate || { log_error "Falha ao ativar o Yarn stable"; return 1; }
+  local yarn_version
+  yarn_version=$(yarn --version 2>/dev/null || true)
+  case "$yarn_version" in
+    1.*|"")
+      log_error "Yarn Berry não ativado (yarn --version: ${yarn_version:-indisponível})"
+      return 1
+      ;;
+    *)
+      log_success "Yarn Berry instalado: $yarn_version"
+      ;;
+  esac
 }
 
 install_nodemon() {
@@ -108,50 +124,6 @@ install_nestjs() {
   log_success "Nest.js CLI instalado: $(nest --version)"
 }
 
-install_vuejs() {
-  # https://cli.vuejs.org/guide/installation.html
-  print_header "Vue.js" "Framework JS progressivo"
-  print_details "https://vuejs.org" \
-    "Framework reativo e progressivo para SPAs e interfaces" \
-    "Vue CLI para scaffolding, Vue 3 com Composition API" \
-    "Uso: vue create projeto, vue ui"
-  npm i -g @vue/cli
-  log_success "Vue.js CLI instalado: $(vue --version)"
-}
-
-install_prisma() {
-  # https://www.prisma.io/
-  print_header "Prisma" "ORM moderno para Node.js e TypeScript"
-  print_details "https://www.prisma.io" \
-    "ORM type-safe: schema declarativo, migrations, queries" \
-    "Prisma Studio: GUI visual para o banco, suporte a MySQL/PG/SQLite" \
-    "Uso: prisma init, prisma db push, npx prisma studio"
-  npm i -g prisma
-  log_success "Prisma instalado: $(prisma --version 2>&1 | head -1)"
-}
-
-install_json_server() {
-  # https://github.com/typicode/json-server
-  print_header "json-server" "API REST fake com zero configuração"
-  print_details "https://github.com/typicode/json-server" \
-    "Cria API REST completa a partir de um arquivo JSON" \
-    "Suporte a paginação, filtros, ordenação, POST/PUT/DELETE" \
-    "Uso: json-server --watch db.json"
-  npm i -g json-server
-  log_success "json-server instalado: $(json-server --version 2>&1 | head -1)"
-}
-
-install_create_next_app() {
-  # https://nextjs.org/docs/api-reference/create-next-app
-  print_header "create-next-app" "Scaffolding de projetos Next.js"
-  print_details "https://nextjs.org" \
-    "Inicia projetos Next.js com configuração zero" \
-    "Suporte a TypeScript, App Router, Tailwind CSS" \
-    "Uso: npx create-next-app@latest meu-app"
-  npm i -g create-next-app
-  log_success "create-next-app instalado"
-}
-
 install_npm_check_updates() {
   # https://github.com/raineorshine/npm-check-updates
   print_header "npm-check-updates" "Atualizar versões de dependências no package.json"
@@ -186,37 +158,25 @@ install_9router() {
 }
 
 install_openspec() {
-  # https://github.com/Fission-AI/OpenSpec
+  # https://openspec.dev/docs/installation
   print_header "OpenSpec" "Gerenciador de mudanças para projetos de IA"
-  print_details "https://github.com/Fission-AI/OpenSpec" \
+  print_details "https://openspec.dev/docs/installation" \
     "Planeja, implementa e arquiva mudanças em projetos" \
     "Gera specs técnicas, rastreia tasks, sincroniza com código" \
-    "Uso: openspec propose, openspec apply, openspec archive"
-  npm i -g @fission-ai/openspec@latest
-  log_success "OpenSpec instalado"
+    "Uso: openspec init, openspec update, openspec archive" \
+    "Requisito: Node >= 20.19.0 (instalação global via npm pertence à versão ativa do Node)" \
+    "Ao trocar de versão com nvm use, reinstale: npm i -g @fission-ai/openspec@latest"
+  if ! node -e 'const [maj, min] = process.versions.node.split(".").map(Number); process.exit(maj > 20 || (maj === 20 && min >= 19) ? 0 : 1)'; then
+    log_error "OpenSpec exige Node >= 20.19.0 (versão ativa: $(node --version))"
+    return 1
+  fi
+  npm install -g @fission-ai/openspec@latest
+  command -v openspec >/dev/null || { log_error "openspec não encontrado no PATH após a instalação"; return 1; }
+  log_success "OpenSpec instalado: $(openspec --version)"
 }
 
-_run_npm_globals_total=18
+_run_npm_globals_total=$(catalog_module_total NPM_GLOBALS)
 
 run_npm_globals() {
-  init_module_progress $_run_npm_globals_total "NPM Globals"
-  track "NPM_GLOBALS" install_typescript "TypeScript"
-  track "NPM_GLOBALS" install_prettier "Prettier"
-  track "NPM_GLOBALS" install_eslint "ESLint"
-  track "NPM_GLOBALS" install_pnpm "pnpm"
-  track "NPM_GLOBALS" install_yarn "Yarn"
-  track "NPM_GLOBALS" install_tsx "tsx"
-  track "NPM_GLOBALS" install_nodemon "Nodemon"
-  track "NPM_GLOBALS" install_concurrently "Concurrently"
-  track "NPM_GLOBALS" install_serve "Serve"
-  track "NPM_GLOBALS" install_nestjs "Nest.js"
-  track "NPM_GLOBALS" install_vuejs "Vue.js"
-  track "NPM_GLOBALS" install_prisma "Prisma"
-  track "NPM_GLOBALS" install_json_server "json-server"
-  track "NPM_GLOBALS" install_create_next_app "create-next-app"
-  track "NPM_GLOBALS" install_npm_check_updates "npm-check-updates"
-  track "NPM_GLOBALS" install_live_server "live-server"
-  track "NPM_GLOBALS" install_9router "9Router"
-  track "NPM_GLOBALS" install_openspec "OpenSpec"
-  end_module_progress
+  catalog_run_module NPM_GLOBALS
 }

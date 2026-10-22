@@ -23,11 +23,8 @@ install_brave() {
   log_success "Brave instalado: $(brave-browser --version 2>&1)"
 }
 
-_run_media_total=2
+_run_media_total=$(catalog_module_total MEDIA)
 
 run_media() {
-  init_module_progress $_run_media_total "Media"
-  track "MEDIA" install_chrome "Google Chrome"
-  track "MEDIA" install_brave "Brave"
-  end_module_progress
+  catalog_run_module MEDIA
 }

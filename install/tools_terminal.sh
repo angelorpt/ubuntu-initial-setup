@@ -163,24 +163,8 @@ install_fdupes() {
   log_success "fdupes instalado: $(fdupes --version 2>&1 | head -1)"
 }
 
-_run_tools_terminal_total=15
+_run_tools_terminal_total=$(catalog_module_total TOOLS_TERMINAL)
 
 run_tools_terminal() {
-  init_module_progress $_run_tools_terminal_total "Tools Terminal"
-  track "TOOLS_TERMINAL" install_htop "htop"
-  track "TOOLS_TERMINAL" install_tmux "tmux"
-  track "TOOLS_TERMINAL" install_ripgrep "ripgrep"
-  track "TOOLS_TERMINAL" install_fd "fd"
-  track "TOOLS_TERMINAL" install_fzf "fzf"
-  track "TOOLS_TERMINAL" install_bat "bat"
-  track "TOOLS_TERMINAL" install_eza "eza"
-  track "TOOLS_TERMINAL" install_starship "Starship"
-  track "TOOLS_TERMINAL" install_zoxide "zoxide"
-  track "TOOLS_TERMINAL" install_nano "Nano"
-  track "TOOLS_TERMINAL" install_vim "Vim"
-  track "TOOLS_TERMINAL" install_neovim "Neovim"
-  track "TOOLS_TERMINAL" install_anyquery "Anyquery"
-  track "TOOLS_TERMINAL" install_superfile "Superfile"
-  track "TOOLS_TERMINAL" install_fdupes "fdupes"
-  end_module_progress
+  catalog_run_module TOOLS_TERMINAL
 }

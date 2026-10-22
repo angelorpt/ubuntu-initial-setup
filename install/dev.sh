@@ -438,32 +438,8 @@ install_bats() {
   log_success "BATS instalado: $(bats --version 2>&1)"
 }
 
-_run_dev_total=23
+_run_dev_total=$(catalog_module_total DEV)
 
 run_dev() {
-  init_module_progress $_run_dev_total "Dev"
-  track "DEV" install_build_essential "build-essential"
-  track "DEV" install_libssl_dev "libssl-dev"
-  track "DEV" install_python "Python"
-  track "DEV" install_docker "Docker"
-  track "DEV" install_nvm "NVM + Node"
-  track "DEV" install_java "Java (JDK)"
-  track "DEV" install_vscode "VSCode"
-  track "DEV" install_go "Go"
-  track "DEV" install_postman "Postman"
-  track "DEV" install_virtualbox "VirtualBox"
-  track "DEV" install_antigravity2 "Antigravity 2.0"
-  track "DEV" install_antigravity_ide "Antigravity IDE"
-  track "DEV" install_terraform "Terraform"
-  track "DEV" install_vagrant "Vagrant"
-  track "DEV" install_github_cli "GitHub CLI"
-  track "DEV" install_aws_cli "AWS CLI"
-  track "DEV" install_ansible "Ansible"
-  track "DEV" install_kubectl "kubectl"
-  track "DEV" install_helm "Helm"
-  track "DEV" install_minikube "Minikube"
-  track "DEV" install_kiro_cli "Kiro CLI"
-  track "DEV" install_shellcheck "ShellCheck"
-  track "DEV" install_bats "BATS"
-  end_module_progress
+  catalog_run_module DEV
 }

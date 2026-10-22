@@ -4,6 +4,10 @@
 # ============================================================
 # Este arquivo NÃO é um módulo e não é carregado pelo install.sh.
 # Use como referência para adicionar programas ou criar módulos.
+#
+# O catálogo (lib/catalog.sh) é a fonte de verdade: menu de
+# categorias, checklist de itens, total de progresso e ordem de
+# execução são todos derivados dele.
 # ============================================================
 
 # ============================================================
@@ -27,22 +31,34 @@ install_meu_app() {
   log_success "MeuApp instalado"                 ← confirmação visual
 }
 #
-# ─── Passo 2: Incremente o total ───
-# Subtraia 1 e some de volta (evita conflito de merge):
-#   _run_ai_total=6  →  _run_ai_total=7
+# ─── Passo 2: Registre o item no catálogo ───
+# Em lib/catalog.sh, adicione uma linha no array _ITEMS_AI:
+#   "install_meu_app|MeuApp|Descrição curta"
+# A posição no array define a ordem de instalação.
 #
-# ─── Passo 3: Adicione o track na run_ai() ───
-#   track "AI" install_meu_app "MeuApp"
-# A ordem dos tracks determina a ordem de instalação.
+# Não é preciso mexer em run_ai() nem em _run_ai_total.
 # ============================================================
 
 
 # ============================================================
 # PARTE B — CRIAR UM MÓDULO NOVO (ex: "JOGOS")
 # ============================================================
-# Envolve 4 arquivos: install/jogos.sh + 3 alterações no install.sh
+# Envolve lib/catalog.sh + install/jogos.sh + 2 casos no install.sh
 #
-# ─── B.1: Crie install/jogos.sh ───
+# ─── B.1: Declare o módulo e os itens no catálogo ───
+
+# lib/catalog.sh:
+#   MODULES=(... JOGOS)                        ← adicione na ordem canônica
+#
+#   _ITEMS_JOGOS=(
+#     "install_steam|Steam|Plataforma de jogos digitais"
+#     "install_lutris|Lutris|Gerenciador de jogos para Linux"
+#   )
+#
+#   MODULE_LABELS[JOGOS]="Jogos"
+#   MODULE_DESCRIPTIONS[JOGOS]="Jogos (Steam, Lutris)"
+#
+# ─── B.2: Crie install/jogos.sh com as funções + run_*() ───
 
 install_steam() {
   # https://store.steampowered.com
@@ -68,36 +84,20 @@ install_lutris() {
   log_success "Lutris instalado"
 }
 
-_run_jogos_total=2                              ← total de funções no módulo
+_run_jogos_total=$(catalog_module_total JOGOS)   # total derivado do catálogo
 
 run_jogos() {
-  init_module_progress $_run_jogos_total "Jogos"
-  track "JOGOS" install_steam "Steam"
-  track "JOGOS" install_lutris "Lutris"
-  end_module_progress
+  catalog_run_module JOGOS
 }
 #
-# ─── B.2: Adicione a entrada no whiptail (install.sh) ───
-# Localize o array MODULES dentro do bloco `if [ "$MODE" != "retry" ]`
-# e adicione uma linha:
-#   "JOGOS" "Jogos (Steam, Lutris)" ON
-#
-# ─── B.3: Adicione nos 3 loops de case (install.sh) ───
-# Você precisa adicionar em 3 lugares diferentes (todos no install.sh):
-#
-# 1º loop (source):
+# ─── B.3: Adicione os casos no install.sh ───
+# No laço de source:
 #   JOGOS)           source install/jogos.sh           ;;
-#
-# 2º loop (total):
-#   JOGOS)           TOTAL=$((TOTAL + _run_jogos_total))           ;;
-#
-# 3º loop (execução):
+# No laço de execução:
 #   JOGOS)           run_jogos           ;;
 #
-# ─── B.4: Adicione nas strings CHOICES (se quiser --all/--update) ───
-# Nas linhas CHOICES="BASE DEV AI ..." dos blocos --all e --update,
-# adicione "JOGOS" à lista:
-#   CHOICES="BASE DEV AI JOGOS TOOLS_TERMINAL TOOLS_DESKTOP ..."
+# O menu de categorias, o checklist de itens e o total do
+# progresso passam a incluir o módulo automaticamente.
 # ============================================================
 
 
@@ -106,16 +106,13 @@ run_jogos() {
 # ============================================================
 # Para adicionar 1 programa a módulo existente:
 #   [ ] Criar função install_*()
-#   [ ] Incrementar _run_MODULO_total
-#   [ ] Adicionar track na run_*()
+#   [ ] Adicionar item em _ITEMS_MODULO (lib/catalog.sh)
 #
 # Para criar módulo novo:
-#   [ ] Criar install/novo_modulo.sh com _run_*_total + run_*()
-#   [ ] Adicionar entrada no array MODULES (whiptail)
-#   [ ] Adicionar case no 1º loop (source) do install.sh
-#   [ ] Adicionar case no 2º loop (total) do install.sh
-#   [ ] Adicionar case no 3º loop (execução) do install.sh
-#   [ ] Adicionar nas strings CHOICES (--all / --update)
+#   [ ] Adicionar módulo em MODULES + _ITEMS_* + labels/descrições (lib/catalog.sh)
+#   [ ] Criar install/novo_modulo.sh com funções + _run_*_total + run_*()
+#   [ ] Adicionar case no laço de source do install.sh
+#   [ ] Adicionar case no laço de execução do install.sh
 
 # ============================================================
 # FUNÇÕES DISPONÍVEIS (definidas em lib/)
@@ -126,6 +123,11 @@ run_jogos() {
 # log_success   "mensagem"            → log de sucesso (verde)
 # log_warn      "mensagem"            → log de aviso (amarelo)
 # log_error     "mensagem"            → log de erro (vermelho)
+#
+# Catálogo (lib/catalog.sh):
+# catalog_run_module MODULO            → executa os itens selecionados do módulo
+# catalog_module_total MODULO          → nº total de itens do módulo
+# catalog_selected_total [MODULO...]   → nº de itens selecionados
 #
 # Utilitários (lib/utils.sh):
 # ensure_snap                          → instala snap se ausente

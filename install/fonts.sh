@@ -88,15 +88,8 @@ install_monaspace() {
   log_success "Monaspace ${tag#v} instalado em $fonts_dir"
 }
 
-_run_fonts_total=6
+_run_fonts_total=$(catalog_module_total FONTS)
 
 run_fonts() {
-  init_module_progress $_run_fonts_total "Fonts"
-  track "FONTS" install_firacode "Fira Code"
-  track "FONTS" install_jetbrains_mono "JetBrains Mono"
-  track "FONTS" install_cascadia_code "Cascadia Code"
-  track "FONTS" install_ibm_plex "IBM Plex"
-  track "FONTS" install_victor_mono "Victor Mono"
-  track "FONTS" install_monaspace "Monaspace"
-  end_module_progress
+  catalog_run_module FONTS
 }
