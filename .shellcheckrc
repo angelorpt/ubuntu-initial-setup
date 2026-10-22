@@ -1,0 +1,9 @@
+# ShellCheck configuration
+shell=bash
+# SC1091: Not following sourced files
+# SC2034: Variables appear unused (e.g. colors.sh exported/sourced)
+# SC2164: popd/pushd without || exit
+# SC2162: read without -r
+# SC2059: printf variable format string
+# SC2002: Useless cat
+disable=SC1091,SC2034,SC2164,SC2162,SC2059,SC2002
