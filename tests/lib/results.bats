@@ -3,6 +3,8 @@ setup() {
   source_lib "results.sh"
   source_lib "log.sh"
 
+  SELECTION_ENABLED=false
+  select_clear
   TEST_DIR=$(mktemp -d)
 }
 

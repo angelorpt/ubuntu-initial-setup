@@ -4,3 +4,7 @@ results/
 
 # Logs
 *_history.log
+
+# Agent & AI tool configurations
+.agent/
+.opencode/

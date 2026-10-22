@@ -190,21 +190,8 @@ install_timeshift() {
   log_success "Timeshift instalado"
 }
 
-_run_tools_desktop_total=12
+_run_tools_desktop_total=$(catalog_module_total TOOLS_DESKTOP)
 
 run_tools_desktop() {
-  init_module_progress $_run_tools_desktop_total "Tools Desktop"
-  track "TOOLS_DESKTOP" install_flameshot "Flameshot"
-  track "TOOLS_DESKTOP" install_espanso "Espanso"
-  track "TOOLS_DESKTOP" install_hyperkeys "HyperKeys"
-  track "TOOLS_DESKTOP" install_imwheel "IMWheel"
-  track "TOOLS_DESKTOP" install_gparted "GParted"
-  track "TOOLS_DESKTOP" install_waveterm "Wave Terminal"
-  track "TOOLS_DESKTOP" install_warpreminal "Warp Terminal"
-  track "TOOLS_DESKTOP" install_drawio "Draw.io"
-  track "TOOLS_DESKTOP" install_dbeaver "DBeaver"
-  track "TOOLS_DESKTOP" install_stacer "Stacer"
-  track "TOOLS_DESKTOP" install_bleachbit "BleachBit"
-  track "TOOLS_DESKTOP" install_timeshift "Timeshift"
-  end_module_progress
+  catalog_run_module TOOLS_DESKTOP
 }
