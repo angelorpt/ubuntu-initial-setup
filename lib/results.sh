@@ -1,3 +1,8 @@
+if ! declare -F select_has >/dev/null 2>&1; then
+  # shellcheck source=lib/selection.sh
+  source "$(dirname "${BASH_SOURCE[0]}")/selection.sh"
+fi
+
 RESULTS_DIR=""
 RESULTS_RETRY=false
 RESULTS_CONTINUE=false
@@ -40,6 +45,11 @@ track() {
   local func="$2"
   local name="$3"
   shift 3
+
+  if $SELECTION_ENABLED && ! select_has "$category:$func"; then
+    update_progress "$name"
+    return 0
+  fi
 
   if $RESULTS_RETRY; then
     if ! echo "$_FAILED_ITEMS" | grep -q -F "$name"; then
