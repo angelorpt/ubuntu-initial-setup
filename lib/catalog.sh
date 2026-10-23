@@ -240,3 +240,27 @@ catalog_run_module() {
   done < <(catalog_items "$module")
   end_module_progress
 }
+
+catalog_module_is_gui() {
+  local module="${1:?módulo obrigatório}"
+  case "$module" in
+    TOOLS_DESKTOP|MEDIA|FONTS) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+catalog_item_is_gui() {
+  local module="${1:?módulo obrigatório}"
+  local func="${2:?função obrigatória}"
+  if catalog_module_is_gui "$module"; then
+    return 0
+  fi
+  case "$func" in
+    install_vscode|install_postman|install_virtualbox|install_antigravity_ide)
+      return 0
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
