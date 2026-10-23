@@ -230,8 +230,20 @@ _preselect_retry() {
   done
 }
 
+_dialog_width() {
+  local cols
+  cols=$(tput cols 2>/dev/null || echo 80)
+  if [ "$cols" -gt 104 ]; then
+    printf '%s\n' "98"
+  elif [ "$cols" -gt 88 ]; then
+    printf '%s\n' "$(( cols - 6 ))"
+  else
+    printf '%s\n' "$cols"
+  fi
+}
+
 _select_categories() {
-  local module output height
+  local module output height width
   local -a entries=()
   for module in "${MODULES[@]}"; do
     if [ "$PROFILE" = "headless" ] && catalog_module_is_gui "$module"; then
@@ -245,6 +257,7 @@ _select_categories() {
 
   height=$(( ${#MODULES[@]} + 8 ))
   [ "$height" -gt 30 ] && height=30
+  width=$(_dialog_width)
 
   local cat_prompt="Select categories (Space to toggle):"
   if [ "$APP_LANG" = "pt" ] || [ "$APP_LANG" = "pt-BR" ] || [ "$APP_LANG" = "pt_BR" ]; then
@@ -254,7 +267,7 @@ _select_categories() {
   output=$(whiptail --title "ubuntu-initial-setup" \
     --separate-output \
     --checklist "$cat_prompt" \
-    "$height" 78 10 \
+    "$height" "$width" 10 \
     "${entries[@]}" \
     3>&1 1>&2 2>&3) || return 1
   printf '%s\n' "$output"
@@ -262,8 +275,17 @@ _select_categories() {
 
 _select_items() {
   local module="$1"
-  local func name desc state output
+  local func name desc state output width
   local -a entries=()
+
+  local all_label="[★ SELECT ALL / MARCAR TODOS]"
+  if [ "$APP_LANG" = "pt" ] || [ "$APP_LANG" = "pt-BR" ] || [ "$APP_LANG" = "pt_BR" ]; then
+    all_label="[★ MARCAR TODOS OS ITENS DESTA CATEGORIA]"
+  else
+    all_label="[★ SELECT ALL ITEMS IN THIS CATEGORY]"
+  fi
+  entries+=("__ALL__" "$all_label" "OFF")
+
   while IFS='|' read -r func name desc; do
     [ -n "$func" ] || continue
     if [ "$PROFILE" = "headless" ] && catalog_item_is_gui "$module" "$func"; then
@@ -274,31 +296,37 @@ _select_items() {
   done < <(catalog_items "$module")
 
   local count=$(( ${#entries[@]} / 3 ))
-  if [ "$count" -eq 0 ]; then
+  if [ "$count" -le 1 ]; then
     return 0
   fi
   local height=$(( count + 8 ))
   [ "$height" -gt 30 ] && height=30
   local list_height=$count
   [ "$list_height" -gt 20 ] && list_height=20
+  width=$(_dialog_width)
 
-  local item_prompt="Select items (Space to toggle):"
+  local item_prompt="Select items (Space to toggle) or Cancel to go back:"
+  local cancel_text="Back"
   if [ "$APP_LANG" = "pt" ] || [ "$APP_LANG" = "pt-BR" ] || [ "$APP_LANG" = "pt_BR" ]; then
-    item_prompt="Selecione os itens (espaço marca/desmarca):"
+    item_prompt="Selecione os itens (espaço marca/desmarca) ou Cancelar para voltar:"
+    cancel_text="Voltar"
   fi
 
   output=$(whiptail --title "$(catalog_module_label "$module")" \
+    --cancel-button "$cancel_text" \
     --separate-output \
     --checklist "$item_prompt" \
-    "$height" 78 "$list_height" \
+    "$height" "$width" "$list_height" \
     "${entries[@]}" \
-    3>&1 1>&2 2>&3) || return 1
+    3>&1 1>&2 2>&3) || return 2
   printf '%s\n' "$output"
 }
 
 _select_via_menu() {
-  local module category_output item_output func action
-  local batch_prompt batch_all batch_custom batch_skip
+  local module category_output item_output func action ret
+  local batch_prompt batch_all batch_custom batch_skip width
+  width=$(_dialog_width)
+
   if [ "$APP_LANG" = "pt" ] || [ "$APP_LANG" = "pt-BR" ] || [ "$APP_LANG" = "pt_BR" ]; then
     batch_prompt="Como deseja selecionar os itens desta categoria?"
     batch_all="Marcar todos os itens desta categoria"
@@ -314,38 +342,60 @@ _select_via_menu() {
   SELECTED_MODULES=()
   category_output=$(_select_categories) || return 1
   for module in $category_output; do
-    action=$(whiptail --title "$(catalog_module_label "$module")" \
-      --menu "$batch_prompt" \
-      15 65 3 \
-      "all"    "$batch_all" \
-      "custom" "$batch_custom" \
-      "skip"   "$batch_skip" \
-      3>&1 1>&2 2>&3) || return 1
+    while true; do
+      action=$(whiptail --title "$(catalog_module_label "$module")" \
+        --menu "$batch_prompt" \
+        15 "$width" 3 \
+        "all"    "$batch_all" \
+        "custom" "$batch_custom" \
+        "skip"   "$batch_skip" \
+        3>&1 1>&2 2>&3) || return 1
 
-    case "$action" in
-      all)
-        while IFS='|' read -r func name desc; do
-          [ -n "$func" ] || continue
-          if [ "$PROFILE" = "headless" ] && catalog_item_is_gui "$module" "$func"; then
-            continue
-          fi
-          select_add "$(catalog_tag "$module" "$func")"
-        done < <(catalog_items "$module")
-        SELECTED_MODULES+=("$module")
-        ;;
-      custom)
-        item_output=$(_select_items "$module") || return 1
-        if [ -n "$item_output" ]; then
-          for func in $item_output; do
+      case "$action" in
+        all)
+          while IFS='|' read -r func name desc; do
+            [ -n "$func" ] || continue
+            if [ "$PROFILE" = "headless" ] && catalog_item_is_gui "$module" "$func"; then
+              continue
+            fi
             select_add "$(catalog_tag "$module" "$func")"
-          done
+          done < <(catalog_items "$module")
           SELECTED_MODULES+=("$module")
-        fi
-        ;;
-      skip)
-        continue
-        ;;
-    esac
+          break
+          ;;
+        custom)
+          item_output=$(_select_items "$module")
+          ret=$?
+          if [ "$ret" -eq 2 ]; then
+            # User clicked Back / Voltar, loop to show category menu again
+            continue
+          elif [ "$ret" -ne 0 ]; then
+            return 1
+          fi
+
+          if [ -n "$item_output" ]; then
+            if grep -qxF "__ALL__" <<< "$item_output"; then
+              while IFS='|' read -r func name desc; do
+                [ -n "$func" ] || continue
+                if [ "$PROFILE" = "headless" ] && catalog_item_is_gui "$module" "$func"; then
+                  continue
+                fi
+                select_add "$(catalog_tag "$module" "$func")"
+              done < <(catalog_items "$module")
+            else
+              for func in $item_output; do
+                select_add "$(catalog_tag "$module" "$func")"
+              done
+            fi
+            SELECTED_MODULES+=("$module")
+          fi
+          break
+          ;;
+        skip)
+          break
+          ;;
+      esac
+    done
   done
 }
 
@@ -414,10 +464,11 @@ Iniciar a instalação?"
     cancel_msg="Instalação cancelada. Nada foi instalado."
   fi
 
+  width=$(_dialog_width)
   if ! whiptail --title "$confirm_title" \
     --yesno "${SUMMARY}
 ${confirm_prompt}" \
-    "$summary_height" 78 3>&1 1>&2 2>&3; then
+    "$summary_height" "$width" 3>&1 1>&2 2>&3; then
     log_info "$cancel_msg"
     exit 0
   fi
