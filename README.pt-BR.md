@@ -92,8 +92,12 @@ Clone e utilize diretamente com as flags desejadas:
 git clone https://github.com/angelorpt/ubuntu-initial-setup.git
 cd ubuntu-initial-setup
 
-# Menu interativo (Ambiente -> Modo -> Categorias -> Itens -> Confirmação)
+# Menu interativo (Idioma -> Ambiente -> Modo -> Categorias -> Itens -> Confirmação)
 ./install.sh
+
+# Executar menu interativo diretamente em inglês ou português
+./install.sh --lang=en
+./install.sh --lang=pt
 
 # Executar especificamente com perfil Headless / WSL (somente CLI)
 ./install.sh --headless
@@ -133,6 +137,7 @@ cd ubuntu-initial-setup
 
 | Flag | Descrição |
 | :--- | :--- |
+| `--lang=LANG` | Define o idioma da UI e descrições: `en` (padrão) ou `pt` |
 | `--all` | Pré-seleciona todos os módulos e itens; exibe resumo e solicita confirmação |
 | `--headless`, `--wsl` | Ativa o perfil Headless/WSL (oculta pacotes GUI e módulos desktop) |
 | `--desktop` | Ativa o perfil Standard Ubuntu Desktop |

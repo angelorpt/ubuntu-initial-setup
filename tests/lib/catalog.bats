@@ -129,3 +129,25 @@ teardown() {
   run catalog_item_is_gui TOOLS_DESKTOP install_flameshot
   [ "$status" -eq 0 ]
 }
+
+@test "catalog descriptions resolve based on language" {
+  APP_LANG=en
+  run catalog_item_desc BASE install_curl
+  [ "$status" -eq 0 ]
+  [ "$output" = "Command line tool for transferring data with URLs" ]
+
+  APP_LANG=pt
+  run catalog_item_desc BASE install_curl
+  [ "$status" -eq 0 ]
+  [ "$output" = "Cliente HTTP/HTTPS" ]
+
+  APP_LANG=en
+  run catalog_module_desc DEV
+  [ "$status" -eq 0 ]
+  [ "$output" = "Developer compilers, runtimes, containers and cloud tools" ]
+
+  APP_LANG=pt
+  run catalog_module_desc DEV
+  [ "$status" -eq 0 ]
+  [ "$output" = "Ferramentas de desenvolvimento" ]
+}

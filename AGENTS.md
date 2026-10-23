@@ -10,7 +10,9 @@ Shell scripts to automate Ubuntu setup. Modular, interactive menu (whiptail) or 
 ## Commands
 
 ```bash
-./install.sh                  # whiptail menu (env → mode → categories → items → confirm)
+./install.sh                  # whiptail menu (lang → env → mode → categories → items → confirm)
+./install.sh --lang=en        # force English UI and descriptions
+./install.sh --lang=pt        # force Portuguese UI and descriptions
 ./install.sh --headless       # runs with Headless / WSL profile (CLI only)
 ./install.sh --all            # select everything, show summary, ask confirmation (fresh)
 ./install.sh --all --yes      # headless full install (fresh)
