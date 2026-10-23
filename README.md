@@ -92,8 +92,12 @@ Clone and run directly with standard or tailored flags:
 git clone https://github.com/angelorpt/ubuntu-initial-setup.git
 cd ubuntu-initial-setup
 
-# Interactive Whiptail Menu (Environment -> Mode -> Categories -> Items -> Confirm)
+# Interactive Whiptail Menu (Language -> Environment -> Mode -> Categories -> Items -> Confirm)
 ./install.sh
+
+# Run interactive menu explicitly in English or Portuguese
+./install.sh --lang=en
+./install.sh --lang=pt
 
 # Run specifically with Headless / WSL profile (CLI only)
 ./install.sh --headless
@@ -133,6 +137,7 @@ cd ubuntu-initial-setup
 
 | Flag | Description |
 | :--- | :--- |
+| `--lang=LANG` | Sets UI and descriptions language: `en` (default) or `pt` |
 | `--all` | Preselects all modules and items; displays confirmation before running |
 | `--headless`, `--wsl` | Activates Headless/WSL profile (omits GUI packages & desktop modules) |
 | `--desktop` | Activates Standard Ubuntu Desktop profile |
