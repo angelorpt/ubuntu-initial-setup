@@ -183,7 +183,7 @@ flowchart TD
 
 ## Modules & Software Catalog
 
-The suite contains **10 modules** providing **91 curated tools**. All metadata is declared in [`lib/catalog.sh`](lib/catalog.sh).
+The suite contains **10 modules** providing **92 curated tools**. All metadata is declared in [`lib/catalog.sh`](lib/catalog.sh).
 
 | Module | Items | Summary |
 | :--- | :---: | :--- |
@@ -191,7 +191,7 @@ The suite contains **10 modules** providing **91 curated tools**. All metadata i
 | [`dev`](#dev) | 23 | Compilers, runtimes, containers, cloud & k8s tooling |
 | [`ai`](#ai) | 6 | Local LLM runtimes and AI engineering terminal assistants |
 | [`tools_terminal`](#tools-terminal) | 15 | Modern CLI utilities, multiplexers, and file viewers |
-| [`tools_desktop`](#tools-desktop) | 12 | Productivity, screen capture, GUI DB managers & system tools |
+| [`tools_desktop`](#tools-desktop) | 13 | Productivity, screen capture, GUI DB managers & system tools |
 | [`tools_ubuntu`](#tools-ubuntu) | 8 | System maintenance, package managers, and security |
 | [`media`](#media) | 2 | Web browsers |
 | [`fonts`](#fonts) | 6 | Developer monospace fonts with programming ligatures |
@@ -284,6 +284,7 @@ The suite contains **10 modules** providing **91 curated tools**. All metadata i
 | **Stacer** | Linux system optimizer and hardware monitor | [github.com/oguzhaninan/Stacer](https://github.com/oguzhaninan/Stacer) |
 | **BleachBit** | Disk space cleaner and cache privacy manager | [bleachbit.org](https://www.bleachbit.org) |
 | **Timeshift** | System restore tool with incremental snapshots | [github.com/linuxmint/timeshift](https://github.com/linuxmint/timeshift) |
+| **Moji** | Modern and lightweight emoji picker | [github.com/alexishida/Moji](https://github.com/alexishida/Moji) |
 
 ### Tools Ubuntu
 

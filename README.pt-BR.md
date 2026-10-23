@@ -183,7 +183,7 @@ flowchart TD
 
 ## Módulos e Catálogo de Programas
 
-O projeto contém **10 módulos** e um total de **91 ferramentas curadas**. A lista declarativa fica em [`lib/catalog.sh`](lib/catalog.sh).
+O projeto contém **10 módulos** e um total de **92 ferramentas curadas**. A lista declarativa fica em [`lib/catalog.sh`](lib/catalog.sh).
 
 | Módulo | Itens | Resumo |
 | :--- | :---: | :--- |
@@ -191,7 +191,7 @@ O projeto contém **10 módulos** e um total de **91 ferramentas curadas**. A li
 | [`dev`](#dev) | 23 | Compiladores, runtimes, contêineres, nuvem e ferramentas Kubernetes |
 | [`ai`](#ai) | 6 | Runtimes de LLMs locais e assistentes de engenharia com IA |
 | [`tools_terminal`](#tools-terminal) | 15 | Utilitários modernos de CLI, multiplexadores e visualizadores |
-| [`tools_desktop`](#tools-desktop) | 12 | Aplicativos de produtividade, captura de tela, bancos de dados e sistema |
+| [`tools_desktop`](#tools-desktop) | 13 | Aplicativos de produtividade, captura de tela, bancos de dados e sistema |
 | [`tools_ubuntu`](#tools-ubuntu) | 8 | Manutenção do sistema, gerenciadores de pacotes e firewall |
 | [`media`](#media) | 2 | Navegadores web |
 | [`fonts`](#fonts) | 6 | Fontes monoespaçadas para programação com ligaduras |
@@ -284,6 +284,7 @@ O projeto contém **10 módulos** e um total de **91 ferramentas curadas**. A li
 | **Stacer** | Otimizador de sistema operacional e monitor de hardware | [github.com/oguzhaninan/Stacer](https://github.com/oguzhaninan/Stacer) |
 | **BleachBit** | Limpeza de arquivos temporários, logs e lixo do sistema | [bleachbit.org](https://www.bleachbit.org) |
 | **Timeshift** | Criação e restauração de snapshots incrementais do sistema | [github.com/linuxmint/timeshift](https://github.com/linuxmint/timeshift) |
+| **Moji** | Seletor de emojis moderno e leve para desktop Linux | [github.com/alexishida/Moji](https://github.com/alexishida/Moji) |
 
 ### Tools Ubuntu
 
