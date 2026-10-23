@@ -18,14 +18,17 @@ show_help() {
 Uso: ./install.sh [OPÇÃO]
 
 Opções:
-  --all        Seleciona todos os módulos e itens (pede confirmação)
-  --update     Seleciona todos os módulos e itens e limpa histórico
-  --retry      Pré-seleciona apenas os programas que falharam
-  --continue   Continua instalação pulando programas já instalados com sucesso
-  --yes, -y    Dispensa a confirmação final (obrigatório em automação)
-  --help       Mostra esta ajuda
+  --all                 Seleciona todos os módulos e itens (pede confirmação)
+  --headless, --wsl     Ativa o perfil Headless / WSL (somente CLI / terminal)
+  --desktop             Ativa o perfil Standard Desktop (padrão em ambiente desktop)
+  --profile=TIPO        Define perfil de ambiente: "desktop" ou "headless" (wsl)
+  --update              Seleciona todos os módulos e itens e limpa histórico
+  --retry               Pré-seleciona apenas os programas que falharam
+  --continue            Continua instalação pulando programas já instalados com sucesso
+  --yes, -y             Dispensa a confirmação final (obrigatório em automação)
+  --help                Mostra esta ajuda
 
-Sem opções: abre o menu interativo whiptail (modo → categorias → itens).
+Sem opções: abre o menu interativo whiptail (ambiente → modo → categorias → itens).
 
 A instalação só começa após o resumo da seleção ser confirmado. Para execução
 não interativa use --all --yes; sem terminal e sem --yes o script encerra com erro.
@@ -38,24 +41,37 @@ Relatórios salvos em results/
 Exemplos:
   ./install.sh                 # menu interativo
   ./install.sh --all           # seleciona tudo e pede confirmação
+  ./install.sh --headless      # menu com perfil apenas CLI/WSL
   ./install.sh --all --yes     # instala tudo sem perguntar
   ./install.sh --continue      # continua de onde parou
   ./install.sh --retry         # retenta falhas
 EOF
 }
 
+is_wsl() {
+  if [ -e /proc/sys/fs/binfmt_misc/WSLInterop ] || [ -d /run/WSL ] || grep -qi microsoft /proc/version 2>/dev/null; then
+    return 0
+  fi
+  return 1
+}
+
 SELECTION_ENABLED=true
 MODE=""
+PROFILE=""
 ASSUME_YES=false
 
 for arg in "$@"; do
   case "$arg" in
-    --all)      MODE="all"      ;;
-    --update)   MODE="update"   ;;
-    --retry)    MODE="retry"    ;;
-    --continue) MODE="continue" ;;
-    --yes|-y)   ASSUME_YES=true ;;
-    --help|-h)  show_help; exit 0 ;;
+    --all)             MODE="all"      ;;
+    --update)          MODE="update"   ;;
+    --retry)           MODE="retry"    ;;
+    --continue)        MODE="continue" ;;
+    --headless|--wsl)  PROFILE="headless" ;;
+    --desktop)         PROFILE="desktop"  ;;
+    --profile=headless|--profile=wsl) PROFILE="headless" ;;
+    --profile=desktop) PROFILE="desktop"  ;;
+    --yes|-y)          ASSUME_YES=true ;;
+    --help|-h)         show_help; exit 0 ;;
     *)
       log_error "Opção desconhecida: $arg"
       echo
@@ -75,6 +91,31 @@ FROM_MENU=false
 if [ -z "$MODE" ]; then
   ensure_whiptail
   FROM_MENU=true
+
+  if [ -z "$PROFILE" ]; then
+    default_profile="desktop"
+    if is_wsl; then
+      default_profile="headless"
+    fi
+    desktop_state="OFF"
+    headless_state="OFF"
+    if [ "$default_profile" = "desktop" ]; then
+      desktop_state="ON"
+    else
+      headless_state="ON"
+    fi
+    PROFILE=$(whiptail --title "ubuntu-initial-setup — Ambiente" \
+      --radiolist "Escolha o ambiente de instalação:" \
+      15 70 2 \
+      "desktop"  "Standard Ubuntu (Desktop + GUI + CLI)" "$desktop_state" \
+      "headless" "Headless / WSL (Terminal & CLI apenas)" "$headless_state" \
+      3>&1 1>&2 2>&3) || true
+    if [ -z "$PROFILE" ]; then
+      log_info "Cancelado."
+      exit 0
+    fi
+  fi
+
   MODE=$(whiptail --title "ubuntu-initial-setup" \
     --menu "Escolha o modo de instalação:" \
     15 60 3 \
@@ -85,6 +126,14 @@ if [ -z "$MODE" ]; then
   if [ -z "$MODE" ]; then
     log_info "Cancelado."
     exit 0
+  fi
+fi
+
+if [ -z "$PROFILE" ]; then
+  if is_wsl; then
+    PROFILE="headless"
+  else
+    PROFILE="desktop"
   fi
 fi
 
@@ -100,9 +149,16 @@ _preselect_all() {
   local module func name _desc
   SELECTED_MODULES=()
   for module in "${MODULES[@]}"; do
+    if [ "$PROFILE" = "headless" ] && catalog_module_is_gui "$module"; then
+      continue
+    fi
     SELECTED_MODULES+=("$module")
     while IFS='|' read -r func name _desc; do
-      [ -n "$func" ] && select_add "$(catalog_tag "$module" "$func")"
+      [ -n "$func" ] || continue
+      if [ "$PROFILE" = "headless" ] && catalog_item_is_gui "$module" "$func"; then
+        continue
+      fi
+      select_add "$(catalog_tag "$module" "$func")"
     done < <(catalog_items "$module")
   done
 }
@@ -111,10 +167,16 @@ _preselect_retry() {
   local module func name _desc matched
   SELECTED_MODULES=()
   for module in "${MODULES[@]}"; do
+    if [ "$PROFILE" = "headless" ] && catalog_module_is_gui "$module"; then
+      continue
+    fi
     grep -q "^${module}:" "$RESULTS_PATH/failure.txt" || continue
     matched=false
     while IFS='|' read -r func name _desc; do
       [ -n "$func" ] || continue
+      if [ "$PROFILE" = "headless" ] && catalog_item_is_gui "$module" "$func"; then
+        continue
+      fi
       if grep -qxF "$module: $name" "$RESULTS_PATH/failure.txt"; then
         select_add "$(catalog_tag "$module" "$func")"
         matched=true
@@ -128,10 +190,13 @@ _select_categories() {
   local module output height
   local -a entries=()
   for module in "${MODULES[@]}"; do
+    if [ "$PROFILE" = "headless" ] && catalog_module_is_gui "$module"; then
+      continue
+    fi
     if [ "$MODE" = "retry" ] && ! grep -q "^${module}:" "$RESULTS_PATH/failure.txt"; then
       continue
     fi
-    entries+=("$module" "$(catalog_module_label "$module") — $(catalog_module_desc "$module")" "ON")
+    entries+=("$module" "$(catalog_module_label "$module") — $(catalog_module_desc "$module")" "OFF")
   done
 
   height=$(( ${#MODULES[@]} + 8 ))
@@ -152,14 +217,17 @@ _select_items() {
   local -a entries=()
   while IFS='|' read -r func name desc; do
     [ -n "$func" ] || continue
-    state="ON"
-    if [ "$MODE" = "retry" ] && ! grep -qxF "$module: $name" "$RESULTS_PATH/failure.txt"; then
-      state="OFF"
+    if [ "$PROFILE" = "headless" ] && catalog_item_is_gui "$module" "$func"; then
+      continue
     fi
+    state="OFF"
     entries+=("$func" "$name — $desc" "$state")
   done < <(catalog_items "$module")
 
   local count=$(( ${#entries[@]} / 3 ))
+  if [ "$count" -eq 0 ]; then
+    return 0
+  fi
   local height=$(( count + 8 ))
   [ "$height" -gt 30 ] && height=30
   local list_height=$count
@@ -175,16 +243,42 @@ _select_items() {
 }
 
 _select_via_menu() {
-  local module category_output item_output func
+  local module category_output item_output func action
   SELECTED_MODULES=()
   category_output=$(_select_categories) || return 1
   for module in $category_output; do
-    item_output=$(_select_items "$module") || return 1
-    [ -z "$item_output" ] && continue
-    for func in $item_output; do
-      select_add "$(catalog_tag "$module" "$func")"
-    done
-    SELECTED_MODULES+=("$module")
+    action=$(whiptail --title "$(catalog_module_label "$module")" \
+      --menu "Como deseja selecionar os itens desta categoria?" \
+      15 65 3 \
+      "all"    "Marcar todos os itens desta categoria" \
+      "custom" "Escolher programas item a item" \
+      "skip"   "Desconsiderar categoria" \
+      3>&1 1>&2 2>&3) || return 1
+
+    case "$action" in
+      all)
+        while IFS='|' read -r func name desc; do
+          [ -n "$func" ] || continue
+          if [ "$PROFILE" = "headless" ] && catalog_item_is_gui "$module" "$func"; then
+            continue
+          fi
+          select_add "$(catalog_tag "$module" "$func")"
+        done < <(catalog_items "$module")
+        SELECTED_MODULES+=("$module")
+        ;;
+      custom)
+        item_output=$(_select_items "$module") || return 1
+        if [ -n "$item_output" ]; then
+          for func in $item_output; do
+            select_add "$(catalog_tag "$module" "$func")"
+          done
+          SELECTED_MODULES+=("$module")
+        fi
+        ;;
+      skip)
+        continue
+        ;;
+    esac
   done
 }
 

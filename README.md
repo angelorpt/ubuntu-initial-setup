@@ -1,92 +1,81 @@
 # Ubuntu Initial Setup
 
 <p align="center">
-  <img src="https://img.shields.io/badge/licen%C3%A7a-MIT-green" alt="Licença MIT">
-  <img src="https://img.shields.io/badge/plataforma-Ubuntu-orange" alt="Ubuntu">
-  <img src="https://img.shields.io/badge/linguagem-Bash-blue" alt="Bash">
+  <a href="README.pt-BR.md">🇧🇷 Versão em Português</a>
 </p>
 
 <p align="center">
-  <img src="prints/print-01.png" alt="Demonstração do ubuntu-initial-setup" width="700">
+  <a href="https://github.com/angelorpt/ubuntu-initial-setup/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg?style=for-the-badge" alt="MIT License"></a>
+  <img src="https://img.shields.io/badge/platform-Ubuntu%2022.04%20%7C%2024.04-E95420.svg?style=for-the-badge&logo=ubuntu&logoColor=white" alt="Ubuntu">
+  <img src="https://img.shields.io/badge/bash-5.0+-4EAA25.svg?style=for-the-badge&logo=gnubash&logoColor=white" alt="Bash">
+  <img src="https://img.shields.io/badge/tests-BATS%20%2B%20ShellCheck-brightgreen.svg?style=for-the-badge" alt="Tests">
 </p>
 
-**Projeto pessoal** de scripts modulares para automatizar a instalação e configuração do Ubuntu — criado por e para desenvolvedores que precisam montar seu ambiente de trabalho rápido, seja do zero ou após formatá-lo.
-
-Ideal para usuários Ubuntu que:
-- Formatam o computador com frequência e querem restaurar o setup em minutos
-- Preferem escolher o que instalar via menu interativo
-- Querem um ponto de partida para customizar seu próprio instalador
-
-Fique à vontade para fazer um **fork**, remover o que não usa, adicionar seus programas favoritos e adaptar ao seu gosto.
-
-## Sumário
-
-- [Ubuntu Initial Setup](#ubuntu-initial-setup)
-  - [Sumário](#sumário)
-  - [Pré-requisitos](#pré-requisitos)
-  - [Uso](#uso)
-    - [`bootstrap.sh` — Instalação rápida (recomendado para primeira vez)](#bootstrapsh--instalação-rápida-recomendado-para-primeira-vez)
-    - [`install.sh` — Controle total sobre o que instalar](#installsh--controle-total-sobre-o-que-instalar)
-    - [Comparação rápida](#comparação-rápida)
-  - [Módulos](#módulos)
-  - [Programas](#programas)
-    - [Base](#base)
-    - [Dev](#dev)
-    - [AI](#ai)
-    - [Tools Terminal](#tools-terminal)
-    - [Tools Desktop](#tools-desktop)
-    - [Tools Ubuntu](#tools-ubuntu)
-    - [Media](#media)
-    - [Fonts](#fonts)
-    - [Config](#config)
-    - [NPM Globals](#npm-globals)
-  - [Flags](#flags)
-  - [Relatórios](#relatórios)
-  - [Progresso Visual](#progresso-visual)
-  - [Testes](#testes)
-  - [Estrutura](#estrutura)
-  - [Arquitetura](#arquitetura)
-  - [FAQ / Troubleshooting](#faq--troubleshooting)
-    - [`curl: command not found`](#curl-command-not-found)
-    - [Falha na instalação de algum pacote](#falha-na-instalação-de-algum-pacote)
-    - [Algum programa não aparece no menu](#algum-programa-não-aparece-no-menu)
-    - [Erro de permissão](#erro-de-permissão)
-    - [Quero adicionar meus próprios programas](#quero-adicionar-meus-próprios-programas)
-  - [Licença](#licença)
-
-
-## Pré-requisitos
-
-- **Sistema** ubuntu
-- **Conexão com internet**
-- **Espaço em disco**: variável conforme os módulos selecionados
-- **Privilégios sudo**: diversos módulos requerem permissão de superusuário
-
-## Uso
-
-A instalação pode ser feita de duas formas, com objetivos diferentes:
+<p align="center">
+  <img src="prints/print-01.png" alt="ubuntu-initial-setup demonstration" width="720">
+</p>
 
 ---
 
-### `bootstrap.sh` — Instalação rápida (recomendado para primeira vez)
+Modular, resilient, and interactive shell suite designed to automate workstation setup on Ubuntu systems and development environments. Tailored for engineers who want quick setups from scratch, fresh reinstalls, or automated headless configurations.
+
+---
+
+## Table of Contents
+
+- [Features](#features)
+- [Quick Start](#quick-start)
+  - [1. Bootstrap (Recommended)](#1-bootstrap-recommended)
+  - [2. Manual Execution](#2-manual-execution)
+  - [Bootstrap vs. Direct Runner](#bootstrap-vs-direct-runner)
+- [Command Flags](#command-flags)
+- [Interactive Workflow](#interactive-workflow)
+- [Modules & Software Catalog](#modules--software-catalog)
+  - [Base](#base)
+  - [Dev](#dev)
+  - [AI](#ai)
+  - [Tools Terminal](#tools-terminal)
+  - [Tools Desktop](#tools-desktop)
+  - [Tools Ubuntu](#tools-ubuntu)
+  - [Media](#media)
+  - [Fonts](#fonts)
+  - [Config](#config)
+  - [NPM Globals](#npm-globals)
+- [Architecture & Design](#architecture--design)
+- [Testing & Quality](#testing--quality)
+- [Directory Structure](#directory-structure)
+- [Extending the Catalog](#extending-the-catalog)
+- [License](#license)
+
+---
+
+## Features
+
+- **Whiptail TUI & Headless Options**: Interactive step-by-step terminal UI or single-command unattended execution (`--all --yes`).
+- **Resilient Execution (`set -uo pipefail`)**: Tool failures are logged and tracked without aborting the remaining installation pipeline.
+- **Granular Selection**: Pick entire categories or drill down to select individual packages.
+- **State Tracking & Retry**: Execution outcomes are saved in `results/`, enabling `--retry` (re-run failed items only) and `--continue` (skip installed tools).
+- **Single Source of Truth**: All modules, names, and install orders derive from a centralized catalog (`lib/catalog.sh`).
+- **Automated Testing**: Comprehensive ShellCheck linting and BATS unit tests for every library helper.
+
+---
+
+## Quick Start
+
+### 1. Bootstrap (Recommended)
+
+One-line runner that installs prerequisites (`git`, `curl`, `wget`, `whiptail`), clones the repository to `~/ubuntu-initial-setup`, and launches the interactive menu:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/angelorpt/ubuntu-initial-setup/main/bootstrap.sh | bash
 ```
 
-**O que faz:**
-1. Instala dependências mínimas (`git`, `curl`, `wget`, `whiptail`)
-2. Clona (ou atualiza) o repositório em `~/ubuntu-initial-setup`
-3. Reconecta o terminal (`/dev/tty`) e abre diretamente o **menu interativo** do `install.sh` para você escolher o que instalar
-4. Se executado em ambiente sem TTY (CI/scripts) e sem parâmetros, apenas prepara o repositório e mostra as instruções de execução
-
-**Automação headless (sem perguntas):**
+**Unattended / Headless (CI or automated scripts):**
 ```bash
 curl -fsSL https://raw.githubusercontent.com/angelorpt/ubuntu-initial-setup/main/bootstrap.sh | bash -s -- --all --yes
 ```
 
-**Reabrir o menu a qualquer momento:**
-Após a primeira execução do bootstrap, o repositório já estará clonado. Para rodar o instalador novamente:
+**Rerun at any time:**
 ```bash
 cd ~/ubuntu-initial-setup
 ./install.sh
@@ -94,366 +83,385 @@ cd ~/ubuntu-initial-setup
 
 ---
 
-### `install.sh` — Controle total sobre o que instalar
+### 2. Manual Execution
+
+Clone and run directly with standard or tailored flags:
 
 ```bash
-# 1. Clone manualmente (caso não tenha usado o bootstrap.sh)
+# Clone
 git clone https://github.com/angelorpt/ubuntu-initial-setup.git
 cd ubuntu-initial-setup
 
-# 2. Escolha o modo
-./install.sh              # Menu interativo: modo → categorias → itens → confirmação
-./install.sh --all        # Seleciona tudo e pede confirmação
-./install.sh --all --yes  # Instala tudo sem perguntar (automação)
-./install.sh --update     # Reinstala todos os programas (últimas versões)
-./install.sh --retry      # Tenta novamente apenas os que falharam
-./install.sh --continue   # Pula os que já deram certo, instala o resto
-./install.sh --help       # Mostra ajuda
+# Interactive Whiptail Menu (Environment -> Mode -> Categories -> Items -> Confirm)
+./install.sh
+
+# Run specifically with Headless / WSL profile (CLI only)
+./install.sh --headless
+
+# Install Everything (requests final confirmation)
+./install.sh --all
+
+# Fully Unattended Install (no confirmations)
+./install.sh --all --yes
+
+# Reinstall / Update all tools
+./install.sh --update
+
+# Retry only previously failed packages
+./install.sh --retry
+
+# Continue interrupted installation (skips successful ones)
+./install.sh --continue
 ```
-
-**O que faz:**
-- **Sem argumentos:** menu whiptail em etapas — escolhe o modo (nova instalação, continuar, retentar), marca as categorias e, para cada categoria, marca os programas individuais. Ao final, exibe um resumo e só instala após confirmação
-- **`--all`:** pré-seleciona todos os módulos e itens, exibe o resumo e pede confirmação
-- **`--update`:** igual ao `--all`, mas pensado para reinstalar/atualizar programas já existentes
-- **`--yes`:** dispensa apenas a confirmação final; use junto de `--all` em automação
-- **`--retry`:** lê `results/failure.txt` da execução anterior e pré-seleciona apenas os programas que falharam (o resumo continua sendo exibido)
-- **`--continue`:** lê `results/success.txt` e pula os já instalados, executando apenas os pendentes
-
-Sem terminal interativo e sem `--yes`, o instalador encerra com erro em vez de instalar às cegas.
-
-**Quando usar:** Você quer controle granular — escolher exatamente quais módulos **e programas** instalar, retentar falhas sem começar do zero, ou continuar uma instalação interrompida.
-
-<p align="center">
-  <img src="prints/print-04.png" alt="Seleção de módulos no whiptail" width="700">
-</p>
 
 ---
 
-### Comparação rápida
+### Bootstrap vs. Direct Runner
 
-| | `bootstrap.sh` | `install.sh` |
-|---|---|---|
-| **Propósito** | One-liner para início rápido | Execução e controle fino do instalador |
-| **Clonagem** | Automática em `~/ubuntu-initial-setup` | Manual (`git clone`) |
-| **Dependências** | Instala git, curl, wget, whiptail automaticamente | Assume dependências instaladas |
-| **Menu interativo** | Sim (abre por padrão via `/dev/tty`) | Sim (sem argumentos) |
-| **Headless** | Sim (via repasse: `bash -s -- --all --yes`) | Sim (`--all --yes`) |
-| **Seleção por item** | Sim (via menu) | Sim |
-| **Retry/Continue** | Sim (via repasse: `bash -s -- --retry`) | Sim (`--retry`, `--continue`) |
-| **Quando escolher** | Primeira instalação, máquina recém-formatada | Reexecução, manutenção, reinstalação seletiva |
+| Feature | `bootstrap.sh` | `install.sh` |
+| :--- | :--- | :--- |
+| **Purpose** | Single-line quick setup for new or fresh systems | Direct fine-grained control and management |
+| **Cloning** | Automatic (into `~/ubuntu-initial-setup`) | Manual (`git clone`) |
+| **Prerequisites** | Installs `git`, `curl`, `wget`, `whiptail` automatically | Assumes standard dependencies exist |
+| **Interactive TUI** | Yes (via `/dev/tty`) | Yes (default when run without flags) |
+| **Headless Support** | Pass args via `bash -s -- --all --yes` | Pass flags directly: `./install.sh --all --yes` |
+| **Recovery** | Supports `--retry` and `--continue` through arguments | Native flags: `--retry`, `--continue` |
 
-> O catálogo de módulos e itens fica em `lib/catalog.sh`; o menu, a contagem e a execução são todos derivados dele.
+---
 
-## Módulos
+## Command Flags
 
-| Módulo | Total | Programas |
-|--------|-----------|-------|
-| `base` | 4 | curl, git, gum, zsh + oh-my-zsh |
-| `dev` | 23 | Python, Docker, NVM + Node LTS, Java (JDK), VSCode, Go, Postman, VirtualBox, Antigravity 2.0, Antigravity IDE, Terraform, Vagrant, GitHub CLI, AWS CLI, Ansible, build-essential, libssl-dev, kubectl, helm, minikube, Kiro CLI, ShellCheck, BATS |
-| `ai` | 7 | Ollama, OpenCode, Serena, Hermes Agent, Antigravity CLI, Claude Code, GitHub Copilot CLI |
-| `tools_terminal` | 15 | htop, tmux, ripgrep, fd, fzf, bat, eza, Starship, zoxide, nano, vim, Neovim, Anyquery, Superfile, fdupes |
-| `tools_desktop` | 12 | Flameshot, Espanso, HyperKeys, IMWheel, GParted, Wave Terminal, Warp Terminal, Draw.io, DBeaver, Stacer, BleachBit, Timeshift |
-| `tools_ubuntu` | 8 | Nala, neofetch, ncdu, duf, deborphan, lm-sensors, UFW, Unattended Upgrades |
-| `media` | 2 | Google Chrome, Brave |
-| `fonts` | 6 | Fira Code, JetBrains Mono, Cascadia Code, IBM Plex, Victor Mono, Monaspace |
-| `config` | 3 | Git config, SSH key, Gogh terminal themes |
-| `npm-globals` | 12 | TypeScript, pnpm, Yarn Classic, Yarn Berry, Nodemon, Concurrently, Serve, Nest.js, npm-check-updates, live-server, 9Router, OpenSpec |
+| Flag | Description |
+| :--- | :--- |
+| `--all` | Preselects all modules and items; displays confirmation before running |
+| `--headless`, `--wsl` | Activates Headless/WSL profile (omits GUI packages & desktop modules) |
+| `--desktop` | Activates Standard Ubuntu Desktop profile |
+| `--profile=TYPE` | Sets environment profile: `desktop` or `headless` (or `wsl`) |
+| `--all --yes` | Fully headless; selects all items and installs without prompts |
+| `--update` | Fresh reinstall of all tools, fetching latest versions |
+| `--retry` | Reads `results/failure.txt` and runs only tools that failed |
+| `--continue` | Reads `results/success.txt` and installs only remaining pending items |
+| `--yes`, `-y` | Bypasses confirmation prompt (must be paired with target selection) |
+| `--help`, `-h` | Displays usage manual and flags |
 
-## Programas
+---
+
+## Interactive Workflow
+
+```mermaid
+flowchart TD
+    Start([Execute ./install.sh]) --> CheckTTY{Interactive TTY?}
+    CheckTTY -- No without --yes --> Error[Exit with Error]
+    CheckTTY -- Yes --> EnvSelect[Environment: Desktop vs. Headless/WSL]
+    
+    EnvSelect --> ModeSelect[Mode: New / Continue / Retry]
+    ModeSelect --> CatMenu[Select Categories Checklist - Defaults to OFF]
+    CatMenu --> CategoryBatch{Category Action}
+    CategoryBatch -- All --> SelectAllCat[Select All in Category]
+    CategoryBatch -- Custom --> ItemMenu[Select Individual Items - Defaults to OFF]
+    CategoryBatch -- Skip --> SkipCat[Skip Category]
+    
+    SelectAllCat --> Summary[Display Selection Summary]
+    ItemMenu --> Summary
+    SkipCat --> Summary
+    Summary --> Confirm{Confirm Installation?}
+    
+    Confirm -- Cancel --> Cancelled[Exit]
+    Confirm -- Yes --> RunModules[Execute Modules in Catalog Order]
+    
+    RunModules --> Track[track & log results]
+    Track --> Results[Write to results/success.txt & failure.txt]
+    Results --> End([Print Final Report])
+```
+
+---
+
+## Modules & Software Catalog
+
+The suite contains **10 modules** providing **91 curated tools**. All metadata is declared in [`lib/catalog.sh`](lib/catalog.sh).
+
+| Module | Items | Summary |
+| :--- | :---: | :--- |
+| [`base`](#base) | 4 | Essential CLI foundations (curl, git, gum, zsh + oh-my-zsh) |
+| [`dev`](#dev) | 23 | Compilers, runtimes, containers, cloud & k8s tooling |
+| [`ai`](#ai) | 6 | Local LLM runtimes and AI engineering terminal assistants |
+| [`tools_terminal`](#tools-terminal) | 15 | Modern CLI utilities, multiplexers, and file viewers |
+| [`tools_desktop`](#tools-desktop) | 12 | Productivity, screen capture, GUI DB managers & system tools |
+| [`tools_ubuntu`](#tools-ubuntu) | 8 | System maintenance, package managers, and security |
+| [`media`](#media) | 2 | Web browsers |
+| [`fonts`](#fonts) | 6 | Developer monospace fonts with programming ligatures |
+| [`config`](#config) | 3 | Git identity, SSH key generation, and terminal color schemes |
+| [`npm_globals`](#npm-globals) | 12 | Global Node CLI packages and package managers |
+
+---
 
 ### Base
 
-| Programa | Descrição | Site |
-|----------|-----------|------|
-| Curl | Ferramenta de transferência de dados via URL | https://curl.se |
-| Git | Sistema de controle de versão distribuído | https://git-scm.com |
-| Gum | Ferramenta de UI para shell scripts | https://github.com/charmbracelet/gum |
-| Zsh + Oh My Zsh | Terminal aprimorado com plugins e temas | https://ohmyz.sh |
+| Tool | Description | Website |
+| :--- | :--- | :--- |
+| **Curl** | Command line tool for transferring data with URLs | [curl.se](https://curl.se) |
+| **Git** | Distributed version control system | [git-scm.com](https://git-scm.com) |
+| **Gum** | Tool for glamorous shell scripts and prompts | [github.com/charmbracelet/gum](https://github.com/charmbracelet/gum) |
+| **Zsh + Oh My Zsh** | Extended shell with plugins and themes | [ohmyz.sh](https://ohmyz.sh) |
 
 ### Dev
 
-| Programa | Descrição | Site |
-|----------|-----------|------|
-| build-essential | Meta-pacote com gcc, g++, make e ferramentas de compilação | https://packages.ubuntu.com/build-essential |
-| libssl-dev | Headers do OpenSSL para compilação de pacotes | https://packages.ubuntu.com/libssl-dev |
-| Python | Linguagem de programação versátil | https://www.python.org |
-| Docker | Plataforma de contêineres para desenvolvimento e deployment | https://docs.docker.com/engine/install/ubuntu |
-| NVM + Node | Gerenciador de versões do Node.js + Node LTS | https://github.com/nvm-sh/nvm |
-| Java (JDK) | Kit de desenvolvimento Java padrão (OpenJDK) | https://openjdk.org |
-| VSCode | Editor de código da Microsoft com extensões | https://code.visualstudio.com |
-| Go | Linguagem de programação compilada do Google | https://snapcraft.io/go |
-| Postman | Plataforma de API para desenvolvimento | https://snapcraft.io/postman |
-| VirtualBox | Hipervisor de código aberto para virtualização | https://www.virtualbox.org |
-| Antigravity 2.0 | Plataforma de desenvolvimento agente-first do Google | https://antigravity.google |
-| Antigravity IDE | IDE para desenvolvimento agente-first | https://antigravity.google |
-| Terraform | Infraestrutura como código pela HashiCorp | https://developer.hashicorp.com/terraform/install#linux |
-| Vagrant | Ambientes de desenvolvimento reproduzíveis | https://developer.hashicorp.com/vagrant/install |
-| GitHub CLI | CLI oficial do GitHub | https://cli.github.com |
-| AWS CLI | CLI oficial da Amazon Web Services | https://aws.amazon.com/cli |
-| Ansible | Automação de infraestrutura | https://www.ansible.com |
-| kubectl | CLI oficial do Kubernetes | https://kubernetes.io |
-| Helm | Gerenciador de pacotes Kubernetes | https://helm.sh |
-| Minikube | Kubernetes single-node local para estudos | https://minikube.sigs.k8s.io |
-| Kiro CLI | CLI da plataforma Kiro | https://kiro.dev/cli |
-| ShellCheck | Análise estática para scripts shell | https://www.shellcheck.net |
-| BATS | Testes automatizados para Bash | https://bats-core.readthedocs.io |
+| Tool | Description | Website |
+| :--- | :--- | :--- |
+| **build-essential** | Meta-package with gcc, g++, make, and build toolchain | [packages.ubuntu.com](https://packages.ubuntu.com/build-essential) |
+| **libssl-dev** | OpenSSL development headers | [packages.ubuntu.com](https://packages.ubuntu.com/libssl-dev) |
+| **Python** | Python 3 and pip runtime | [python.org](https://www.python.org) |
+| **Docker** | Container platform (Engine + Compose) | [docs.docker.com](https://docs.docker.com/engine/install/ubuntu) |
+| **NVM + Node** | Node Version Manager with current Node LTS | [github.com/nvm-sh/nvm](https://github.com/nvm-sh/nvm) |
+| **Java (JDK)** | OpenJDK Java Development Kit | [openjdk.org](https://openjdk.org) |
+| **VSCode** | Visual Studio Code editor | [code.visualstudio.com](https://code.visualstudio.com) |
+| **Go** | Go programming language | [snapcraft.io/go](https://snapcraft.io/go) |
+| **Postman** | API development platform | [snapcraft.io/postman](https://snapcraft.io/postman) |
+| **VirtualBox** | Open-source hypervisor | [virtualbox.org](https://www.virtualbox.org) |
+| **Antigravity 2.0** | Agent-first developer platform | [antigravity.google](https://antigravity.google) |
+| **Antigravity IDE** | Agent-first IDE | [antigravity.google](https://antigravity.google) |
+| **Terraform** | Infrastructure as Code | [developer.hashicorp.com](https://developer.hashicorp.com/terraform/install#linux) |
+| **Vagrant** | Reproducible development environments | [developer.hashicorp.com](https://developer.hashicorp.com/vagrant/install) |
+| **GitHub CLI** | Official GitHub command line tool | [cli.github.com](https://cli.github.com) |
+| **AWS CLI** | Official Amazon Web Services CLI | [aws.amazon.com/cli](https://aws.amazon.com/cli) |
+| **Ansible** | IT automation platform | [ansible.com](https://www.ansible.com) |
+| **kubectl** | Kubernetes CLI tool | [kubernetes.io](https://kubernetes.io) |
+| **Helm** | Kubernetes package manager | [helm.sh](https://helm.sh) |
+| **Minikube** | Local single-node Kubernetes cluster | [minikube.sigs.k8s.io](https://minikube.sigs.k8s.io) |
+| **Kiro CLI** | Official CLI for the Kiro platform | [kiro.dev/cli](https://kiro.dev/cli) |
+| **ShellCheck** | Static analysis linter for shell scripts | [shellcheck.net](https://www.shellcheck.net) |
+| **BATS** | Automated Bash Automated Testing System | [bats-core.readthedocs.io](https://bats-core.readthedocs.io) |
 
 ### AI
 
-| Programa | Descrição | Site |
-|----------|-----------|------|
-| Ollama | Plataforma local para execução de modelos de linguagem | https://ollama.com |
-| OpenCode | Assistente de engenharia de software no terminal | https://opencode.ai |
-| Serena | MCP toolkit semântico para agentes de código | https://github.com/oraios/serena |
-| Antigravity CLI | CLI para desenvolvimento agente-first do Google | https://antigravity.google |
-| Claude Code | Assistente de codificação IA da Anthropic | https://code.claude.com |
-| GitHub Copilot CLI | Assistente de linha de comando com IA do GitHub | https://github.com/features/copilot/cli |
+| Tool | Description | Website |
+| :--- | :--- | :--- |
+| **Ollama** | Local LLM runner and management | [ollama.com](https://ollama.com) |
+| **OpenCode** | Terminal AI software engineering assistant | [opencode.ai](https://opencode.ai) |
+| **Serena** | Semantic MCP toolkit for code agents | [github.com/oraios/serena](https://github.com/oraios/serena) |
+| **Antigravity CLI** | Google agent-first command line interface | [antigravity.google](https://antigravity.google) |
+| **Claude Code** | Anthropic terminal coding agent | [code.claude.com](https://code.claude.com) |
+| **GitHub Copilot CLI** | GitHub AI assistant for command-line terminals | [github.com/features/copilot/cli](https://github.com/features/copilot/cli) |
 
 ### Tools Terminal
 
-| Programa | Descrição | Site |
-|----------|-----------|------|
-| htop | Monitor de processos interativo | https://htop.dev |
-| tmux | Multiplexador de terminal com sessões persistentes | https://github.com/tmux/tmux |
-| ripgrep | Ferramenta de busca turbo em Rust | https://github.com/BurntSushi/ripgrep |
-| fd | Alternativa moderna ao find | https://github.com/sharkdp/fd |
-| fzf | Buscador fuzzy generalizado para terminal | https://github.com/junegunn/fzf |
-| bat | cat com syntax highlight | https://github.com/sharkdp/bat |
-| eza | ls moderno com ícones e git status | https://github.com/eza-community/eza |
-| Starship | Prompt minimalista e personalizável | https://starship.rs |
-| zoxide | cd inteligente que aprende seus diretórios | https://github.com/ajeetdsouza/zoxide |
-| Nano | Editor de texto simples para terminal | https://www.nano-editor.org |
-| Vim | Editor de texto clássico e poderoso | https://www.vim.org |
-| Neovim | Fork moderno do Vim com suporte a Lua | https://neovim.io |
-| Anyquery | Ferramenta de consulta SQL para qualquer fonte de dados | https://anyquery.dev |
-| Superfile | Gerenciador de arquivos no terminal | https://superfile.dev |
-| fdupes | Localizador de arquivos duplicados | https://github.com/adrianlopezroche/fdupes |
+| Tool | Description | Website |
+| :--- | :--- | :--- |
+| **htop** | Interactive process viewer | [htop.dev](https://htop.dev) |
+| **tmux** | Terminal multiplexer with persistent sessions | [github.com/tmux/tmux](https://github.com/tmux/tmux) |
+| **ripgrep** | Blazing-fast regex recursive search | [github.com/BurntSushi/ripgrep](https://github.com/BurntSushi/ripgrep) |
+| **fd** | Simple, fast, and user-friendly alternative to find | [github.com/sharkdp/fd](https://github.com/sharkdp/fd) |
+| **fzf** | Command-line fuzzy finder | [github.com/junegunn/fzf](https://github.com/junegunn/fzf) |
+| **bat** | Cat clone with syntax highlighting and Git integration | [github.com/sharkdp/bat](https://github.com/sharkdp/bat) |
+| **eza** | Modern replacement for ls with icons and git status | [github.com/eza-community/eza](https://github.com/eza-community/eza) |
+| **Starship** | Fast, customizable cross-shell prompt | [starship.rs](https://starship.rs) |
+| **zoxide** | Smarter cd command that learns your habits | [github.com/ajeetdsouza/zoxide](https://github.com/ajeetdsouza/zoxide) |
+| **Nano** | Easy-to-use terminal text editor | [nano-editor.org](https://www.nano-editor.org) |
+| **Vim** | Highly configurable text editor | [vim.org](https://www.vim.org) |
+| **Neovim** | Hyperextensible Vim-based text editor with Lua | [neovim.io](https://neovim.io) |
+| **Anyquery** | Query any data source using SQL | [anyquery.dev](https://anyquery.dev) |
+| **Superfile** | Modern terminal file manager | [superfile.dev](https://superfile.dev) |
+| **fdupes** | Duplicate file finder and manager | [github.com/adrianlopezroche/fdupes](https://github.com/adrianlopezroche/fdupes) |
 
 ### Tools Desktop
 
-| Programa | Descrição | Site |
-|----------|-----------|------|
-| Flameshot | Ferramenta de captura de tela com anotações | https://flameshot.org |
-| Espanso | Expansor de texto para produtividade | https://espanso.org |
-| HyperKeys | Atalhos de teclado personalizados | https://hyperkeys.xureilab.com |
-| IMWheel | Ajuste de velocidade do scroll do mouse | https://imwheel.sourceforge.net |
-| GParted | Gerenciador de partições de disco | https://gparted.org |
-| Wave Terminal | Terminal moderno com widgets integrados | https://www.waveterm.dev |
-| Warp Terminal | Terminal moderno com IA integrada | https://www.warp.dev |
-| Draw.io | Editor de diagramas e fluxogramas | https://www.drawio.com |
-| DBeaver | Gerenciador de bancos de dados universal | https://dbeaver.io |
-| Stacer | Otimizador e monitor do sistema | https://github.com/oguzhaninan/Stacer |
-| BleachBit | Limpeza de cache e lixo do sistema | https://www.bleachbit.org |
-| Timeshift | Backup incremental do sistema com snapshots | https://github.com/linuxmint/timeshift |
+| Tool | Description | Website |
+| :--- | :--- | :--- |
+| **Flameshot** | Powerful screenshot tool with in-app annotations | [flameshot.org](https://flameshot.org) |
+| **Espanso** | Cross-platform text expander | [espanso.org](https://espanso.org) |
+| **HyperKeys** | Global custom keyboard shortcut manager | [hyperkeys.xureilab.com](https://hyperkeys.xureilab.com) |
+| **IMWheel** | Mouse wheel scroll speed modifier | [imwheel.sourceforge.net](https://imwheel.sourceforge.net) |
+| **GParted** | Partition editor for disk management | [gparted.org](https://gparted.org) |
+| **Wave Terminal** | Modern terminal with inline UI rendering | [waveterm.dev](https://www.waveterm.dev) |
+| **Warp Terminal** | Rust-based modern terminal with AI integration | [warp.dev](https://www.warp.dev) |
+| **Draw.io** | Diagramming and flowchart tool | [drawio.com](https://www.drawio.com) |
+| **DBeaver** | Universal multi-platform database manager | [dbeaver.io](https://dbeaver.io) |
+| **Stacer** | Linux system optimizer and hardware monitor | [github.com/oguzhaninan/Stacer](https://github.com/oguzhaninan/Stacer) |
+| **BleachBit** | Disk space cleaner and cache privacy manager | [bleachbit.org](https://www.bleachbit.org) |
+| **Timeshift** | System restore tool with incremental snapshots | [github.com/linuxmint/timeshift](https://github.com/linuxmint/timeshift) |
 
 ### Tools Ubuntu
 
-| Programa | Descrição | Site |
-|----------|-----------|------|
-| Nala | Frontend moderno para o apt | https://gitlab.com/volian/nala |
-| neofetch | Informações do sistema com ASCII art da distro | https://github.com/dylanaraps/neofetch |
-| ncdu | Análise de uso de disco em TUI | https://dev.yorhel.nl/ncdu |
-| duf | df moderno com gráficos e cores | https://github.com/muesli/duf |
-| deborphan | Localiza pacotes órfãos no sistema | https://packages.debian.org/deborphan |
-| lm-sensors | Monitoramento de temperatura da CPU/GPU | https://github.com/lm-sensors/lm-sensors |
-| UFW | Firewall simples para Ubuntu | https://help.ubuntu.com/community/UFW |
-| Unattended Upgrades | Atualizações automáticas de segurança | https://wiki.debian.org/UnattendedUpgrades |
+| Tool | Description | Website |
+| :--- | :--- | :--- |
+| **Nala** | Elegant, parallel frontend for apt | [github.com/volitank/nala](https://github.com/volitank/nala) |
+| **neofetch** | CLI system information tool | [github.com/dylanaraps/neofetch](https://github.com/dylanaraps/neofetch) |
+| **ncdu** | NCurses disk usage analyzer | [dev.yorhel.nl/ncdu](https://dev.yorhel.nl/ncdu) |
+| **duf** | Better disk usage utility with tables and colors | [github.com/muesli/duf](https://github.com/muesli/duf) |
+| **deborphan** | Finds orphaned packages on Debian/Ubuntu | [packages.ubuntu.com](https://packages.ubuntu.com/deborphan) |
+| **lm-sensors** | Hardware temperature and fan sensor reader | [github.com/lm-sensors/lm-sensors](https://github.com/lm-sensors/lm-sensors) |
+| **UFW** | Uncomplicated Firewall manager | [launchpad.net/ufw](https://launchpad.net/ufw) |
+| **Unattended Upgrades** | Automatic security updates setup | [wiki.debian.org](https://wiki.debian.org/UnattendedUpgrades) |
 
 ### Media
 
-| Programa | Descrição | Site |
-|----------|-----------|------|
-| Google Chrome | Navegador web do Google | https://www.google.com/chrome |
-| Brave | Navegador focado em privacidade | https://brave.com |
+| Tool | Description | Website |
+| :--- | :--- | :--- |
+| **Google Chrome** | Modern web browser by Google | [google.com/chrome](https://www.google.com/chrome) |
+| **Brave** | Privacy-focused secure web browser | [brave.com](https://brave.com) |
 
 ### Fonts
 
-| Programa | Descrição | Site |
-|----------|-----------|------|
-| Fira Code | Fonte monoespaçada com ligaduras para programação | https://github.com/tonsky/FiraCode |
-| JetBrains Mono | Fonte para programação desenhada pela JetBrains | https://www.jetbrains.com/lp/mono |
-| Cascadia Code | Fonte monoespaçada da Microsoft com ligaduras | https://github.com/microsoft/cascadia-code |
-| IBM Plex | Família de fontes da IBM com design elegante | https://www.ibm.com/plex |
-| Victor Mono | Fonte com itálico cursivo e ligaduras | https://rubjo.github.io/victor-mono |
-| Monaspace | Família de fontes do GitHub com 5 variantes | https://monaspace.githubnext.com |
+| Tool | Description | Website |
+| :--- | :--- | :--- |
+| **Fira Code** | Monospace font with programming ligatures | [github.com/tonsky/FiraCode](https://github.com/tonsky/FiraCode) |
+| **JetBrains Mono** | Developer typeface created by JetBrains | [jetbrains.com/lp/mono](https://www.jetbrains.com/lp/mono) |
+| **Cascadia Code** | Monospaced font created by Microsoft | [github.com/microsoft/cascadia-code](https://github.com/microsoft/cascadia-code) |
+| **IBM Plex** | Open-source typeface superfamily by IBM | [github.com/IBM/plex](https://github.com/IBM/plex) |
+| **Victor Mono** | Slanted monospaced font with cursive italics | [rubjo.github.io/victor-mono](https://rubjo.github.io/victor-mono) |
+| **Monaspace** | GitHub typography system for coding | [monaspace.githubnext.com](https://monaspace.githubnext.com) |
 
 ### Config
 
-| Programa | Descrição | Site |
-|----------|-----------|------|
-| Git Config | Identificação para commits Git | — |
-| SSH Key | Chave SSH para autenticação em serviços remotos | — |
-| Gogh Terminal | Temas para o terminal GNOME | https://github.com/Gogh-Co/Gogh |
+| Step | Description |
+| :--- | :--- |
+| **Git Config** | Interactive prompt to configure global git name and email |
+| **SSH Key** | Generation of ED25519 SSH keys for GitHub/GitLab authentication |
+| **Gogh Terminal** | Over 200 color schemes for GNOME and Linux terminals |
 
 ### NPM Globals
 
-| Programa | Descrição | Site |
-|----------|-----------|------|
-| TypeScript | Compilador TypeScript | https://www.typescriptlang.org |
-| pnpm | Gerenciador de pacotes rápido e eficiente | https://pnpm.io/installation |
-| Yarn Classic | Gerenciador de pacotes (linha 1.22.x) | https://classic.yarnpkg.com |
-| Yarn Berry | Gerenciador de pacotes moderno (4.x, via Corepack) | https://yarnpkg.com |
-| Nodemon | Auto-restart em alterações de código | https://nodemon.io |
-| Concurrently | Rodar múltiplos comandos em paralelo | https://github.com/open-cli-tools/concurrently |
-| Serve | Servidor estático moderno pela Vercel | https://github.com/vercel/serve |
-| Nest.js | Framework Node.js progressivo | https://nestjs.com |
-| npm-check-updates | Atualizar versões de dependências no package.json | https://github.com/raineorshine/npm-check-updates |
-| live-server | Servidor com live reload para páginas estáticas | https://github.com/tapio/live-server |
-| 9Router | Roteador CLI | https://github.com/decolua/9router |
-| OpenSpec | Gerenciador de mudanças para projetos de IA | https://openspec.dev/docs/installation |
+| Package | Description | Website |
+| :--- | :--- | :--- |
+| **TypeScript** | Typed JavaScript language compiler | [typescriptlang.org](https://www.typescriptlang.org) |
+| **pnpm** | Fast, disk space efficient package manager | [pnpm.io](https://pnpm.io) |
+| **Yarn Classic** | Classic Node.js package manager (v1.22.x) | [classic.yarnpkg.com](https://classic.yarnpkg.com) |
+| **Yarn Berry** | Modern Yarn (v4.x) via Corepack | [yarnpkg.com](https://yarnpkg.com) |
+| **Nodemon** | Automatic script reloader for Node applications | [nodemon.io](https://nodemon.io) |
+| **Concurrently** | Run multiple commands concurrently | [github.com/open-cli-tools/concurrently](https://github.com/open-cli-tools/concurrently) |
+| **Serve** | Static file serving and single page apps | [github.com/vercel/serve](https://github.com/vercel/serve) |
+| **Nest.js** | Progressive Node.js framework CLI | [nestjs.com](https://nestjs.com) |
+| **npm-check-updates** | Upgrades package.json dependencies | [github.com/raineorshine/npm-check-updates](https://github.com/raineorshine/npm-check-updates) |
+| **live-server** | Development HTTP server with live reloading | [github.com/tapio/live-server](https://github.com/tapio/live-server) |
+| **9Router** | Fast command-line routing utility | [github.com/kbrgl/9router](https://github.com/kbrgl/9router) |
+| **OpenSpec** | Spec-driven change manager for AI workflows | [openspec.dev](https://openspec.dev) |
 
-## Flags
+---
 
-| Flag / Modo | Script | Comando | O que faz | Quando usar |
-|---|---|---|---|---|
-| *(nenhuma)* | `install.sh` | `./install.sh` ou `bash bootstrap.sh` (terminal) | Menu whiptail em etapas: modo (new/continue/retry) → categorias → itens de cada categoria → resumo + confirmação | Você quer escolher exatamente o que instalar, item por item |
-| `--all` | `install.sh` | `./install.sh --all` | Pré-seleciona **todos** os módulos e itens, limpa o histórico (`init_results --fresh`) e pede confirmação | Máquina recém-formatada, você quer tudo do zero revisando o resumo |
-| `--yes`, `-y` | `install.sh` | `./install.sh --all --yes` | Dispensa **apenas** a confirmação final. Obrigatório quando não há terminal interativo | Automação, scripts e `bootstrap.sh` |
-| `--update` | `install.sh` | `./install.sh --update` | Reinstala **todos** os programas (últimas versões). Também limpa o histórico e pede confirmação | Você já tem o setup instalado mas quer atualizar tudo para a versão mais recente |
-| `--retry` | `install.sh` | `./install.sh --retry` | Lê `results/failure.txt` da execução anterior e **pré-seleciona** apenas os programas que falharam. O resumo continua aparecendo | Alguns programas falharam (rede instável, repositório offline) e você quer tentar de novo sem refazer tudo |
-| `--continue` | `install.sh` | `./install.sh --continue` | Lê `results/success.txt` e pula os já instalados. Executa **apenas** os programas que ainda não constam como sucesso | A instalação foi interrompida no meio e você quer continuar de onde parou sem repetir os já instalados |
-| `--help` | `install.sh` | `./install.sh --help` | Exibe a ajuda com todas as opções disponíveis | Você esqueceu as opções ou está conhecendo o projeto |
-| via pipe | `bootstrap.sh` | `curl ... | bash` | Detecta pipe, clona o repositório e executa `install.sh --all --yes` automaticamente. | Setup completo em um comando, sem clonar nada manualmente |
+## Architecture & Design
 
-**Breaking change:** `--all` sozinho não é mais 100% não interativo — ele mostra o resumo e pede confirmação. Para automação, use `--all --yes`.
+The project is structured around clear separation of concerns, single source of truth, and strict defensive shell scripting:
 
-## Relatórios
+```mermaid
+classDiagram
+    class Catalog {
+        +MODULES Array
+        +_ITEMS_MODULE Array
+        +catalog_items(module)
+        +catalog_run_module(module)
+        +catalog_selected_total()
+    }
 
-Cada execução gera `results/` no diretório clonado:
+    class Selection {
+        +SELECTION_ENABLED
+        +select_add(tag)
+        +select_has(tag)
+        +select_summary()
+    }
 
+    class Results {
+        +init_results()
+        +track(category, function, name)
+        +log_results()
+    }
+
+    class ModuleRunner {
+        +install_app()
+        +print_header()
+        +print_details()
+        +log_success()
+    }
+
+    Catalog --> ModuleRunner : declares order & functions
+    Selection --> Results : filters execution
+    Results --> ModuleRunner : wraps & logs outcomes
 ```
-results/
-├── success.txt     — programs installed successfully
-├── failure.txt     — programs that failed
-└── report.txt      — formatted report with summary by category
-```
 
-Se houver falhas, `./install.sh --retry` lê `failure.txt` e tenta novamente apenas os programas pendentes — útil para falhas temporárias (rede, repositório instável).
+### Key Principles
 
-## Progresso Visual
+- **SOLID (Shell Adaptation)**:
+  - *Single Responsibility*: Every `install_*` function strictly installs one tool. Shared infrastructure resides in `lib/`.
+  - *Open/Closed*: Adding tools or modules requires appending to `lib/catalog.sh` without altering installer loops.
+  - *Dependency Inversion*: Modules do not couple to Whiptail TUI directly; executions pass through `catalog_run_module` and `track`.
+- **DRY (Don't Repeat Yourself)**: Common patterns are encapsulated in `lib/utils.sh` (`install_deb`, `download_to_temp`, `ensure_snap`, `ensure_flatpak`).
+- **Safety First**: Directory changes are guarded with `pushd ... || return 1` and `popd`. Inputs use `read -r`.
 
-Durante a instalação, duas barras de progresso são exibidas em tempo real:
+---
 
-```
-  Dev          ████████████████████░░░░░░  75% (3/4)
-  → Docker
-  Total        ████████████████░░░░░░░░░░  25% (3/12)
-```
+## Testing & Quality
 
-- **Linha 1**: progresso do módulo atual com nome, barra, percentual e contagem
-- **Linha 2**: nome do programa sendo instalado no momento
-- **Linha 3**: progresso global (total de todos os módulos)
-
-O sistema detecta automaticamente o **gum** (instalado via `base.sh`), mas funciona sem ele com cores ANSI puras.
-
-<p align="center">
-  <img src="prints/print-02.png" alt="Tela do menu interativo whiptail" width="700">
-</p>
-
-## Testes
-
-O projeto possui testes com duas ferramentas:
-
-| Ferramenta | Alvo | O que testa |
-|---|---|---|
-| **ShellCheck** | Todos os `.sh` em `./`, `lib/` e `install/` | Análise estática — detecta erros de sintaxe, variáveis não utilizadas, problemas de quoting e más práticas em shell script |
-| **BATS** (Bash Automated Testing System) | `tests/lib/*.bats` | Testes de unidade — verifica o comportamento isolado das funções das bibliotecas |
-
-**Testes disponíveis (BATS):**
-
-| Arquivo | O que cobre |
-|---|---|
-| `tests/lib/log.bats` | `print_header`, `print_details`, `log_info`, `log_success`, `log_error` |
-| `tests/lib/progress.bats` | `init_progress`, `update_progress`, barras de progresso |
-| `tests/lib/results.bats` | `init_results`, `track`, registro de sucesso/falha |
-| `tests/lib/catalog.bats` | Catálogo de módulos/itens, totais, ordem de execução e seleção |
-| `tests/lib/selection.bats` | `select_add`, `select_has`, `select_clear`, filtro de `track` |
-| `tests/lib/utils.bats` | `die_on_error`, `ensure_whiptail`, `ensure_snap`, `ensure_flatpak` |
-
-**Pré-requisitos:**
+All codebase changes are validated against strict static analysis and unit tests:
 
 ```bash
-sudo apt install shellcheck bats
-```
-
-**Como executar:**
-
-```bash
-# ShellCheck + BATS (completo)
+# Run full suite (ShellCheck + BATS)
 bash tests/run.sh
 
-# Apenas ShellCheck
+# Run static linter only
 bash tests/lint.sh
 
-# Apenas BATS
+# Run BATS unit tests only
 bats tests/lib/
 ```
 
-## Estrutura
+Continuous integration runs these tests on every pull request to guarantee zero regressions.
 
-```
+---
+
+## Directory Structure
+
+```text
 ubuntu-initial-setup/
-├── bootstrap.sh          # curl | bash — instala dependências e executa install.sh
-├── install.sh            # Ponto de entrada com menu interativo e CLI flags
-├── install/
-│   ├── base.sh             # curl, git, gum, zsh
-│   ├── dev.sh              # Python, Docker, NVM, Java, VSCode, Go, kubectl, helm e mais
-│   ├── ai.sh               # Ollama, OpenCode, Serena, Hermes, Antigravity CLI, Claude Code, GitHub Copilot CLI
-│   ├── tools_terminal.sh   # htop, tmux, ripgrep, fzf, vim, Neovim, Superfile, fdupes
-│   ├── tools_desktop.sh    # Flameshot, Espanso, Draw.io, DBeaver, Stacer, Timeshift
-│   ├── tools_ubuntu.sh     # Nala, neofetch, ncdu, duf, UFW
-│   ├── media.sh            # Chrome, Brave
-│   ├── fonts.sh            # Fira Code, JetBrains Mono, Cascadia Code, Victor Mono, Monaspace
-│   ├── config.sh           # Git, SSH, Gogh
-│   └── npm-globals.sh      # TypeScript, pnpm, Yarn, Nest.js, OpenSpec e mais
-├── lib/
-│   ├── colors.sh         # Cores ANSI
-│   ├── log.sh            # log_info, log_success, log_error, print_header
-│   ├── catalog.sh        # Catálogo único de módulos e itens (fonte de verdade)
-│   ├── selection.sh      # Seleção por item (tags MODULO:funcao)
-│   ├── utils.sh          # Utilitários (die_on_error, download_to_temp, install_deb, ensure_snap, ensure_flatpak)
-│   ├── progress.sh       # Barras de progresso (módulo + total)
-│   └── results.sh        # Tracking de resultados, relatório e retry
-└── tests/
-    ├── run.sh              # Runner: lint + BATS
-    ├── lint.sh             # ShellCheck em todos os .sh
-    ├── helpers.bash        # source_lib() para BATS
-    └── lib/
-        ├── log.bats        # Testes: print_header, print_details, log_*
-        ├── progress.bats   # Testes: init_progress, update_progress
-        ├── catalog.bats    # Testes: catálogo, totais e ordem
-        ├── selection.bats  # Testes: seleção e filtro de track
-        ├── results.bats    # Testes: init_results, track
-        └── utils.bats      # Testes: die_on_error, ensure_whiptail, ensure_snap, ensure_flatpak
+├── bootstrap.sh            # Remote curl-pipe-bash bootstrap script
+├── install.sh              # Central CLI and Whiptail orchestrator
+├── install/                # Installation logic per category
+│   ├── _template.sh        # Developer template for creating new modules
+│   ├── base.sh             # Essential CLI tooling
+│   ├── dev.sh              # Programming runtimes, build tools, Docker, k8s
+│   ├── ai.sh               # Local LLMs and agent CLI tools
+│   ├── tools_terminal.sh   # Terminal utilities and multiplexers
+│   ├── tools_desktop.sh    # Desktop GUI applications
+│   ├── tools_ubuntu.sh     # System maintainers and firewall
+│   ├── media.sh            # Web browsers
+│   ├── fonts.sh            # Monospace programming fonts
+│   ├── config.sh           # Git, SSH, and terminal themes
+│   └── npm-globals.sh      # Global NPM tools
+├── lib/                    # Reusable modular engine
+│   ├── catalog.sh          # Single source of truth for items and modules
+│   ├── selection.sh        # Selection tags and filter registry
+│   ├── results.sh          # Execution logging, report generator, retry state
+│   ├── progress.sh         # Dynamic terminal progress bars
+│   ├── utils.sh            # System wrappers (install_deb, snap, flatpak)
+│   ├── log.sh              # Formatted colored log outputs
+│   └── colors.sh           # ANSI color definitions
+└── tests/                  # Test suite
+    ├── run.sh              # Master test runner
+    ├── lint.sh             # ShellCheck runner
+    └── lib/                # BATS test specs
 ```
 
-## Arquitetura
+---
 
-- **Strict mode** (`set -uo pipefail`) em `install.sh` — sem `set -e` para não abortar em caso de erro em um módulo
-- **Catálogo como fonte de verdade**: `lib/catalog.sh` declara `MODULES` e `_ITEMS_<MODULO>` (`funcao|Nome|descrição`); menu, contagem e execução derivam dele
-- **Execução orientada pelo catálogo**: cada `run_*()` delega para `catalog_run_module MODULO`, que percorre os itens na ordem declarada e respeita a seleção
-- **Versões dinâmicas**: resolvidas via GitHub API (`releases/latest`) ou scraping da página oficial — sem versões fixas
-- **Cada função de instalação** segue o padrão `# <url>` + `print_header` + `log_info "↪ <url>"` + comandos + `log_success`
-- **Tracking independente**: `results.sh` registra em arquivo separadamente da saída do terminal e ignora itens fora da seleção
-- **Snap/Flatpak**: funções que usam `snap install` ou `flatpak install` chamam `ensure_snap()` / `ensure_flatpak()` antes para garantir que o gerenciador esteja instalado
+## Extending the Catalog
 
-## FAQ / Troubleshooting
+To add a new tool:
 
-### `curl: command not found`
-O bootstrap.sh instala curl automaticamente. Se for executar manualmente, instale antes com `sudo apt install curl -y`.
+1. **Add function in `install/<module>.sh`**:
+   ```bash
+   install_mytool() {
+     # https://mytool.org
+     print_header "MyTool" "Tool description"
+     print_details "https://mytool.org" "Feature 1" "Feature 2"
+     # commands to install
+     log_success "MyTool installed"
+   }
+   ```
+2. **Register in `lib/catalog.sh`**:
+   Append `"install_mytool|MyTool|Short description"` to `_ITEMS_<MODULE>`.
+3. **Verify**:
+   Run `bash tests/run.sh` to confirm linting and tests pass.
 
-### Falha na instalação de algum pacote
-Pode ser rede instável, repositório temporariamente fora do ar ou pacote já instalado. Execute `./install.sh --retry` para tentar novamente apenas os programas que falharam.
+---
 
-### Algum programa não aparece no menu
-Verifique se o módulo correspondente existe em `install/`. O menu whiptail lista automaticamente os módulos encontrados.
+## License
 
-### Erro de permissão
-Certifique-se de que seu usuário tem permissão sudo. Alguns módulos instalam pacotes via `apt`, `snap` ou scripts que exigem superusuário.
-
-### Quero adicionar meus próprios programas
-Faça um fork do projeto, veja o template guiado em `install/_template.sh` com exemplos práticos para adicionar programas ou criar módulos novos.
-
-## Licença
-
-[MIT](LICENSE) — use, modifique e compartilhe à vontade.
+This project is open-source software licensed under the [MIT License](LICENSE).

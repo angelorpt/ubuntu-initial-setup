@@ -92,3 +92,40 @@ teardown() {
   [ "$(cat "$TEST_DIR/total")" -eq 1 ]
   [ "$(cat "$TEST_DIR/order")" = "install_git" ]
 }
+
+@test "catalog_module_is_gui identifies GUI modules" {
+  run catalog_module_is_gui TOOLS_DESKTOP
+  [ "$status" -eq 0 ]
+
+  run catalog_module_is_gui MEDIA
+  [ "$status" -eq 0 ]
+
+  run catalog_module_is_gui FONTS
+  [ "$status" -eq 0 ]
+
+  run catalog_module_is_gui BASE
+  [ "$status" -eq 1 ]
+
+  run catalog_module_is_gui DEV
+  [ "$status" -eq 1 ]
+}
+
+@test "catalog_item_is_gui identifies individual GUI items" {
+  run catalog_item_is_gui DEV install_vscode
+  [ "$status" -eq 0 ]
+
+  run catalog_item_is_gui DEV install_postman
+  [ "$status" -eq 0 ]
+
+  run catalog_item_is_gui DEV install_virtualbox
+  [ "$status" -eq 0 ]
+
+  run catalog_item_is_gui DEV install_antigravity_ide
+  [ "$status" -eq 0 ]
+
+  run catalog_item_is_gui DEV install_docker
+  [ "$status" -eq 1 ]
+
+  run catalog_item_is_gui TOOLS_DESKTOP install_flameshot
+  [ "$status" -eq 0 ]
+}

@@ -10,7 +10,8 @@ Shell scripts to automate Ubuntu setup. Modular, interactive menu (whiptail) or 
 ## Commands
 
 ```bash
-./install.sh                  # whiptail menu (mode → categories → items → confirm)
+./install.sh                  # whiptail menu (env → mode → categories → items → confirm)
+./install.sh --headless       # runs with Headless / WSL profile (CLI only)
 ./install.sh --all            # select everything, show summary, ask confirmation (fresh)
 ./install.sh --all --yes      # headless full install (fresh)
 ./install.sh --update         # reinstall everything (fresh, asks confirmation)
@@ -55,6 +56,16 @@ bats tests/lib/               # BATS only
 - Every `install_*` function starts with `# <url>` comment
 - `print_header "Name" "Desc"` before install commands, then `print_details "url" "bullet1" "bullet2" ...`
 - End with `log_success "Name installed"`
+
+## Documentation Synchronization (README.md & README.pt-BR.md)
+
+- The project maintains two synchronized documentation files:
+  - `README.md` — Primary documentation in **English**.
+  - `README.pt-BR.md` — Complete mirror in **Portuguese**.
+- Whenever a module or program is **added, renamed, updated, or removed**:
+  1. Both `README.md` and `README.pt-BR.md` MUST be updated simultaneously.
+  2. The module counts in the summary table and the detailed category table must match `lib/catalog.sh` precisely.
+  3. Ensure reciprocal language switcher links at the top of each README remain intact.
 
 ## Engineering Principles & Best Practices
 
