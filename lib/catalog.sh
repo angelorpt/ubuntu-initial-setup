@@ -85,6 +85,7 @@ _ITEMS_TOOLS_DESKTOP=(
   "install_stacer|Stacer|Linux system optimizer and monitor|Otimizador e monitor do sistema"
   "install_bleachbit|BleachBit|Disk space cleaner and privacy manager|Limpeza de cache e lixo do sistema"
   "install_timeshift|Timeshift|Incremental system restore snapshots|Backup incremental com snapshots"
+  "install_moji|Moji|Modern and lightweight emoji picker|Seletor de emojis moderno e leve"
 )
 
 _ITEMS_TOOLS_UBUNTU=(

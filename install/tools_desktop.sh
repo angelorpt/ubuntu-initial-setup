@@ -191,6 +191,33 @@ install_timeshift() {
   log_success "Timeshift instalado"
 }
 
+install_moji() {
+  # https://github.com/alexishida/Moji
+  print_header "Moji" "Seletor de emojis moderno e leve"
+  print_details "https://github.com/alexishida/Moji" \
+    "Seletor de emojis para desktop Linux com busca rápida" \
+    "Interface minimalista e atalho de ativação personalizável" \
+    "Uso: moji (ou atalho de teclado configurado)"
+
+  if command -v moji &>/dev/null; then
+    log_info "Moji já instalado"
+    return 0
+  fi
+
+  local url
+  url=$(curl -fsSL https://api.github.com/repos/alexishida/Moji/releases/latest 2>/dev/null | grep -o 'https://[^"]*amd64\.deb' | head -n1)
+  if [ -z "$url" ]; then
+    url="https://github.com/alexishida/Moji/releases/download/v1.0.7/Moji-1.0.7-amd64.deb"
+  fi
+
+  pushd /tmp > /dev/null || return 1
+  wget -q -O moji.deb "$url" || { log_error "Falha ao baixar Moji"; popd > /dev/null || return 1; return 1; }
+  install_deb ./moji.deb
+  rm -f moji.deb
+  popd > /dev/null || return 1
+  log_success "Moji instalado"
+}
+
 _run_tools_desktop_total=$(catalog_module_total TOOLS_DESKTOP)
 
 run_tools_desktop() {
