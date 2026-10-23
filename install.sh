@@ -15,36 +15,29 @@ RESULTS_PATH="$(pwd)/results"
 
 show_help() {
   cat << EOF
-Uso: ./install.sh [OPÇÃO]
+Usage / Uso: ./install.sh [OPTION]
 
-Opções:
-  --all                 Seleciona todos os módulos e itens (pede confirmação)
-  --headless, --wsl     Ativa o perfil Headless / WSL (somente CLI / terminal)
-  --desktop             Ativa o perfil Standard Desktop (padrão em ambiente desktop)
-  --profile=TIPO        Define perfil de ambiente: "desktop" ou "headless" (wsl)
-  --update              Seleciona todos os módulos e itens e limpa histórico
-  --retry               Pré-seleciona apenas os programas que falharam
-  --continue            Continua instalação pulando programas já instalados com sucesso
-  --yes, -y             Dispensa a confirmação final (obrigatório em automação)
-  --help                Mostra esta ajuda
+Options / Opções:
+  --lang=LANG           Set UI language: "en" (default) or "pt"
+  --all                 Select all modules and items (requests confirmation)
+  --headless, --wsl     Activate Headless / WSL profile (CLI / terminal only)
+  --desktop             Activate Standard Desktop profile (default in desktop)
+  --profile=TYPE        Set environment profile: "desktop" or "headless" (wsl)
+  --update              Select all modules/items and clean history
+  --retry               Preselect only previously failed items
+  --continue            Continue install skipping already successful items
+  --yes, -y             Bypass final confirmation (mandatory in automation)
+  --help, -h            Show this help
 
-Sem opções: abre o menu interativo whiptail (ambiente → modo → categorias → itens).
+Interactive whiptail menu without options: language → environment → mode → categories → items.
 
-A instalação só começa após o resumo da seleção ser confirmado. Para execução
-não interativa use --all --yes; sem terminal e sem --yes o script encerra com erro.
-
-Relatórios salvos em results/
-  success.txt   — programs installed successfully
-  failure.txt   — programs that failed
-  report.txt    — full formatted report
-
-Exemplos:
-  ./install.sh                 # menu interativo
-  ./install.sh --all           # seleciona tudo e pede confirmação
-  ./install.sh --headless      # menu com perfil apenas CLI/WSL
-  ./install.sh --all --yes     # instala tudo sem perguntar
-  ./install.sh --continue      # continua de onde parou
-  ./install.sh --retry         # retenta falhas
+Examples:
+  ./install.sh                 # interactive menu
+  ./install.sh --lang=en       # interactive menu in English
+  ./install.sh --lang=pt       # interactive menu in Portuguese
+  ./install.sh --headless      # CLI/WSL profile
+  ./install.sh --all --yes     # unattended full install
+  ./install.sh --retry         # retry failures
 EOF
 }
 
@@ -59,6 +52,7 @@ SELECTION_ENABLED=true
 MODE=""
 PROFILE=""
 ASSUME_YES=false
+CLI_LANG=""
 
 for arg in "$@"; do
   case "$arg" in
@@ -70,10 +64,12 @@ for arg in "$@"; do
     --desktop)         PROFILE="desktop"  ;;
     --profile=headless|--profile=wsl) PROFILE="headless" ;;
     --profile=desktop) PROFILE="desktop"  ;;
+    --lang=en|--en)    CLI_LANG="en"   ;;
+    --lang=pt|--lang=pt-br|--lang=pt_BR|--pt) CLI_LANG="pt" ;;
     --yes|-y)          ASSUME_YES=true ;;
     --help|-h)         show_help; exit 0 ;;
     *)
-      log_error "Opção desconhecida: $arg"
+      log_error "Opção desconhecida / Unknown option: $arg"
       echo
       show_help
       exit 1
@@ -81,9 +77,13 @@ for arg in "$@"; do
   esac
 done
 
+if [ -n "$CLI_LANG" ]; then
+  APP_LANG="$CLI_LANG"
+fi
+
 if ! $ASSUME_YES && { [ ! -t 0 ] || [ ! -t 1 ]; }; then
-  log_error "Terminal não interativo detectado."
-  log_info "Use --all --yes para instalar sem nenhuma pergunta."
+  log_error "Non-interactive terminal detected / Terminal não interativo detectado."
+  log_info "Use --all --yes to install without prompts."
   exit 1
 fi
 
@@ -91,6 +91,25 @@ FROM_MENU=false
 if [ -z "$MODE" ]; then
   ensure_whiptail
   FROM_MENU=true
+
+  if [ -z "$CLI_LANG" ]; then
+    chosen_lang=$(whiptail --title "ubuntu-initial-setup — Language / Idioma" \
+      --radiolist "Choose language / Escolha o idioma:" \
+      15 65 2 \
+      "en" "English (Default)" "ON" \
+      "pt" "Português (Brasil)" "OFF" \
+      3>&1 1>&2 2>&3) || true
+    if [ -z "$chosen_lang" ]; then
+      log_info "Cancelled / Cancelado."
+      exit 0
+    fi
+    APP_LANG="$chosen_lang"
+  fi
+
+  is_pt=false
+  if [ "$APP_LANG" = "pt" ] || [ "$APP_LANG" = "pt-BR" ] || [ "$APP_LANG" = "pt_BR" ]; then
+    is_pt=true
+  fi
 
   if [ -z "$PROFILE" ]; then
     default_profile="desktop"
@@ -104,27 +123,52 @@ if [ -z "$MODE" ]; then
     else
       headless_state="ON"
     fi
-    PROFILE=$(whiptail --title "ubuntu-initial-setup — Ambiente" \
-      --radiolist "Escolha o ambiente de instalação:" \
+
+    env_title="ubuntu-initial-setup — Target Environment"
+    env_prompt="Select target environment:"
+    env_desktop="Standard Ubuntu (Desktop + GUI + CLI)"
+    env_headless="Headless / WSL (Terminal & CLI only)"
+    if $is_pt; then
+      env_title="ubuntu-initial-setup — Ambiente"
+      env_prompt="Escolha o ambiente de instalação:"
+      env_desktop="Standard Ubuntu (Desktop + GUI + CLI)"
+      env_headless="Headless / WSL (Terminal & CLI apenas)"
+    fi
+
+    PROFILE=$(whiptail --title "$env_title" \
+      --radiolist "$env_prompt" \
       15 70 2 \
-      "desktop"  "Standard Ubuntu (Desktop + GUI + CLI)" "$desktop_state" \
-      "headless" "Headless / WSL (Terminal & CLI apenas)" "$headless_state" \
+      "desktop"  "$env_desktop" "$desktop_state" \
+      "headless" "$env_headless" "$headless_state" \
       3>&1 1>&2 2>&3) || true
     if [ -z "$PROFILE" ]; then
-      log_info "Cancelado."
+      log_info "$($is_pt && echo "Cancelado." || echo "Cancelled.")"
       exit 0
     fi
   fi
 
-  MODE=$(whiptail --title "ubuntu-initial-setup" \
-    --menu "Escolha o modo de instalação:" \
+  mode_title="ubuntu-initial-setup — Mode"
+  mode_prompt="Choose installation mode:"
+  mode_new="Fresh install (clear history)"
+  mode_continue="Continue from last run"
+  mode_retry="Retry failed items only"
+  if $is_pt; then
+    mode_title="ubuntu-initial-setup — Modo"
+    mode_prompt="Escolha o modo de instalação:"
+    mode_new="Nova instalação (limpa histórico)"
+    mode_continue="Continuar de onde parou"
+    mode_retry="Retentar apenas falhas"
+  fi
+
+  MODE=$(whiptail --title "$mode_title" \
+    --menu "$mode_prompt" \
     15 60 3 \
-    "new"       "Nova instalação (limpa histórico)" \
-    "continue"  "Continuar de onde parou" \
-    "retry"     "Retentar apenas falhas" \
+    "new"       "$mode_new" \
+    "continue"  "$mode_continue" \
+    "retry"     "$mode_retry" \
     3>&1 1>&2 2>&3) || true
   if [ -z "$MODE" ]; then
-    log_info "Cancelado."
+    log_info "$($is_pt && echo "Cancelado." || echo "Cancelled.")"
     exit 0
   fi
 fi
@@ -202,9 +246,14 @@ _select_categories() {
   height=$(( ${#MODULES[@]} + 8 ))
   [ "$height" -gt 30 ] && height=30
 
+  local cat_prompt="Select categories (Space to toggle):"
+  if [ "$APP_LANG" = "pt" ] || [ "$APP_LANG" = "pt-BR" ] || [ "$APP_LANG" = "pt_BR" ]; then
+    cat_prompt="Selecione as categorias (espaço marca/desmarca):"
+  fi
+
   output=$(whiptail --title "ubuntu-initial-setup" \
     --separate-output \
-    --checklist "Selecione as categorias (espaço marca/desmarca):" \
+    --checklist "$cat_prompt" \
     "$height" 78 10 \
     "${entries[@]}" \
     3>&1 1>&2 2>&3) || return 1
@@ -233,9 +282,14 @@ _select_items() {
   local list_height=$count
   [ "$list_height" -gt 20 ] && list_height=20
 
+  local item_prompt="Select items (Space to toggle):"
+  if [ "$APP_LANG" = "pt" ] || [ "$APP_LANG" = "pt-BR" ] || [ "$APP_LANG" = "pt_BR" ]; then
+    item_prompt="Selecione os itens (espaço marca/desmarca):"
+  fi
+
   output=$(whiptail --title "$(catalog_module_label "$module")" \
     --separate-output \
-    --checklist "Selecione os itens (espaço marca/desmarca):" \
+    --checklist "$item_prompt" \
     "$height" 78 "$list_height" \
     "${entries[@]}" \
     3>&1 1>&2 2>&3) || return 1
@@ -244,15 +298,28 @@ _select_items() {
 
 _select_via_menu() {
   local module category_output item_output func action
+  local batch_prompt batch_all batch_custom batch_skip
+  if [ "$APP_LANG" = "pt" ] || [ "$APP_LANG" = "pt-BR" ] || [ "$APP_LANG" = "pt_BR" ]; then
+    batch_prompt="Como deseja selecionar os itens desta categoria?"
+    batch_all="Marcar todos os itens desta categoria"
+    batch_custom="Escolher programas item a item"
+    batch_skip="Desconsiderar categoria"
+  else
+    batch_prompt="How would you like to select items in this category?"
+    batch_all="Select all items in this category"
+    batch_custom="Choose items individually"
+    batch_skip="Skip this category"
+  fi
+
   SELECTED_MODULES=()
   category_output=$(_select_categories) || return 1
   for module in $category_output; do
     action=$(whiptail --title "$(catalog_module_label "$module")" \
-      --menu "Como deseja selecionar os itens desta categoria?" \
+      --menu "$batch_prompt" \
       15 65 3 \
-      "all"    "Marcar todos os itens desta categoria" \
-      "custom" "Escolher programas item a item" \
-      "skip"   "Desconsiderar categoria" \
+      "all"    "$batch_all" \
+      "custom" "$batch_custom" \
+      "skip"   "$batch_skip" \
       3>&1 1>&2 2>&3) || return 1
 
     case "$action" in
@@ -283,7 +350,7 @@ _select_via_menu() {
 }
 
 if $FROM_MENU; then
-  _select_via_menu || { log_info "Cancelado."; exit 0; }
+  _select_via_menu || { log_info "$([ "$APP_LANG" = "pt" ] && echo "Cancelado." || echo "Cancelled.")"; exit 0; }
 else
   case "$MODE" in
     all|update|continue) _preselect_all ;;
@@ -294,7 +361,11 @@ fi
 TOTAL=$(catalog_selected_total "${SELECTED_MODULES[@]}")
 
 if [ "$TOTAL" -eq 0 ]; then
-  log_info "Nenhum item selecionado. Nada a instalar."
+  if [ "$APP_LANG" = "pt" ] || [ "$APP_LANG" = "pt-BR" ] || [ "$APP_LANG" = "pt_BR" ]; then
+    log_info "Nenhum item selecionado. Nada a instalar."
+  else
+    log_info "No items selected. Nothing to install."
+  fi
   exit 0
 fi
 
@@ -308,27 +379,54 @@ for module in "${SELECTED_MODULES[@]}"; do
 done
 
 echo
-log_info "Resumo da seleção:"
+if [ "$APP_LANG" = "pt" ] || [ "$APP_LANG" = "pt-BR" ] || [ "$APP_LANG" = "pt_BR" ]; then
+  log_info "Resumo da seleção:"
+else
+  log_info "Selection summary:"
+fi
+
 while IFS= read -r line; do
   [ -n "$line" ] && echo -e "  ${BOLD}•${NC} $line"
 done <<< "$SUMMARY"
-log_info "Total: $TOTAL item(ns) em ${#SELECTED_MODULES[@]} categoria(s)"
+
+if [ "$APP_LANG" = "pt" ] || [ "$APP_LANG" = "pt-BR" ] || [ "$APP_LANG" = "pt_BR" ]; then
+  log_info "Total: $TOTAL item(ns) em ${#SELECTED_MODULES[@]} categoria(s)"
+else
+  log_info "Total: $TOTAL item(s) across ${#SELECTED_MODULES[@]} category(ies)"
+fi
 echo
 
 if ! $ASSUME_YES; then
   summary_height=$(( $(printf '%s' "$SUMMARY" | grep -c .) + 10 ))
   [ "$summary_height" -gt 30 ] && summary_height=30
-  if ! whiptail --title "Confirmar instalação" \
-    --yesno "${SUMMARY}
-Total: $TOTAL item(ns) em ${#SELECTED_MODULES[@]} categoria(s)
 
-Iniciar a instalação?" \
+  confirm_title="Confirm installation"
+  confirm_prompt="Total: $TOTAL item(s) across ${#SELECTED_MODULES[@]} category(ies)
+
+Start installation?"
+  cancel_msg="Installation cancelled. Nothing was installed."
+
+  if [ "$APP_LANG" = "pt" ] || [ "$APP_LANG" = "pt-BR" ] || [ "$APP_LANG" = "pt_BR" ]; then
+    confirm_title="Confirmar instalação"
+    confirm_prompt="Total: $TOTAL item(ns) em ${#SELECTED_MODULES[@]} categoria(s)
+
+Iniciar a instalação?"
+    cancel_msg="Instalação cancelada. Nada foi instalado."
+  fi
+
+  if ! whiptail --title "$confirm_title" \
+    --yesno "${SUMMARY}
+${confirm_prompt}" \
     "$summary_height" 78 3>&1 1>&2 2>&3; then
-    log_info "Instalação cancelada. Nada foi instalado."
+    log_info "$cancel_msg"
     exit 0
   fi
 else
-  log_info "Confirmação dispensada (--yes)."
+  if [ "$APP_LANG" = "pt" ] || [ "$APP_LANG" = "pt-BR" ] || [ "$APP_LANG" = "pt_BR" ]; then
+    log_info "Confirmação dispensada (--yes)."
+  else
+    log_info "Confirmation bypassed (--yes)."
+  fi
 fi
 
 case "$MODE" in
