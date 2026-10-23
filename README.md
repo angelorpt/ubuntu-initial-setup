@@ -156,7 +156,7 @@ cd ubuntu-initial-setup
 ```mermaid
 flowchart TD
     Start([Execute ./install.sh]) --> CheckTTY{Interactive TTY?}
-    CheckTTY -- No without --yes --> Error[Exit with Error]
+    CheckTTY -- "No without --yes" --> Error[Exit with Error]
     CheckTTY -- Yes --> EnvSelect[Environment: Desktop vs. Headless/WSL]
     
     EnvSelect --> ModeSelect[Mode: New / Continue / Retry]
